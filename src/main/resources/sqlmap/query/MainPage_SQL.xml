@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.open.MainPage">
+
+	<sql id="Where">
+		<if test="searchKeyword !=null and searchKeyword !=''">
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==0">
+				AND (TITLE LIKE CONCAT('%',#{searchKeyword},'%') OR CONT like CONCAT('%',#{searchKeyword},'%'))
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==1">
+				AND TITLE LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==2">
+				AND CONT LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+	 	</if>
+	</sql>
+	
+	
+	
+	<select id="selectMainpageNoticeList" parameterType="cmmnDefaultVO" resultType="noticeVO">
+		/* mainnotice.selectList */
+		<![CDATA[
+      	     SELECT  
+				  SEQ seq
+				, TITLE title
+				, DATE_FORMAT(RGST_DT,'%Y.%m.%d') rgstDt
+				, RGST_ID rgstId
+				, F_USER_NM(RGST_ID) name
+				, ATCH_FILE_ID atchFileId
+				, STA_DATE staDate
+				, END_DATE endDate
+		     FROM T_NOTICE TB
+			 WHERE DATE(STA_DATE) <= CURDATE() AND DATE(END_DATE) >= CURDATE() 
+			 	AND NOTI_YN = 'Y'
+	      ]]>
+		     <include refid="Where"/>	 
+	     <![CDATA[ 
+	    		ORDER BY RGST_DT DESC
+				LIMIT  #{firstIndex} , #{recordCountPerPage}
+		]]>
+	</select>	
+
+	<select id="selectPopupList" parameterType="cmmnDefaultVO" resultType="popupVO">
+		/* popup.selectList */
+		<![CDATA[
+      	     SELECT  
+				  SEQ seq
+				, TITLE title
+				, CONT cont
+				, DATE_FORMAT(RGST_DT,'%Y.%m.%d') rgstDt
+				, RGST_ID rgstId
+				, F_USER_NM(RGST_ID) name
+				, ATCH_FILE_ID atchFileId
+				, STA_DATE staDate
+				, END_DATE endDate
+				, POPLEFT popLeft
+				, POPTOP popTop 
+				, POPWIDTH popWidth
+		     FROM T_POPUP TB
+			 WHERE USE_YN = 'Y'
+	      ]]>
+	</select>
+	
+</mapper>
