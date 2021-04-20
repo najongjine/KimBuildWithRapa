@@ -52,6 +52,7 @@
 				, RGST_ID rgstId
 				, F_USER_NM(RGST_ID) name
 				, ATCH_FILE_ID atchFileId
+				, (SELECT MIN(FILE_SN) FROM T_ATCH_FILE_DETAIL WHERE ATCH_FILE_ID = TB.ATCH_FILE_ID) minFileSn
 				, STA_DATE staDate
 				, END_DATE endDate
 				, POPLEFT popLeft
@@ -59,6 +60,7 @@
 				, POPWIDTH popWidth
 		     FROM T_POPUP TB
 			 WHERE USE_YN = 'Y'
+			 	AND (DATE(STA_DATE) <= CURDATE() AND DATE(END_DATE) >= CURDATE()) 
 	      ]]>
 	</select>
 	

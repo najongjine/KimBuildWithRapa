@@ -36,9 +36,10 @@ public class PopupVO extends CmmnDefaultVO implements Serializable {
 	private String rgstId;
 	private String cnt;
 	private String name;
-	private String popLeft="800";
-	private String popTop="10";
-	private String popWidth="600";
+	private String popLeft;
+	private String popTop;
+	private String popWidth;
+	private String minFileSn;
 	
 	
 	public String getPopLeft() {
@@ -146,6 +147,12 @@ public class PopupVO extends CmmnDefaultVO implements Serializable {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public String getMinFileSn() {
+		return minFileSn;
+	}
+	public void setMinFileSn(String minFileSn) {
+		this.minFileSn = minFileSn;
 	}
 	
 }

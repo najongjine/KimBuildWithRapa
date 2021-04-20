@@ -9,6 +9,7 @@
 	<title>김건축사무소</title>
 	<link rel="stylesheet" type="text/css" href="/publish/ft/css/font-awesome.css">
 	<link rel="stylesheet" type="text/css" href="/publish/ft/css/style.css">
+	<link rel="stylesheet" href="/publish/ft/css/swiper.min.css"/>
 	<%-- <link rel="stylesheet" href="/publish/ft/css/main.css"/> --%>
 	<script type="text/javascript" src="/publish/ft/js/jquery-1.11.3.min.js"></script>
 	<script type="text/javascript" src="/publish/ft/js/common.js"></script>
@@ -16,9 +17,10 @@
 	<script type="text/javascript" src="/publish/ft/js/jquery.bxslider.js"></script>
 	<script src="/publish/ma/js/jquery-ui.js"></script>
 	<script src="/publish/ft/js/jquery.cookie.js"></script>
+	<script type="text/javascript" src="/publish/ft/js/swiper.min.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			popUp();
+			mainResponse();
 			
 			$('.slider').bxSlider({
 				controls:false,
@@ -28,7 +30,25 @@
 				pager:true,
 				pause: 4000
 			});
-		});
+			
+			/* 모바일 팝업 슬라이드*/
+			var mainPopSlide = $('.m_main_popslide .swiper-slide').length;
+			if(mainPopSlide>1){
+				var moblieSwiper = new Swiper('.m_main_popslide.swiper-container',{
+					slidesPerView: 1, 
+					spaceBetween: 10,
+					pagination: {
+						el: '.banner-pagination',
+						type: 'fraction',
+					},
+					navigation: {
+						nextEl: '.banner-next',
+						prevEl: '.banner-prev',
+					},
+					loop:true
+				});
+			}
+		}); // end of jquery
 		function myFunc(){
 			var url="/ft/ftcustomer/ftnotice/view.do?seq=3"
 			window.open(url, 'popup', 'top=120,left=50,titlebar=no,status=no,toolbar=no,resizable=no,scrollbars=yes,width=800px, height=600px');
@@ -37,9 +57,25 @@
 			return false
 		}
 		
-		/* 팝업을 띄우는 메인 스크립트 */
+		function mainResponse(){
+			if($( window ).width() < 1200) {	 
+				//var sectionOnePdt = $("#js-link").outerHeight();
+				var sectionOnePdt = 180;
+				//alert(sectionOnePdt);
+				$("#section0 .rc").css({"padding-top": sectionOnePdt});
+				m_popUP();
+			}else{
+				$("#section0 .rc").css({"padding-top": 0});
+				popUp();
+			}
+		}
+		
+		/* 팝업을 띄우는 메인 스크립트 
+		 $.cookie 관한 설명 : https://offbyone.tistory.com/176 */
 		function popUp(){
+			 $(".m_main_pop").hide()
 		<c:forEach var="popUp" items="${popupList}" varStatus="status">
+			/* 쿠키에서 popUpYn{x} 라는 이름의 쿠키 꺼내기*/
 			if(!$.cookie("popUpYn${status.count}")){
 				var html="";
 					html = '<div id="dispay_view${status.count}"class="mainPop js-mainPop id_popup1 p_main_pop">';
@@ -48,7 +84,7 @@
 					html += '<div class="mainPop_cont">';
 					html += '<p><c:out value="${util:unEscape(popUp.cont)}" escapeXml="false"/></p>';
 					if('${popUp.atchFileId}'){
-						html += '<p><img src="/atch/getImage.do?atchFileId=${popUp.atchFileId}&fileSn=0" alt="팝업" style="width:70%;"></p>';
+						html += '<p><img src="/atch/getImage.do?atchFileId=${popUp.atchFileId}&fileSn=${popUp.minFileSn}" alt="팝업" style="width:70%;"></p>';
 					}
 					html += '</div>';
 					html += '<div class="mainPop_foot">';
@@ -61,16 +97,26 @@
 			}	    		
 		</c:forEach>
 		$( ".p_main_pop" ).draggable();
+		}
 		
-	}
+		function m_popUP(){	    	
+			var mTop = (($(window).height() - $('.m_main_pop').height())/2);
+			var mLeft = (($(window).width() - $('.m_main_pop').width())/2);
+			$('.m_main_pop').css({'top':mTop,'left':mLeft});
+			$('.btn_close').click(function(){
+				$('.m_main_pop').hide();
+				$('#js-popup-bg').hide();
+			});	    		    	
+		}
 		
 		/* 팝업 오늘 하루동안 보지 않기 버튼용 함수 */
 		function closePopup(num) {
-			if ($("input:checkbox[name=popUp]").is(":checked")==true) {
+			if ($("input:checkbox[name=popUp]").is(":checked")) {
+				/* 이름이 popUpYn{x} 라는 이름의 쿠키, 값은 N, 1일뒤 만료되는 쿠리를 생성하라*/
 				$.cookie("popUpYn"+num, "N", 1);
 				view_hide(num);
 			}
-			if ($("input:checkbox[name=mPop]").is(":checked")==true){
+			if ($("input:checkbox[name=mPop]").is(":checked")){
 				$.cookie("mPop","N",1);
 			}
 		}
@@ -87,7 +133,41 @@
  			<input type="hidden" id="seq">
  		</form>
  	</div>
+ 	
+ 	<!-- pc 팝업 -->
  	<div id="pcPop"></div>
+ 	<!-- //팝업 -->
+ 	
+ 	<!--  모바일 팝업 -->	
+	<c:if test="${not empty popupList && empty cookie.mPop.value}">
+		<div class="mainPop js-mainPop id_popup1 m_main_pop">
+			<h1 class="mainPop_tag">공지<br>사항</h1>
+			<div class="m_main_popslide swiper-container">
+				<div class="swiper-wrapper">				    	
+					<c:forEach var="m_pop" items="${popupList }" varStatus="status">
+						<div class="swiper-slide">
+							<h2 class="mainPop_tit">${util:unEscape(m_pop.title)}</h2>
+							<div class="mainPop_cont">
+								<p>${util:unEscape(m_pop.cont)}</p>
+								<span>
+									<c:if test="${not empty m_pop.atchFileId}">
+										<img src="/atch/getImage.do?atchFileId=${m_pop.atchFileId}&fileSn=${m_pop.minFileSn}" alt="배너">
+									</c:if>
+								</span>
+							</div>
+						</div>
+					</c:forEach>
+				</div>
+			</div>	            
+			<div class="mainPop_foot">
+				<label class="no_today"><input type="checkbox" class="checkbox check" name="mPop" onclick="closePopup(1)">오늘 하루 동안 열지 않음</label>
+				<a href="javaScript:void(0)" class="btn_close od_popup" onclick="view_hide('1'); return false;">닫기</a>
+			</div>
+		</div>
+		<div class="popup_bg" id="js-popup-bg"></div>
+	</c:if>	
+	<!-- //모바일팝업 -->	
+ 	
 	<div id="skipnavi">
 		<a href="#container">▶본문 바로가기</a>
 		<a href="#gnb_area">▶주메뉴 바로가기</a>

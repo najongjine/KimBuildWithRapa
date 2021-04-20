@@ -6,6 +6,13 @@
 <script type="text/javascript">
 var oEditors = [];
 $(document).ready(function(){	
+	fncDate('date1');
+	
+	/* 멀티 checkbox 값을 가지고 있는 게시물의 checkbox 체크여부를 유지하는 코드 */
+	<c:forEach items="${checkboxList}" var="item">
+		var content='${item.checkboxContent}';
+		$("#"+content).attr("checked","checked");
+	</c:forEach>
 	
 	<%-- 에디터 --%>
 	nhn.husky.EZCreator.createInIFrame({
@@ -14,7 +21,7 @@ $(document).ready(function(){
 	    sSkinURI: "/resource/editor/SmartEditor2Skin.html",
 	    fCreator: "createSEditor2"
 	}); 
-	$("#btn_submit").bind("click", function(){
+	$("#btn_submit").on("click", function(){
 		
 		if($("#title").val() == "" || $("#title").val() == null) {
 			alert("제목을 입력해주세요");
@@ -38,9 +45,20 @@ $(document).ready(function(){
 		fncPageBoard('view','view.do');
 	});
 });
+
+var tabMenu=function(schEtc02){
+	$("#schEtc02").val(schEtc02);
+	if(schEtc02 == '1'){
+		$("#btnST").show();
+		$("#btnS").hide();
+	}else{
+		$("#btnS").show();
+		$("#btnST").hide();
+	}
+}
 </script>
 <div class="content_box">
-	<form:form commandName="sampleVO" name="defaultFrm" id="defaultFrm" method="post">
+	<form:form commandName="forumInputVO" name="defaultFrm" id="defaultFrm" method="post">
 		<form:hidden path="seq" id="seq"/>
 		<form:hidden path="pageIndex" id="pageIndex"/> 
 		<form:hidden path="atchFileId" id="atchFileId"/>
@@ -65,7 +83,7 @@ $(document).ready(function(){
 					<tr>
 						<th scope="row"><strong class="th_tit">제목</strong></th>
 						<td colspan="3">
-							<input type="text" name="title" id="title" class="text w100p"  required="required"  maxlength="50" value="${util:unEscape(sampleVO.title) }" />
+							<input type="text" name="title" id="title" class="text w100p"  required="required"  maxlength="50" value="${util:unEscape(forumInputVO.title) }" />
 							<form:errors path="title" cssClass="error" cssStyle="color:#ff0000" /> 
 						</td>
 					</tr>
@@ -74,8 +92,8 @@ $(document).ready(function(){
 					<tr>
 						<!-- 셀렉트 드롭박스 제목 -->
 						<th scope="row"><strong class="">select 요소</strong></th>
-						<td>
-							<select name="city">
+						<td colspan="3">
+							<select name="city" class="w12p">
 							  <option value="option1">서울</option>
 							  <option value="option2">대전</option>
 							  <option value="option3">대구</option>
@@ -87,7 +105,7 @@ $(document).ready(function(){
 					<!-- 여러 체크박스 . controller 에서는 단일 프로퍼티일 경우 , 표로 묶어서 받고, List을 경우 List로 받음-->
 					<tr>
 						<th scope="row"><strong class="">소속종류(체크박스)</strong></th>
-						<td>
+						<td colspan="3">
 							<input type="checkbox" name="belongkind" value="belong1" id="belong1">
 							<label id="belong1">belong1</label>
 							<input type="checkbox" name="belongkind" value="belong2" id="belong2">
@@ -99,33 +117,31 @@ $(document).ready(function(){
 					
 					<!-- 라디오 버튼 -->
 					<tr>
-						
 						<th scope="row"><strong class="">라디오버튼</strong></th>
-						<td>
-							<input type="radio" name="q1" value="option1" id="option1" />
+						<td colspan="3">
+							<input type="radio" name="radio1" value="option1" id="option1" <c:if test="${forumInputVO.radio1 eq 'option1'}">checked="checked"</c:if>/>
 							<label for="option1">옵션1</label>
-							<input type="radio" name="q1" value="option2" id="option2"/>
+							<input type="radio" name="radio1" value="option2" id="option2" <c:if test="${forumInputVO.radio1 eq 'option2'}">checked="checked"</c:if>/>
 							<label for="option2">옵션2</label>
-							<input type="radio" name="q1" value="option3" id="option3"/>
+							<input type="radio" name="radio1" value="option3" id="option3" <c:if test="${forumInputVO.radio1 eq 'option3'}">checked="checked"</c:if>/>
 							<label for="option3">옵션3</label>
-							<input type=”radio”>
 						</td>
 					</tr>
 					
 					<!-- range slider -->
 					<tr>
 						<th scope="row"><strong class="">rage slider</strong></th>
-						<td>
-							<input id="scale" type="range" name="scale" min=0 max=100 step=10 value=20>
+						<td colspan="3">
+							<input id="scale" type="range" name="scale" min=0 max=100 step=10 value="${forumInputVO.scale}">
 						</td>
 					</tr>
 					
 					<!-- datalist 요소 -->
 					<tr>
 						<th scope="row"><strong class="">datalist 요소</strong></th>
-						<td>
-							<input type="text" list="cities" id="city" name="city">
-							  <datalist id="cities">
+						<td colspan="3">
+							<input type="text" list="cities" id="datalist" name="datalist" class="text w20p" value="<c:out value="${forumInputVO.datalist}"/>">
+							  <datalist id="cities" class="text w20p">
 							  <option value="서울"></option>
 							  <option value="대전"></option>
 							  <option value="대구"></option>
@@ -134,107 +150,58 @@ $(document).ready(function(){
 						</td>
 					</tr>
 					
-					<!-- 파일 선택 - file. 파일 프로퍼티를 String으로 할 경우 파일 이름만 받음
-						재대로 받으려면 private MultipartFile uploadFile; || private List<MultipartFile> file; 로 받아야함 -->
-					<tr>
-						<th scope="row"><strong class="">파일 선택 - file</strong></th>
-						<td>
-							<input type="file" name="imageFile" accept="image/*">
-						</td>
-					</tr>
-					
 					<!-- 색상 입력(color). 선택된 색상은 #을 제외한 6자리의 16진수 색상값으로 전송된다.
 						브라우저 지원 여부에 따라 색상을 선택하기 위한 도구를 보여준다. 
 						프로퍼티를 String 으로 할시 ## color : #ff0000-->
 					<tr>
 						<th scope="row"><strong class="">색상 입력(color)</strong></th>
-						<td>
-							<input type="color" name="color" value="#FF0000">
+						<td colspan="3">
+							<input type="color" name="color" value="${forumInputVO.color}">
 						</td>
 					</tr>
 					
 					<!-- 날짜 입력(date) -->
 					<tr>
 						<th scope="row"><strong class="">날짜 입력(date)</strong></th>
-						<td>
-							<input type="date" name="day1">
-						</td>
-					</tr>
-					
-					<!-- 시간 입력(time) ## time : 16:18 -->
-					<tr>
-						<th scope="row"><strong class="">날짜 입력(date)</strong></th>
-						<td>
-							<input type="time" name="time">
-						</td>
-					</tr>
-					
-					<!-- 날짜와 시간 입력(datetime-local) ## datetime : 2021-04-19T16:18 -->
-					<tr>
-						<th scope="row"><strong class="">날짜와 시간 입력(datetime-local)</strong></th>
-						<td>
-							<input type="datetime-local" name="datetime">
-						</td>
-					</tr>
-					
-					<!-- 연도와 월 입력(month) ## month : 2021-04 -->
-					<tr>
-						<th scope="row"><strong class="">연도와 월 입력(month)</strong></th>
-						<td>
-							<input type="month" name="month">
-						</td>
-					</tr>
-					
-					<!-- 연도와 주 입력(week) ## week : 2021-W16 -->
-					<tr>
-						<th scope="row"><strong class="">연도와 주 입력(week)</strong></th>
-						<td>
-							<input type="week" name="week">
+						<td colspan="3">
+							<span class="pick_input"><input id="date1" name="date1" class="text w100" title="date1" readonly="readonly" type="text" value="${forumInputVO.date1}"/></span>
 						</td>
 					</tr>
 					
 					<!-- 이메일 입력(email) -->
 					<tr>
 						<th scope="row"><strong class="">이메일 입력(email)</strong></th>
-						<td>
-							<input type="email" name="email">
+						<td colspan="3">
+							<input type="email" name="mail" class="text w20p" value="<c:out value="${forumInputVO.mail}"/>">
 						</td>
 					</tr>
 					
 					<!-- URL 주소 입력(url) -->
 					<tr>
 						<th scope="row"><strong class="">URL 주소 입력(url)</strong></th>
-						<td>
-							<input type="url" name="url">
-						</td>
-					</tr>
-					
-					<!-- 전화번호 입력(tel) -->
-					<tr>
-						<th scope="row"><strong class="">전화번호 입력(tel)</strong></th>
-						<td>
-							<input type="tel" name="tel">
+						<td colspan="3">
+							<input type="url" name="url" class="text w20p" value="<c:out value="${forumInputVO.url}"/>">
 						</td>
 					</tr>
 					
 					<!-- 검색어 입력(search) 검색어를 바로 삭제할 수 있는 엑스(X) 표시가 생기는 점이다.-->
 					<tr>
 						<th scope="row"><strong class="">검색어 입력(search)</strong></th>
-						<td>
-							<input type="search" name="keyword">
+						<td colspan="3">
+							<input type="search" name="keyword" class="text w20p" value="<c:out value="${forumInputVO.keyword}"/>">
 						</td>
 					</tr>
 					
 					<tr>
 						<th scope="row"><strong class="th_tit">내용</strong></th>
 						<td colspan="3">
-							<textarea name="cont" id="cont" class="txt_area w_100p" >${util:unEscape(sampleVO.cont)}</textarea>
+							<textarea name="cont" id="cont" class="txt_area02" style="width:80%"><c:out value="${util:unEscape(forumInputVO.cont)}" escapeXml="false"/></textarea>
 						</td> 
 					</tr>
 					<tr>
 						<th scope="row"><strong>첨부파일</strong></th>
 						<td colspan="3">
-							<iframe name="atchFileIdFrame" id="atchFileIdFrame" src="/atch/fileUpload.do?atchFileId=${sampleVO.atchFileId }&fileCnt=5&atchFileIdNm=atchFileId&updateType=upload" style="width: 100%;" height="50" frameborder="0" title="파일 업로드 폼"></iframe>
+							<iframe name="atchFileIdFrame" id="atchFileIdFrame" src="/atch/fileUpload.do?atchFileId=${forumInputVO.atchFileId }&fileCnt=5&atchFileIdNm=atchFileId&updateType=upload" style="width: 100%;" height="50" frameborder="0" title="파일 업로드 폼"></iframe>
 						</td>
 					</tr> 
 				</tbody>

@@ -27,10 +27,17 @@
 				, RGST_ID rgstId
 				, ATCH_FILE_ID atchFileId
 				, F_USER_NM(RGST_ID) name
-				, STA_DATE staDate
-				, END_DATE endDate
-				, NOTI_YN notiYn
-		     FROM  T_SAMPLE TS
+				, MAIL mail
+				, CITY city
+				, RADIO1 radio1
+				, SCALE scale
+				, COLOR color
+				, DATE1 date1
+				, URL url
+				, HP hp
+				, KEYWORD keyword
+				, DATALIST datalist
+		     FROM  T_FORMINPUT TS
 			 WHERE  USE_YN='Y'	
 				 AND SEQ = #{seq}
 		]]>
@@ -48,10 +55,7 @@
 				, DATE_FORMAT(RGST_DT,'%Y.%m.%d') rgstDt
 				, RGST_ID rgstId
 				, F_USER_NM(RGST_ID) name
-				, ATCH_FILE_ID atchFileId
-				, STA_DATE staDate
-				, END_DATE endDate
-		     FROM T_SAMPLE TS
+		     FROM T_FORMINPUT TS
 			 WHERE USE_YN='Y'	
 	      ]]>
 		     <include refid="Where"/>	 
@@ -60,6 +64,18 @@
 				LIMIT  #{firstIndex} , #{recordCountPerPage}
 		]]>
 	</select>	
+	
+	<select id="selectCheckboxList" parameterType="forminputVO" resultType="forminputCheckboxListVO">
+		/* checkboxlist.selectList */
+		<![CDATA[
+      	     SELECT  
+				  SEQ seq
+				, FORMINPUT_SEQ forminputSeq
+				, CHECKBOX_CONTENT checkboxContent
+		     FROM T_FORMINPUT_CHECKBOXLIST 
+			 WHERE FORMINPUT_SEQ = #{seq}
+	      ]]>
+	</select>	
 
 
 	<select id="selectCount" parameterType="cmmnDefaultVO" resultType="int">
@@ -67,50 +83,86 @@
 		<![CDATA[
 			SELECT 
 				COUNT(SEQ) cnt 
-			FROM T_SAMPLE
+			FROM T_FORMINPUT
 			WHERE USE_YN='Y' 
 		]]>
 			 <include refid="Where"/>
 	</select>
 	
-	<insert id="insertContents" parameterType="forminputVO">
+	<insert id="insertContents" parameterType="forminputVO" useGeneratedKeys="true" keyProperty="seq">
 		/* Sample.insertContents */
 		<![CDATA[
-			INSERT INTO T_SAMPLE(
+			INSERT INTO T_FORMINPUT(
            	  	  SEQ 
 				, TITLE 
 				, CONT
 				, RGST_ID 
 				, ATCH_FILE_ID 
-				, STA_DATE
-				, END_DATE 
-				, NOTI_YN 
+				, MAIL 
+				, CITY 
+				, RADIO1 
+				, SCALE 
+				, COLOR 
+				, DATE1 
+				, URL 
+				, HP 
+				, KEYWORD
+				, DATALIST    
 			)
 			VALUES (
-				 (SELECT IFNULL(MAX(TS.SEQ)+1,1) FROM T_SAMPLE TS)
+				 (SELECT IFNULL(MAX(TS.SEQ)+1,1) FROM T_FORMINPUT TS)
 				,#{title ,jdbcType=VARCHAR}
 				,#{cont ,jdbcType=VARCHAR}
 				,#{loginSeq ,jdbcType=VARCHAR}
 				,#{atchFileId ,jdbcType=VARCHAR}
-				,#{staDate ,jdbcType=VARCHAR}
-				,#{endDate ,jdbcType=VARCHAR}
-				,#{notiYn ,jdbcType=VARCHAR}
+				,#{mail ,jdbcType=VARCHAR}
+				,#{city ,jdbcType=VARCHAR}
+				,#{radio1 ,jdbcType=VARCHAR}
+				,#{scale ,jdbcType=VARCHAR}
+				,#{color ,jdbcType=VARCHAR}
+				,#{date1 ,jdbcType=VARCHAR}
+				,#{url ,jdbcType=VARCHAR}
+				,#{hp ,jdbcType=VARCHAR}
+				,#{keyword ,jdbcType=VARCHAR}
+				,#{datalist ,jdbcType=VARCHAR}
 			)
 		]]>
+	</insert>
+	
+	<insert id="insertCheckboxList" parameterType="forminputCheckboxListVO">
+		/* checkboxList.insertContents */
+			INSERT INTO T_FORMINPUT_CHECKBOXLIST(
+           	  	 FORMINPUT_SEQ 
+				, CHECKBOX_CONTENT 
+			)
+			VALUES
+			<foreach collection="list" index="index" item="receiver" separator=","> 
+			(
+				#{receiver.forminputSeq ,jdbcType=VARCHAR}
+				,#{receiver.checkboxContent ,jdbcType=VARCHAR}
+			)
+			</foreach>
 	</insert>
 	
 	<update id="updateContents" parameterType="forminputVO">
 		/* Sample.updateContents */
 		<![CDATA[
-			UPDATE T_SAMPLE     
+			UPDATE T_FORMINPUT     
 			 SET 
 				  TITLE = #{title ,jdbcType=VARCHAR} 
 				, CONT = #{cont ,jdbcType=VARCHAR}
 				, RVSE_DT = NOW()
 				, ATCH_FILE_ID = #{atchFileId ,jdbcType=VARCHAR}
-				, STA_DATE = #{staDate ,jdbcType=VARCHAR}
-				, END_DATE  = #{endDate ,jdbcType=VARCHAR}
-				, NOTI_YN  = #{notiYn ,jdbcType=VARCHAR}
+				, MAIL = #{mail ,jdbcType=VARCHAR}
+				, CITY = #{city ,jdbcType=VARCHAR} 
+				, RADIO1  = #{radio1 ,jdbcType=VARCHAR}
+				, SCALE  = #{scale ,jdbcType=VARCHAR}
+				, COLOR  = #{color ,jdbcType=VARCHAR}
+				, DATE1  = #{date1 ,jdbcType=VARCHAR}
+				, URL  = #{url ,jdbcType=VARCHAR}
+				, HP  = #{hp ,jdbcType=VARCHAR}
+				, KEYWORD   = #{keyword ,jdbcType=VARCHAR}
+				, DATALIST   = #{datalist ,jdbcType=VARCHAR}
 			WHERE  SEQ = #{seq}  
 		]]>
 	</update>
@@ -118,7 +170,7 @@
 	<update id="deleteContents" parameterType="forminputVO">
 		/* Sample.deleteContents */
 		<![CDATA[
-			UPDATE T_SAMPLE
+			UPDATE T_FORMINPUT
 		       SET
 	          	 USE_YN='N'
 			WHERE SEQ=#{seq}
@@ -126,7 +178,13 @@
 	</update>
 
 
-	
+	<update id="deleteCheckboxList" parameterType="forminputVO">
+		/* Sample.deleteContents */
+		<![CDATA[
+			DELETE FROM T_FORMINPUT_CHECKBOXLIST
+			WHERE FORMINPUT_SEQ=#{seq}
+		]]>
+	</update>
 	
 	
 	
