@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.open.LogManage">
+
+	<sql id="Where">
+		<if test="searchKeyword !=null and searchKeyword !=''">
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==0">
+				AND (TITLE LIKE CONCAT('%',#{searchKeyword},'%') OR CONT like CONCAT('%',#{searchKeyword},'%'))
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==1">
+				AND TITLE LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==2">
+				AND CONT LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+	 	</if>
+	 	<if test='schEtc01 == "nonWorktimeConnect"'>
+	 		<![CDATA[ 
+	 		AND  USERKIND = "admin" AND TIME(RGST_DT) >= "18:00:01"
+	 		]]>
+	 	</if>
+	</sql>
+	
+	<select id="selectContents" parameterType="logmanageVO" resultType="logmanageVO">
+		/* logmanage.selectContents */
+		<![CDATA[
+			 SELECT  
+				  SEQ seq
+				, USERKIND userkind
+				, ID id
+				, DATE_FORMAT(RGST_DT,'%Y.%m.%d') rgstDt
+				, RGST_ID rgstId
+				, F_USER_NM(ID) name
+				, URL url
+				, IP ip
+		     FROM  T_LOGMANAGE TB
+			 WHERE  USE_YN='Y'	
+				 AND SEQ = #{seq}
+		]]>
+	</select>
+	
+	<select id="selectList" parameterType="cmmnDefaultVO" resultType="logmanageVO">
+		/* logmanage.selectList */
+		<![CDATA[
+      	     SELECT  
+				  SEQ seq
+				, USERKIND userkind
+				, ID id
+				, DATE_FORMAT(RGST_DT,'%Y.%m.%d %T') rgstDt
+				, RGST_ID rgstId
+				, F_USER_NM(ID) name
+				, URL url
+				, IP ip
+		     FROM T_LOGMANAGE TB
+			 WHERE USE_YN='Y'	
+	      ]]>
+		     <include refid="Where"/>	 
+	     <![CDATA[ 
+	    		ORDER BY SEQ DESC
+				LIMIT  #{firstIndex} , #{recordCountPerPage}
+		]]>
+	</select>	
+	
+	<select id="selectLoginFailedList" parameterType="cmmnDefaultVO" resultType="logmanageVO">
+		/* logmanage.selectList */
+		<![CDATA[
+      	     SELECT 
+			 TB.SEQ
+			, TB.ID
+			, (SELECT NAME FROM T_AD_USER WHERE ID = TB.ID) name
+			, (SELECT IP FROM t_login_fail WHERE ID = TB.ID ORDER BY RGST_DT DESC LIMIT 1) ip
+			, (SELECT MAX(RGST_DT) FROM T_LOGIN_FAIL WHERE ID = TB.ID) rgstDt
+			, COUNT(*) loginFailCount
+			FROM T_LOGIN_FAIL as TB
+			JOIN T_AD_USER as TU ON TU.ID = TB.ID
+			 WHERE TB.USE_YN='Y'	
+	      ]]>
+		     <include refid="Where"/>	 
+	     <![CDATA[ 
+	     		GROUP BY TB.ID
+	    		ORDER BY TB.SEQ DESC
+				LIMIT  #{firstIndex} , #{recordCountPerPage}
+		]]>
+	</select>	
+	
+	<select id="selectBannedIpConAttempList" parameterType="cmmnDefaultVO" resultType="logmanageVO">
+		/* T_BANNEDIP_CONATTEMP.selectList */
+		<![CDATA[
+      	     SELECT  
+				  SEQ seq
+				, DATE_FORMAT(RGST_DT,'%Y.%m.%d %T') rgstDt
+				, IP ip
+		     FROM T_BANNEDIP_CONATTEMP TB
+			 WHERE USE_YN='Y'	
+	      ]]>
+		     <include refid="Where"/>	 
+	     <![CDATA[ 
+	    		ORDER BY SEQ DESC
+				LIMIT  #{firstIndex} , #{recordCountPerPage}
+		]]>
+	</select>	
+	
+	<select id="selectMulipleConAttempList" parameterType="cmmnDefaultVO" resultType="logmanageVO">
+		/* logmanage.multipleConAttemp.selectList */
+		<![CDATA[
+      	     SELECT  
+				  SEQ seq
+				, USERKIND userkind
+				, ID id
+				, DATE_FORMAT(RGST_DT,'%Y.%m.%d %H:%i') rgstDt
+				, F_USER_NM(ID) name
+				, URL url
+				, IP ip
+				, count(*) multipleConCount
+		     FROM T_LOGMANAGE TB
+			 WHERE USE_YN='Y'	
+	      ]]>
+		     <include refid="Where"/>	 
+	     <![CDATA[
+	     		GROUP BY ID, URL, DATE_FORMAT(RGST_DT,'%Y.%m.%d %H:%i') 
+	     		HAVING multipleConCount > 10
+	    		ORDER BY SEQ DESC
+				LIMIT  #{firstIndex} , #{recordCountPerPage}
+		]]>
+	</select>	
+
+
+	<select id="selectMulitpleConAttempCount" parameterType="cmmnDefaultVO" resultType="int">
+		/* logmanage.selectCount */
+		SELECT COUNT(*) cnt FROM (
+			SELECT 
+			SEQ
+			, count(*) multipleConCount
+			FROM T_LOGMANAGE
+			WHERE USE_YN='Y'
+			GROUP BY ID, URL, DATE_FORMAT(RGST_DT,'%Y.%m.%d %H:%i')
+			HAVING multipleConCount > 10
+			 <include refid="Where"/>
+			) as T1
+	</select>
+	<select id="selectLoginFailedCount" parameterType="cmmnDefaultVO" resultType="int">
+		/* logmanage.selectCount */
+		<![CDATA[
+			SELECT 
+			COUNT(TB.SEQ) cnt
+			FROM t_login_fail as TB
+			JOIN t_ad_user as TU ON TU.ID = TB.ID
+			WHERE TB.USE_YN='Y' 
+		]]>
+			 <include refid="Where"/>
+			GROUP BY TB.ID
+	</select>
+	<select id="selectCount" parameterType="cmmnDefaultVO" resultType="int">
+		/* logmanage.selectCount */
+		<![CDATA[
+			SELECT 
+				COUNT(SEQ) cnt 
+			FROM T_LOGMANAGE
+			WHERE USE_YN='Y' 
+		]]>
+			 <include refid="Where"/>
+	</select>
+	
+	<select id="selectBannedIpConAttempCount" parameterType="cmmnDefaultVO" resultType="int">
+		/* logmanage.selectCount */
+		<![CDATA[
+			SELECT 
+				COUNT(SEQ) cnt 
+			FROM T_BANNEDIP_CONATTEMP
+			WHERE USE_YN='Y' 
+		]]>
+			 <include refid="Where"/>
+	</select>
+	
+	<insert id="insertContents" parameterType="logmanageVO">
+		/* logmanage.insertContents */
+		<![CDATA[
+			INSERT INTO T_LOGMANAGE(
+           	  	  SEQ 
+				, USERKIND 
+				, ID
+				, RGST_ID 
+				, URL
+				, IP
+			)
+			VALUES (
+				 (SELECT IFNULL(MAX(TB.SEQ)+1,1) FROM T_LOGMANAGE TB)
+				,#{userkind ,jdbcType=VARCHAR}
+				,#{id ,jdbcType=VARCHAR}
+				,#{loginSeq ,jdbcType=VARCHAR}
+				,#{url ,jdbcType=VARCHAR}
+				,#{ip ,jdbcType=VARCHAR}
+			)
+		]]>
+	</insert>
+	
+	<insert id="insertLoginFailed" parameterType="logmanageVO">
+		/* logmanage.insertContents */
+		<![CDATA[
+			INSERT INTO T_LOGIN_FAIL(
+           	  	  SEQ 
+				, USERKIND 
+				, ID
+				, IP
+			)
+			VALUES (
+				 (SELECT IFNULL(MAX(TB.SEQ)+1,1) FROM T_LOGIN_FAIL TB)
+				,#{userkind ,jdbcType=VARCHAR}
+				,#{id ,jdbcType=VARCHAR}
+				,#{ip ,jdbcType=VARCHAR}
+			)
+		]]>
+	</insert>
+	
+	<update id="updateContents" parameterType="logmanageVO">
+		/* logmanage.updateContents */
+		<![CDATA[
+			UPDATE T_LOGMANAGE     
+			 SET 
+				  USERKIND = #{userkind ,jdbcType=VARCHAR} 
+				, ID = #{id ,jdbcType=VARCHAR}
+				, RVSE_DT = NOW()
+				, URL = #{url ,jdbcType=VARCHAR}
+				, IP = #{ip ,jdbcType=VARCHAR}
+			WHERE  SEQ = #{seq}  
+		]]>
+	</update>
+	
+	<update id="deleteContents" parameterType="logmanageVO">
+		/* logmanage.deleteContents */
+		<![CDATA[
+			UPDATE T_LOGMANAGE
+		       SET
+	          	 USE_YN='N'
+			WHERE SEQ=#{seq}
+		]]>
+	</update>
+
+	
+</mapper>

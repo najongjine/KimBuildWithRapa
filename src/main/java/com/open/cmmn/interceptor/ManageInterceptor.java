@@ -20,6 +20,7 @@ import com.open.cmmn.service.CmmnService;
 import com.open.cmmn.util.SessionUtil;
 import com.open.cmmn.util.StringUtil;
 import com.open.ma.login.service.LoginVO;
+import com.open.vo.LogManageVO;
 
 /**
  * <pre>
@@ -118,6 +119,13 @@ public class ManageInterceptor extends HandlerInterceptorAdapter implements Hand
 		request.setAttribute("refererUrl", request.getHeader("referer"));
 		LOGGER.info("=================================== manageInterceptor requestUrl ::: " + requestFullUrl);
 		
+		/* 차단된 ip인지 검사 */
+		Object bannedIp=cmmnService.selectContents(clientIp, "BannedIP.selectContents");
+		if(bannedIp!=null) {
+			cmmnService.insertContents(clientIp, "BannedIP.insertContents");
+			response.sendRedirect("/cmmn/fail.do");
+		}
+		
 			/** 로그인 검사 */
 			if (SessionUtil.isLogined(request)) {
 				LoginVO loginVO = SessionUtil.getUserDetails();
@@ -171,7 +179,18 @@ public class ManageInterceptor extends HandlerInterceptorAdapter implements Hand
 	@Override
 	public void afterCompletion(final HttpServletRequest request, final HttpServletResponse response, final Object handler, final Exception ex) throws Exception {
 		long endTime = System.currentTimeMillis();
+		HttpSession session = request.getSession();	
 		LOGGER.debug("=================================== Loading Report afterHandle ::: " + (endTime - loadingTime));
 		LOGGER.debug("=================================== request URI ::: " + request.getRequestURI());
+		LogManageVO logManageVO=new LogManageVO();
+		String id=(String)session.getAttribute("loginMgrId");
+		String url=request.getRequestURI();
+		String ip = StringUtil.getClientIp(request);
+		String userkind="admin";
+		logManageVO.setId(id);
+		logManageVO.setUrl(url);
+		logManageVO.setIp(ip);
+		logManageVO.setUserkind(userkind);
+		cmmnService.insertContents(logManageVO, "LogManage.insertContents");
 	}
 }

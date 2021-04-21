@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.open.BannedIP">
+
+	<sql id="Where">
+		<if test="searchKeyword !=null and searchKeyword !=''">
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==0">
+				AND (TITLE LIKE CONCAT('%',#{searchKeyword},'%') OR CONT like CONCAT('%',#{searchKeyword},'%'))
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==1">
+				AND TITLE LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==2">
+				AND CONT LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+	 	</if>
+	</sql>
+	
+	<select id="selectContents" parameterType="String" resultType="logmanageVO">
+		/* logmanage.selectContents */
+		<![CDATA[
+			 SELECT  
+				  IP ip
+		     FROM  T_BANNEDIP TB
+			 WHERE  USE_YN='Y'	
+				 AND IP = #{ip}
+		]]>
+	</select>
+	
+	<insert id="insertContents" parameterType="String">
+		/* Sample.insertContents */
+		<![CDATA[
+			INSERT IGNORE INTO T_BANNEDIP_CONATTEMP(
+				 IP 
+			)
+			VALUES (
+				#{ip ,jdbcType=VARCHAR}
+			)
+		]]>
+	</insert>
+	
+	
+	
+	
+</mapper>

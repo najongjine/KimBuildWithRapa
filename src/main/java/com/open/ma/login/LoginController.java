@@ -30,6 +30,7 @@ import com.open.cmmn.util.StringUtil;
 import com.open.ma.bm.cmmnBoard.service.CmmnBoardVO;
 import com.open.ma.login.service.LoginVO;
 import com.open.ma.sys.mn.service.MnVO;
+import com.open.vo.LogManageVO;
 
 import egovframework.rte.fdl.property.EgovPropertyService;
 
@@ -128,8 +129,12 @@ public class LoginController {
 			}*/
 	    	if(userLoginVO == null || userLoginVO.getId() == null || "".equals(userLoginVO.getId())){
 	    		model.addAttribute("message", "아이디 또는 패스워드를 확인하시기 바랍니다.");
-	    		/*로그인 실패횟수 증가
-	    		cmmnService.updateContents(loginVO, PROGRAM_ID+".failCntUpdateContent");*/
+	    		/*로그인 실패횟수 증가*/
+	    		LogManageVO logmanageVO=new LogManageVO();
+	    		logmanageVO.setUserkind("admin");
+	    		logmanageVO.setId(loginVO.getId());
+	    		logmanageVO.setIp(StringUtil.getClientIp(request));
+	    		cmmnService.insertContents(logmanageVO, "LogManage.insertLoginFailed");
 	    		status.setComplete();
 	    		return  "/ma/login/login";  
 	    	}else{
