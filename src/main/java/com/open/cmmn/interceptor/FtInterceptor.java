@@ -14,7 +14,9 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.open.cmmn.service.CmmnService;
 import com.open.cmmn.util.SessionUtil;
+import com.open.cmmn.util.StringUtil;
 import com.open.ma.sys.mn.service.MnVO;
+import com.open.vo.LogManageVO;
 
 public class FtInterceptor extends HandlerInterceptorAdapter implements HandlerInterceptor {
 
@@ -75,6 +77,23 @@ public class FtInterceptor extends HandlerInterceptorAdapter implements HandlerI
 		session.setAttribute(SessionUtil.SESSION_MANAGE_MENU_KEY, menuVO.getMenuList());//메뉴목록
 		session.setAttribute("ftMenu", menuVO.getMenuList());	//메뉴목록
 		return true;
+	}
+	@Override
+	public void afterCompletion(final HttpServletRequest request, final HttpServletResponse response, final Object handler, final Exception ex) throws Exception {
+		long endTime = System.currentTimeMillis();
+		HttpSession session = request.getSession();	
+		LOGGER.debug("=================================== Loading Report afterHandle ::: " + (endTime - loadingTime));
+		LOGGER.debug("=================================== request URI ::: " + request.getRequestURI());
+		LogManageVO logManageVO=new LogManageVO();
+		String id=(String)session.getAttribute("loginFtId");
+		String url=request.getRequestURI();
+		String ip = StringUtil.getClientIp(request);
+		String userkind="user";
+		logManageVO.setId(id);
+		logManageVO.setUrl(url);
+		logManageVO.setIp(ip);
+		logManageVO.setUserkind(userkind);
+		cmmnService.insertContents(logManageVO, "LogManage.insertContents");
 	}
 
 }

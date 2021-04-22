@@ -10,10 +10,10 @@ var pageIndexForCommonJs='${searchVO.pageIndex}' + "";
 <div class="content_box">
 	<%-- 좌상단의 탭 메뉴  --%>
 	<ul class="tab js-tab tab_menu">
-	    <li class="${empty searchVO.schEtc01 ? 'current' : ''}"><a href="javascript:void(0)" onclick="searchLog(0); return false;">전체</a></li>
-	    <li class="${searchVO.schEtc01 eq 'nonWorktimeConnect' ? 'current' : ''}"><a href="javascript:void(0)" onclick="searchLog(1); return false;">업무시간 외 접속</a></li>
-	    <li><a href="javascript:void(0)" onclick="searchLog(2); return false;">과다 접속자관리</a></li>
-	    <li><a href="javascript:void(0)" onclick="searchLog(3); return false;">접속 지점이상</a></li>
+	    <li><a href="javascript:void(0)" onclick="searchLog(0); return false;">전체</a></li>
+	    <li><a href="javascript:void(0)" onclick="searchLog(1); return false;">업무시간 외 접속</a></li>
+	    <li ><a href="#" onclick="searchLog(2); return false;">과다 접속자관리</a></li>
+	    <li class="current"><a href="javascript:void(0)" onclick="searchLog(3); return false;">접속 지점이상</a></li>
 	    <li><a href="javascript:void(0)" onclick="searchLog(4); return false;">로그인 이상관리</a></li>
 	</ul>
 	
@@ -28,15 +28,7 @@ var pageIndexForCommonJs='${searchVO.pageIndex}' + "";
 				<div id="searchDefault" class="search_basic">
 					<strong class="tit">검색구분</strong>
 					<form:select path="searchCondition" id="searchCondition" title="구분 선택" cssClass="w100" >  
-						<form:option value="0" label="전체"/>
-						<form:option value="1" label="ID"/>
-						<form:option value="2" label="URL"/>
 						<form:option value="3" label="IP"/>
-					</form:select>
-					<form:select path="schCategoryCd" id="schCategoryCd" title="이용자 선택" cssClass="w100">  
-						<form:option value="0" label="전체이용자"/>
-						<form:option value="1" label="관리자"/>
-						<form:option value="2" label="유저"/>
 					</form:select>
 					<form:input path="searchKeyword" id="searchKeyword" class="text w50p" />
 					

@@ -34,6 +34,8 @@ public class LogManageVO extends CmmnDefaultVO implements Serializable {
 	private String cnt;
 	private String multipleConCount="0";
 	private String loginFailCount;
+	private String allow="N";
+	private String cont;
 	
 	public String getSeq() {
 		return seq;
@@ -109,6 +111,18 @@ public class LogManageVO extends CmmnDefaultVO implements Serializable {
 	}
 	public void setLoginFailCount(String loginFailCount) {
 		this.loginFailCount = loginFailCount;
+	}
+	public String getAllow() {
+		return allow;
+	}
+	public void setAllow(String allow) {
+		this.allow = allow;
+	}
+	public String getCont() {
+		return cont;
+	}
+	public void setCont(String cont) {
+		this.cont = cont;
 	}
 	
 }

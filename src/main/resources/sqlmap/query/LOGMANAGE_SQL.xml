@@ -5,20 +5,101 @@
 	<sql id="Where">
 		<if test="searchKeyword !=null and searchKeyword !=''">
 			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==0">
-				AND (TITLE LIKE CONCAT('%',#{searchKeyword},'%') OR CONT like CONCAT('%',#{searchKeyword},'%'))
+				AND (TB.ID LIKE CONCAT('%',#{searchKeyword},'%') OR TB.URL like CONCAT('%',#{searchKeyword},'%') OR TB.IP like CONCAT('%',#{searchKeyword},'%') )
 			</if>
 			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==1">
-				AND TITLE LIKE CONCAT('%',#{searchKeyword},'%')
+				AND TB.ID LIKE CONCAT('%',#{searchKeyword},'%')
 			</if>
 			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==2">
-				AND CONT LIKE CONCAT('%',#{searchKeyword},'%')
+				AND TB.URL LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==3">
+				AND TB.IP LIKE CONCAT('%',#{searchKeyword},'%')
 			</if>
 	 	</if>
+	</sql>
+	<sql id="WhereForBannedIpAttemp">
+		<if test="searchKeyword !=null and searchKeyword !=''">
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==3">
+				AND TB.IP LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+	 	</if>
+	</sql>
+	<sql id="WhereForFailedLoginAttemp">
+		<if test="searchKeyword !=null and searchKeyword !=''">
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==0">
+				AND (TB.ID LIKE CONCAT('%',#{searchKeyword},'%') OR TB.IP like CONCAT('%',#{searchKeyword},'%') )
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==1">
+				AND TB.IP LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==3">
+				AND TB.IP LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+	 	</if>
+	</sql>
+	<sql id="WhereWithUserkind">
+	 	<if test='schEtc01 == "" and schCategoryCd == 1'>
+	 		<![CDATA[ 
+	 		AND  USERKIND = "admin"
+	 		]]>
+	 	</if>
+	 	<if test='schEtc01 == "" and schCategoryCd == 2'>
+	 		<![CDATA[ 
+	 		AND  USERKIND = "user"
+	 		]]>
+	 	</if>
+	</sql>
+	<sql id="WhereWithDateTime">
 	 	<if test='schEtc01 == "nonWorktimeConnect"'>
 	 		<![CDATA[ 
 	 		AND  USERKIND = "admin" AND TIME(RGST_DT) >= "18:00:01"
 	 		]]>
 	 	</if>
+	 	<if test='schEtc01 == "nonWorktimeConnect" and schEtc04!="" '>
+	 		<![CDATA[ 
+	 		AND  USERKIND = "admin" AND TIME(RGST_DT) >= "18:00:01"
+	 		]]>
+	 	</if>
+	 	<if test="searchStartDate !='' and searchEndDate !='' and !searchStartDate.contains('--') and !searchEndDate.contains('--')">
+	 		<![CDATA[
+	 		AND DATE(TB.RGST_DT) BETWEEN #{searchStartDate} AND #{searchEndDate}
+	 		]]>
+	 	</if>
+	 	<if test="schEtc02 !='' and schEtc03 !='' and !schEtc02.contains('--') and !schEtc03.contains('--')">
+	 		<![CDATA[
+	 		AND TIME(TB.RGST_DT) BETWEEN #{schEtc02} AND #{schEtc03}
+	 		]]>
+	 	</if>
+	</sql>
+	
+	<sql id="multipleConAttempHaving">
+		<choose>
+			<when test='schEtc04 == "" '>
+				<![CDATA[
+				HAVING multipleConCount > 10
+				]]>
+			</when>
+			<otherwise>
+				<![CDATA[
+				HAVING multipleConCount > #{schEtc04}
+				]]>
+			</otherwise>
+		</choose>
+	</sql>
+	
+	<sql id="loginFailedHaving">
+		<choose>
+			<when test='schEtc04 == "" '>
+				<![CDATA[
+				]]>
+			</when>
+			<otherwise>
+				<![CDATA[
+				HAVING loginFailCount > #{schEtc04}
+				]]>
+			</otherwise>
+		</choose>
 	</sql>
 	
 	<select id="selectContents" parameterType="logmanageVO" resultType="logmanageVO">
@@ -54,7 +135,9 @@
 		     FROM T_LOGMANAGE TB
 			 WHERE USE_YN='Y'	
 	      ]]>
-		     <include refid="Where"/>	 
+		     <include refid="Where"/>
+		     <include refid="WhereWithUserkind"/>
+		     <include refid="WhereWithDateTime"/>		 		 
 	     <![CDATA[ 
 	    		ORDER BY SEQ DESC
 				LIMIT  #{firstIndex} , #{recordCountPerPage}
@@ -75,12 +158,12 @@
 			JOIN T_AD_USER as TU ON TU.ID = TB.ID
 			 WHERE TB.USE_YN='Y'	
 	      ]]>
-		     <include refid="Where"/>	 
-	     <![CDATA[ 
+		     <include refid="WhereForFailedLoginAttemp"/>
+		     <include refid="WhereWithDateTime"/>
 	     		GROUP BY TB.ID
+	     	<include refid="loginFailedHaving"/>	 
 	    		ORDER BY TB.SEQ DESC
 				LIMIT  #{firstIndex} , #{recordCountPerPage}
-		]]>
 	</select>	
 	
 	<select id="selectBannedIpConAttempList" parameterType="cmmnDefaultVO" resultType="logmanageVO">
@@ -93,7 +176,8 @@
 		     FROM T_BANNEDIP_CONATTEMP TB
 			 WHERE USE_YN='Y'	
 	      ]]>
-		     <include refid="Where"/>	 
+		     <include refid="WhereForBannedIpAttemp"/>	 
+		     <include refid="WhereWithDateTime"/>
 	     <![CDATA[ 
 	    		ORDER BY SEQ DESC
 				LIMIT  #{firstIndex} , #{recordCountPerPage}
@@ -116,12 +200,11 @@
 			 WHERE USE_YN='Y'	
 	      ]]>
 		     <include refid="Where"/>	 
-	     <![CDATA[
+		     <include refid="WhereWithDateTime"/>
 	     		GROUP BY ID, URL, DATE_FORMAT(RGST_DT,'%Y.%m.%d %H:%i') 
-	     		HAVING multipleConCount > 10
+	     		<include refid="multipleConAttempHaving"/>
 	    		ORDER BY SEQ DESC
 				LIMIT  #{firstIndex} , #{recordCountPerPage}
-		]]>
 	</select>	
 
 
@@ -131,34 +214,39 @@
 			SELECT 
 			SEQ
 			, count(*) multipleConCount
-			FROM T_LOGMANAGE
+			FROM T_LOGMANAGE TB
 			WHERE USE_YN='Y'
+			<include refid="Where"/>
+			<include refid="WhereWithDateTime"/>
 			GROUP BY ID, URL, DATE_FORMAT(RGST_DT,'%Y.%m.%d %H:%i')
-			HAVING multipleConCount > 10
-			 <include refid="Where"/>
+			<include refid="multipleConAttempHaving"/>
 			) as T1
 	</select>
 	<select id="selectLoginFailedCount" parameterType="cmmnDefaultVO" resultType="int">
 		/* logmanage.selectCount */
-		<![CDATA[
+		SELECT COUNT(*) cnt FROM (
 			SELECT 
-			COUNT(TB.SEQ) cnt
-			FROM t_login_fail as TB
-			JOIN t_ad_user as TU ON TU.ID = TB.ID
+			 COUNT(*) loginFailCount
+			FROM T_LOGIN_FAIL as TB
+			JOIN T_AD_USER as TU ON TU.ID = TB.ID
 			WHERE TB.USE_YN='Y' 
-		]]>
-			 <include refid="Where"/>
+			 <include refid="WhereForFailedLoginAttemp"/>
+			 <include refid="WhereWithDateTime"/>
 			GROUP BY TB.ID
+			<include refid="loginFailedHaving"/>
+		) as T1	
 	</select>
 	<select id="selectCount" parameterType="cmmnDefaultVO" resultType="int">
 		/* logmanage.selectCount */
 		<![CDATA[
 			SELECT 
 				COUNT(SEQ) cnt 
-			FROM T_LOGMANAGE
+			FROM T_LOGMANAGE TB
 			WHERE USE_YN='Y' 
 		]]>
 			 <include refid="Where"/>
+			 <include refid="WhereWithUserkind"/>
+			 <include refid="WhereWithDateTime"/>
 	</select>
 	
 	<select id="selectBannedIpConAttempCount" parameterType="cmmnDefaultVO" resultType="int">
@@ -166,10 +254,11 @@
 		<![CDATA[
 			SELECT 
 				COUNT(SEQ) cnt 
-			FROM T_BANNEDIP_CONATTEMP
+			FROM T_BANNEDIP_CONATTEMP TB
 			WHERE USE_YN='Y' 
 		]]>
-			 <include refid="Where"/>
+			 <include refid="WhereForBannedIpAttemp"/>
+			 <include refid="WhereWithDateTime"/>
 	</select>
 	
 	<insert id="insertContents" parameterType="logmanageVO">

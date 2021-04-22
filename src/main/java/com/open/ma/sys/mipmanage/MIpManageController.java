@@ -1,4 +1,4 @@
-package com.open.ma.sys.mlogmanage;
+package com.open.ma.sys.mipmanage;
 
 import java.util.List;
 import java.util.Properties;
@@ -34,7 +34,7 @@ import net.sf.ehcache.Element;
 /** 공지사항 게시판을 관리하는 컨트롤러 클래스를 정의한다.
  */
 @Controller
-public class MLogManageController {
+public class MIpManageController {
 
 	@Resource(name = "cmmnService")
     protected CmmnService cmmnService;
@@ -58,10 +58,10 @@ public class MLogManageController {
 	
 	
     /** Program ID **/
-    private final static String PROGRAM_ID = "LogManage";
+    private final static String PROGRAM_ID = "BannedIP";
 
     /** folderPath **/
-    private final static String folderPath = "/ma/sys/mlogmanage/";
+    private final static String folderPath = "/ma/sys/mipmanage/";
 
 	//@Resource(name = "beanValidator")
 	//protected DefaultBeanValidator beanValidator;
@@ -79,17 +79,9 @@ public class MLogManageController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(folderPath + "{listType}list.do")
-	public String list(@ModelAttribute("searchVO") CmmnDefaultVO searchVO, @PathVariable String listType ,ModelMap model, HttpServletRequest request) throws Exception {
-		listType=StringUtil.nullString(listType);
-		if(listType.equals("multipleConAttemp")) {
-			return ".mLayout:"+ folderPath + "list_multipleConAttemp";
-		}
-		else if(listType.equals("bannedIpConAttemp")) {
-			return ".mLayout:"+ folderPath + "list_bannedIpConAttemp";
-		}else if(listType.equals("loginFailed")) {
-			return ".mLayout:"+ folderPath + "list_loginFailed";
-		}
+	@RequestMapping(folderPath + "list.do")
+	public String list(@ModelAttribute("searchVO") CmmnDefaultVO searchVO, ModelMap model, HttpServletRequest request) throws Exception {
+
 		return ".mLayout:"+ folderPath + "list";
 	}
 	
@@ -113,8 +105,8 @@ public class MLogManageController {
 
 		
 		if (pageUnit != null && pageSize != null) {
-			searchVO.setPageUnit(Integer.parseInt(pageUnit.getObjectValue().toString()));
-			searchVO.setPageSize(Integer.parseInt(pageSize.getObjectValue().toString()));
+			searchVO.setPageUnit(Integer.parseInt(pageUnit.getValue().toString()));
+			searchVO.setPageSize(Integer.parseInt(pageSize.getValue().toString()));
 		} else {
 			/** EgovPropertyService.sample */
 			searchVO.setPageUnit(propertiesService.getInt("pageUnit"));
@@ -124,51 +116,28 @@ public class MLogManageController {
 			cache.put(new Element("pageSize", propertiesService.getInt("pageSize")));
 		}
 
-		
 
 		/** pageing setting */
 		PaginationInfo paginationInfo = new PaginationInfo();
 		paginationInfo.setCurrentPageNo(searchVO.getPageIndex());
 		paginationInfo.setRecordCountPerPage(searchVO.getPageUnit());
 		paginationInfo.setPageSize(searchVO.getPageSize());
-	
 		searchVO.setFirstIndex(paginationInfo.getFirstRecordIndex());
 		searchVO.setLastIndex(paginationInfo.getLastRecordIndex());
 		searchVO.setRecordCountPerPage(paginationInfo.getRecordCountPerPage());
 		
-		int totCnt=0;
-		List<LogManageVO> resultList=null;
-		if("multipleConAttemp".equals(searchVO.getSchEtc01())) {
-			totCnt = cmmnService.selectCount(searchVO, PROGRAM_ID+".selectMulitpleConAttempCount" );
-			resultList = (List<LogManageVO>) cmmnService.selectList(searchVO, PROGRAM_ID+".selectMulipleConAttempList" );
-		}
-		else if("bannedIpConAttemp".equals(searchVO.getSchEtc01())) {
-			totCnt = cmmnService.selectCount(searchVO, PROGRAM_ID+".selectBannedIpConAttempCount" );
-			resultList = (List<LogManageVO>) cmmnService.selectList(searchVO, PROGRAM_ID+".selectBannedIpConAttempList" );
-		}
-		else if("loginFailed".equals(searchVO.getSchEtc01())) {
-			totCnt = cmmnService.selectCount(searchVO, PROGRAM_ID+".selectLoginFailedCount" );
-			resultList = (List<LogManageVO>) cmmnService.selectList(searchVO, PROGRAM_ID+".selectLoginFailedList" );
-		}
-		else {
-			totCnt = cmmnService.selectCount(searchVO, PROGRAM_ID );
-			resultList = (List<LogManageVO>) cmmnService.selectList(searchVO, PROGRAM_ID );
-		}
 		
+		int totCnt = cmmnService.selectCount(searchVO, PROGRAM_ID );
 		paginationInfo.setTotalRecordCount(totCnt);
 		model.addAttribute("paginationInfo", paginationInfo);
 		
+
+		@SuppressWarnings("unchecked")
+		List<LogManageVO> resultList = (List<LogManageVO>) cmmnService.selectList(searchVO, PROGRAM_ID );
 		model.addAttribute("resultList", resultList);
 		
-		if("multipleConAttemp".equals(searchVO.getSchEtc01())) {
-			return folderPath + "addList_multipleConAttemp";
-		}
-		else if("bannedIpConAttemp".equals(searchVO.getSchEtc01())) {
-			return folderPath + "addList_bannedIpConAttemp";
-		}
-		else if("loginFailed".equals(searchVO.getSchEtc01())) {
-			return folderPath + "addList_loginfail";
-		}
+
+		
 		return folderPath + "addList";
 	}
 
@@ -187,9 +156,9 @@ public class MLogManageController {
 	public String view(@ModelAttribute("searchVO") LogManageVO searchVO, Model model, HttpServletRequest request) throws Exception {
 		
 		/* 게시판 상세정보 */
-		LogManageVO logManageVO = new LogManageVO();
-		logManageVO = (LogManageVO) cmmnService.selectContents(searchVO, PROGRAM_ID );
-		model.addAttribute("logManageVO", logManageVO);
+		LogManageVO ipVO = new LogManageVO();
+		ipVO = (LogManageVO) cmmnService.selectContents(searchVO, PROGRAM_ID +".selectDetailContents");
+		model.addAttribute("ipVO", ipVO);
 		
 		return ".mLayout:"+ folderPath + "view";
 	}
@@ -205,19 +174,21 @@ public class MLogManageController {
 	 */
 	@RequestMapping(folderPath + "{procType}Form.do")
 	public String form(@ModelAttribute("searchVO") LogManageVO searchVO, Model model,@PathVariable String procType, HttpServletRequest request) throws Exception {
-		procType=StringUtil.nullString(procType);
-		LogManageVO logManageVO = new LogManageVO();
+		
+		LogManageVO ipVO = new LogManageVO();
 		if (procType.equals("update")) {
-			logManageVO = (LogManageVO) cmmnService.selectContents(searchVO, PROGRAM_ID);
-			if(!StringUtil.nullString(SessionUtil.getUserDetails().getAuthCode()).equals("1") && !StringUtil.nullString(logManageVO.getRgstId()).equals(StringUtil.nullString(SessionUtil.getUserDetails().getLoginSeq()))){
+			ipVO = (LogManageVO) cmmnService.selectContents(searchVO, PROGRAM_ID+".selectDetailContents");
+			if(!StringUtil.nullString(SessionUtil.getUserDetails().getAuthCode()).equals("1") && !StringUtil.nullString(ipVO.getRgstId()).equals(StringUtil.nullString(SessionUtil.getUserDetails().getLoginSeq()))){
 				model.addAttribute("message", "비정상적인 접근입니다.");
 				model.addAttribute("cmmnScript", "list.do");
 				return "cmmn/execute";
 			}
 		}
-		model.addAttribute("message", "비정상적인 접근입니다.");
-		model.addAttribute("cmmnScript", "list.do");
-		return "cmmn/execute";
+		searchVO.setProcType(procType);
+		ipVO.setSearchVO(searchVO);
+		model.addAttribute("ipVO", ipVO);
+
+		return ".mLayout:"+ folderPath + "form";
 	}
 
 	/**
@@ -232,11 +203,14 @@ public class MLogManageController {
 	 */
 	@RequestMapping(value = folderPath + "{procType}Proc.do", method = RequestMethod.POST)
 	public String proc(@ModelAttribute("searchVO") LogManageVO searchVO, Model model, SessionStatus status,@PathVariable String procType, HttpServletRequest request) throws Exception {
-		
-		
+		searchVO.setIp(searchVO.getIp().replace(',', '.'));
+		System.out.println("## allow : "+searchVO.getAllow());
 		if(procType != null){
 			
 			if (procType.equals("insert")) {
+				
+				cmmnService.insertContents(searchVO, PROGRAM_ID);
+				
 			} else if (procType.equals("update") ) {				
 				cmmnService.updateContents(searchVO, PROGRAM_ID);				
 			} else if (procType.equals("delete")) {				
@@ -253,6 +227,9 @@ public class MLogManageController {
 				model.addAttribute("cmmnScript", "view.do");
 				return "cmmn/execute";
 	    	}else if(procType.equals("insert")){
+				model.addAttribute("message", "등록되었습니다.");
+				model.addAttribute("cmmnScript", "list.do");
+				return "cmmn/execute";
 	    	}else if(procType.equals("delete") ){
 				model.addAttribute("message", "삭제되었습니다..");
 				model.addAttribute("cmmnScript", "list.do");

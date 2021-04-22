@@ -4,42 +4,119 @@
 
 	<sql id="Where">
 		<if test="searchKeyword !=null and searchKeyword !=''">
-			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==0">
-				AND (TITLE LIKE CONCAT('%',#{searchKeyword},'%') OR CONT like CONCAT('%',#{searchKeyword},'%'))
-			</if>
 			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==1">
-				AND TITLE LIKE CONCAT('%',#{searchKeyword},'%')
+				AND (TB.IP LIKE CONCAT('%',#{searchKeyword},'%') OR CONT like CONCAT('%',#{searchKeyword},'%'))
 			</if>
-			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==2">
-				AND CONT LIKE CONCAT('%',#{searchKeyword},'%')
-			</if>
+	 	</if>
+	 	<if test='schCategoryCd == "Y" '>
+			AND TB.ALLOW = 'Y'
+		</if>
+		<if test='schCategoryCd == "N" '>
+			AND TB.ALLOW = 'N'
+		</if>
+		<if test="searchStartDate !='' and searchEndDate !='' and !searchStartDate.contains('--') and !searchEndDate.contains('--')">
+	 		<![CDATA[
+	 		AND DATE(TB.RGST_DT) BETWEEN #{searchStartDate} AND #{searchEndDate}
+	 		]]>
+	 	</if>
+	 	<if test="schEtc02 !='' and schEtc03 !='' and !schEtc02.contains('--') and !schEtc03.contains('--')">
+	 		<![CDATA[
+	 		AND TIME(TB.RGST_DT) BETWEEN #{schEtc02} AND #{schEtc03}
+	 		]]>
 	 	</if>
 	</sql>
 	
 	<select id="selectContents" parameterType="String" resultType="logmanageVO">
-		/* logmanage.selectContents */
+		/* bannedip.selectContents */
 		<![CDATA[
 			 SELECT  
 				  IP ip
 		     FROM  T_BANNEDIP TB
-			 WHERE  USE_YN='Y'	
+			 WHERE  USE_YN='Y'
+			 	AND ALLOW = 'N'
 				 AND IP = #{ip}
 		]]>
 	</select>
 	
-	<insert id="insertContents" parameterType="String">
+	<select id="selectDetailContents" parameterType="logmanageVO" resultType="logmanageVO">
+		/* bannedip.selectContents */
+		<![CDATA[
+			 SELECT
+			 	SEQ seq  
+				  ,IP ip
+				  , F_USER_NM(RGST_ID) name
+				  , DATE_FORMAT(RGST_DT,'%Y.%m.%d') rgstDt
+				  , CONT cont
+				  , ATCH_FILE_ID atchFileId
+				  , ALLOW allow
+		     FROM  T_BANNEDIP TB
+			 WHERE  USE_YN='Y'	
+				 AND SEQ = #{seq}
+		]]>
+	</select>
+	
+	<select id="selectList" parameterType="cmmnDefaultVO" resultType="logmanageVO">
+		/* bannedip.selectList */
+		<![CDATA[
+      	     SELECT  
+				  SEQ seq
+				, IP ip
+				, ALLOW allow
+				, DATE_FORMAT(RGST_DT,'%Y.%m.%d %T') rgstDt
+				, RGST_ID rgstId
+		     FROM T_BANNEDIP TB
+			 WHERE USE_YN='Y'	
+	      ]]>
+		     <include refid="Where"/>	 
+	     <![CDATA[ 
+	    		ORDER BY SEQ DESC
+				LIMIT  #{firstIndex} , #{recordCountPerPage}
+		]]>
+	</select>	
+	<select id="selectCount" parameterType="cmmnDefaultVO" resultType="int">
+		/* bannedip.selectCount */
+		<![CDATA[
+			SELECT 
+				COUNT(SEQ) cnt 
+			FROM T_BANNEDIP TB
+			WHERE USE_YN='Y' 
+		]]>
+			 <include refid="Where"/>
+	</select>
+	
+	<insert id="insertContents" parameterType="logmanageVO">
 		/* Sample.insertContents */
 		<![CDATA[
-			INSERT IGNORE INTO T_BANNEDIP_CONATTEMP(
+			INSERT IGNORE INTO T_BANNEDIP(
 				 IP 
+				 ,ALLOW
+				 ,CONT
+				 ,ATCH_FILE_ID
+				 ,RGST_ID 
 			)
 			VALUES (
 				#{ip ,jdbcType=VARCHAR}
+				,#{allow ,jdbcType=VARCHAR}
+				,#{cont ,jdbcType=VARCHAR}
+				,#{atchFileId ,jdbcType=VARCHAR}
+				,#{loginSeq ,jdbcType=VARCHAR}
 			)
 		]]>
 	</insert>
 	
-	
+	<update id="updateContents" parameterType="logmanageVO">
+		/* Sample.updateContents */
+		<![CDATA[
+			UPDATE T_BANNEDIP     
+			 SET 
+				  IP = #{ip,jdbcType=VARCHAR} 
+				, CONT = #{cont ,jdbcType=VARCHAR}
+				, RVSE_DT = NOW()
+				, ATCH_FILE_ID = #{atchFileId ,jdbcType=VARCHAR}
+				, ALLOW = #{allow,jdbcType=VARCHAR}
+			WHERE  SEQ = #{seq}  
+		]]>
+	</update>
 	
 	
 </mapper>

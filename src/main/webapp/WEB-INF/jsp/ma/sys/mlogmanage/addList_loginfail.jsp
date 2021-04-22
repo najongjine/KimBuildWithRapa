@@ -29,7 +29,7 @@
 			<c:choose>
 				<c:when test="${fn:length(resultList) > 0}">
 					<c:forEach var="result" items="${resultList}" varStatus="status">
-						<tr class="cursor" onclick="fncPageBoard('view','view.do','${result.seq}','seq')">
+						<tr >
 							<td>
 								${paginationInfo.totalRecordCount+1 - ((searchVO.pageIndex-1) * searchVO.pageSize + status.count)}
 							</td>
@@ -55,7 +55,6 @@
 		<ui:pagination paginationInfo="${paginationInfo}" type="manage" jsFunction="fncPageBoard" />
 	</div>
 	<div class="btn_right">
-		<a href="#" class="btn btn_mdl btn_save" onclick="fncPageBoard('write','insertForm.do');">등록</a>
 	</div>
 </div>
 <%-- //paging end--%>
