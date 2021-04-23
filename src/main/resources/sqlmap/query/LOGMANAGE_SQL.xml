@@ -120,7 +120,7 @@
 		]]>
 	</select>
 	
-	<select id="selectList" parameterType="cmmnDefaultVO" resultType="logmanageVO">
+	<select id="selectList" parameterType="logmanageVO" resultType="logmanageVO">
 		/* logmanage.selectList */
 		<![CDATA[
       	     SELECT  

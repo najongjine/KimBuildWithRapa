@@ -2,10 +2,16 @@
 <jsp:directive.include file="/WEB-INF/jsp/cmmn/incTagLib.jsp"/>
 <c:set var="url" value="${requestScope['javax.servlet.forward.request_uri']}"/>
 <script type="text/javascript" src="/publish/ma/js/board.js"></script>
+<script type="text/javascript" src="/publish/ma/js/myjs/myValidationFunc.js"></script>
 <script type="text/javascript" src="/resource/editor/js/HuskyEZCreator.js" charset="utf-8"></script>
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script type="text/javascript">
+<%-- 폼 양식 정리해둔 페이지 --%>
+<%-- 정규식 정리해둔 페이지 --%>
 var oEditors = [];
+var bValidationPassed=true;
 $(document).ready(function(){	
+	$(".errorMsgDiv").hide();
 	fncDate('date1');
 	
 	/* 멀티 checkbox 값을 가지고 있는 게시물의 checkbox 체크여부를 유지하는 코드 */
@@ -22,19 +28,45 @@ $(document).ready(function(){
 	    fCreator: "createSEditor2"
 	}); 
 	$("#btn_submit").on("click", function(){
-		
+		$(".errorMsgDiv").hide();
 		if($("#title").val() == "" || $("#title").val() == null) {
-			alert("제목을 입력해주세요");
+			$("#titleErrorDiv").show();
 			$("#title").focus();
-			return false;
+			bValidationPassed=false;
 		}
 			oEditors.getById["cont"].exec("UPDATE_CONTENTS_FIELD", []);/* 에디터 */
 			
 		if($("#cont").val()=='<p>&nbsp;</p>') {
-			alert("내용을 입력해주세요");
+			$("#contErrorDiv").show();
 			oEditors.getById["cont"].exec("FOCUS"); /* 에디터 */
-			return false;
+			bValidationPassed=false;
 		}		
+		var businessLicNum=$("#businessLicNum").val().trim();
+		var businessLicNumValidResult=isValidBizNo(businessLicNum);
+		if(businessLicNum && businessLicNumValidResult!=true){
+			$("#businessLicNumErrorDiv").show();
+			bValidationPassed=false;
+		}
+		
+		var socialSecNum=$("#socialSecNum").val().trim();
+		var socialSecNumValidResult=isValidJumin(socialSecNum);
+		if(socialSecNum && socialSecNumValidResult!=true){
+			$("#socialSecNumErrorDiv").show();
+			bValidationPassed=false;
+		}
+		
+		var mail=$("#mail").val().trim();
+		var mailValidResult=isValidEmail(mail);
+		if(mail && mailValidResult!=true){
+			$("#mailErrorDiv").show();
+			bValidationPassed=false;
+		}
+		
+		if(!bValidationPassed){
+			//유효성 검사 상태 초기화를 위한 코드
+			bValidationPassed=true;
+			return false;
+		}
 		
 		fncPageBoard('submit','${searchVO.procType}Proc.do');
 		return false;
@@ -55,6 +87,15 @@ var tabMenu=function(schEtc02){
 		$("#btnS").show();
 		$("#btnST").hide();
 	}
+}
+
+var daumAddress=function(){
+	new daum.Postcode({
+        oncomplete: function(data) {
+            $("#addr").val(data.address);
+            $("#zonecode").val(data.zonecode);
+        }
+    }).open();
 }
 </script>
 <div class="content_box">
@@ -84,7 +125,7 @@ var tabMenu=function(schEtc02){
 						<th scope="row"><strong class="th_tit">제목</strong></th>
 						<td colspan="3">
 							<input type="text" name="title" id="title" class="text w100p"  required="required"  maxlength="50" value="${util:unEscape(forumInputVO.title) }" />
-							<form:errors path="title" cssClass="error" cssStyle="color:#ff0000" /> 
+							<div class="errorMsgDiv" id="titleErrorDiv" style="color:#ff0000" >*제목을 입력해주세요</div>
 						</td>
 					</tr>
 					
@@ -172,7 +213,8 @@ var tabMenu=function(schEtc02){
 					<tr>
 						<th scope="row"><strong class="">이메일 입력(email)</strong></th>
 						<td colspan="3">
-							<input type="email" name="mail" class="text w20p" value="<c:out value="${forumInputVO.mail}"/>">
+							<input type="email" name="mail" id="mail" class="text w20p" value="<c:out value="${forumInputVO.mail}"/>">
+							<div class="errorMsgDiv" id="mailErrorDiv" style="color:#ff0000" >*이메일이 잘못됬습니다</div>
 						</td>
 					</tr>
 					
@@ -184,6 +226,38 @@ var tabMenu=function(schEtc02){
 						</td>
 					</tr>
 					
+					<!-- 주소 -->
+					<tr>
+						<th scope="row"><strong class="">주소</strong></th>
+						<td>
+							<input name="addr" id="addr" class="text w100p" value="<c:out value="${forumInputVO.addr}"/>" 
+							 onclick="daumAddress()" readonly="readonly">
+						</td>
+						<th scope="row"><strong class="">우편번호</strong></th>
+						<td>
+							<input name="zonecode" id="zonecode" class="text w40p" value="<c:out value="${forumInputVO.zonecode}"/>"
+						 	onclick="daumAddress()" readonly="readonly">
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><strong class="">주소상세</strong></th>
+						<td colspan="3">
+							<input name="addrDetail" id="addrDetail" class="text w20p" value="<c:out value="${forumInputVO.addrDetail}"/>">
+						</td>
+					</tr>
+					<!-- 주민등록, 사업자번호 -->
+					<tr>
+						<th scope="row"><strong class="">주민등록번호</strong></th>
+						<td>
+							<input name="socialSecNum" id="socialSecNum" class="text w40p" value="<c:out value="${forumInputVO.socialSecNum}"/>" >
+							<div class="errorMsgDiv" id="socialSecNumErrorDiv" style="color:#ff0000" >*주민등록번호가 잘못되었습니다</div>
+						</td>
+						<th scope="row"><strong class="">사업자번호</strong></th>
+						<td>
+							<input name="businessLicNum" id="businessLicNum" class="text w40p" value="<c:out value="${forumInputVO.businessLicNum}"/>">
+							<div class="errorMsgDiv" id="businessLicNumErrorDiv" style="color:#ff0000" >*사업자번호번호가 잘못되었습니다</div>
+						</td>
+					</tr>
 					<!-- 검색어 입력(search) 검색어를 바로 삭제할 수 있는 엑스(X) 표시가 생기는 점이다.-->
 					<tr>
 						<th scope="row"><strong class="">검색어 입력(search)</strong></th>
@@ -196,6 +270,7 @@ var tabMenu=function(schEtc02){
 						<th scope="row"><strong class="th_tit">내용</strong></th>
 						<td colspan="3">
 							<textarea name="cont" id="cont" class="txt_area02" style="width:80%"><c:out value="${util:unEscape(forumInputVO.cont)}" escapeXml="false"/></textarea>
+							<div class="errorMsgDiv" id="contErrorDiv" style="color:#ff0000" >*내용을 입력해주세요</div>
 						</td> 
 					</tr>
 					<tr>

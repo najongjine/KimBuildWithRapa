@@ -45,6 +45,43 @@ public class FormInputVO extends CmmnDefaultVO implements Serializable {
 	private String datalist;
 	private List<String> belongkind=new ArrayList<String>();
 	
+	private String addr;
+	private String addrDetail;
+	private String zonecode;
+	private String socialSecNum;
+	private String businessLicNum;
+	
+	
+	public String getAddrDetail() {
+		return addrDetail;
+	}
+	public void setAddrDetail(String addrDetail) {
+		this.addrDetail = addrDetail;
+	}
+	public String getZonecode() {
+		return zonecode;
+	}
+	public void setZonecode(String zonecode) {
+		this.zonecode = zonecode;
+	}
+	public String getAddr() {
+		return addr;
+	}
+	public void setAddr(String addr) {
+		this.addr = addr;
+	}
+	public String getSocialSecNum() {
+		return socialSecNum;
+	}
+	public void setSocialSecNum(String socialSecNum) {
+		this.socialSecNum = socialSecNum;
+	}
+	public String getBusinessLicNum() {
+		return businessLicNum;
+	}
+	public void setBusinessLicNum(String businessLicNum) {
+		this.businessLicNum = businessLicNum;
+	}
 	public String getScale() {
 		return scale;
 	}

@@ -25,13 +25,13 @@
 				<tbody>
 					<tr>
 						<th scope="row"><strong>제목</strong></th>
-						<td>
+						<td colspan="3">
 							<c:out value="${forumInputVO.title }"/>
 						</td>
 					</tr> 
 					<tr>
 						<th scope="row"><strong>체크한 아이템 목록</strong></th>
-						<td>
+						<td colspan="3">
 							<c:forEach var="result" items="${forumInputVO.checkBoxList }" varStatus="status">
 								<c:out value="${result.checkboxContent}"/>
 								<c:if test="${!status.last}">, </c:if>
@@ -48,6 +48,37 @@
 							<c:out value="${forumInputVO.datalist }"/>
 						</td>
 					</tr> 
+					<tr>
+						<th scope="row"><strong>전화번호</strong></th>
+						<td>
+							<c:out value="${forumInputVO.hp }"/>
+						</td>
+						<th scope="row"><strong>사업자 등록번호</strong></th>
+						<td>
+							<c:out value="${forumInputVO.datalist }"/>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><strong>주소</strong></th>
+						<td>
+							<c:out value="${forumInputVO.addr }"/>
+							<div><c:out value="${forumInputVO.addrDetail }"/></div>
+						</td>
+						<th scope="row"><strong>우편번호</strong></th>
+						<td>
+							<c:out value="${forumInputVO.zonecode }"/>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><strong>주민등록번호</strong></th>
+						<td>
+							<c:out value="${forumInputVO.socialSecNum }"/>
+						</td>
+						<th scope="row"><strong>사업자등록번호</strong></th>
+						<td>
+							<c:out value="${forumInputVO.businessLicNum }"/>
+						</td>
+					</tr>  
 					<tr>
 						<th scope="row"><strong>스케일</strong></th>
 						<td>

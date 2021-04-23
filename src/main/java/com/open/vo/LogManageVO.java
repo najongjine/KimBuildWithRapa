@@ -36,6 +36,7 @@ public class LogManageVO extends CmmnDefaultVO implements Serializable {
 	private String loginFailCount;
 	private String allow="N";
 	private String cont;
+	private String customPageUnit="";
 	
 	public String getSeq() {
 		return seq;
@@ -123,6 +124,12 @@ public class LogManageVO extends CmmnDefaultVO implements Serializable {
 	}
 	public void setCont(String cont) {
 		this.cont = cont;
+	}
+	public String getCustomPageUnit() {
+		return customPageUnit;
+	}
+	public void setCustomPageUnit(String customPageUnit) {
+		this.customPageUnit = customPageUnit;
 	}
 	
 }

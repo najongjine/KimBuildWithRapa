@@ -85,6 +85,9 @@ public class MLogManageController {
 		if(listType.equals("multipleConAttemp")) {
 			return ".mLayout:"+ folderPath + "list_multipleConAttemp";
 		}
+		else if(listType.equals("nonWorktimeConnect")) {
+			return ".mLayout:"+ folderPath + "list_nonWorktimeConnect";
+		}
 		else if(listType.equals("bannedIpConAttemp")) {
 			return ".mLayout:"+ folderPath + "list_bannedIpConAttemp";
 		}else if(listType.equals("loginFailed")) {
@@ -103,7 +106,7 @@ public class MLogManageController {
 	 */
 	@SuppressWarnings("deprecation")
 	@RequestMapping(folderPath + "addList.do")
-	public String addList(@ModelAttribute("searchVO") CmmnDefaultVO searchVO, ModelMap model, HttpServletRequest request) throws Exception {
+	public String addList(@ModelAttribute("searchVO") LogManageVO searchVO, ModelMap model, HttpServletRequest request) throws Exception {
 		
 
 		/**Cache sample */
@@ -124,8 +127,9 @@ public class MLogManageController {
 			cache.put(new Element("pageSize", propertiesService.getInt("pageSize")));
 		}
 
-		
-
+		if(searchVO.getCustomPageUnit()!=null && !"".equals(searchVO.getCustomPageUnit())) {
+			searchVO.setPageUnit(Integer.parseInt(searchVO.getCustomPageUnit()));
+		}
 		/** pageing setting */
 		PaginationInfo paginationInfo = new PaginationInfo();
 		paginationInfo.setCurrentPageNo(searchVO.getPageIndex());
@@ -154,7 +158,7 @@ public class MLogManageController {
 			totCnt = cmmnService.selectCount(searchVO, PROGRAM_ID );
 			resultList = (List<LogManageVO>) cmmnService.selectList(searchVO, PROGRAM_ID );
 		}
-		
+		System.out.println("## pageUnit : "+searchVO.getPageUnit());
 		paginationInfo.setTotalRecordCount(totCnt);
 		model.addAttribute("paginationInfo", paginationInfo);
 		

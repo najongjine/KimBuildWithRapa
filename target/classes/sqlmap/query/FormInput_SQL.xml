@@ -37,13 +37,16 @@
 				, HP hp
 				, KEYWORD keyword
 				, DATALIST datalist
+				, SOCIAL_SEC_NUM
+				, BUSINESS_LIC_NUM businessLicNum
+				, ADDR addr
+				, ZONECODE zonecode
+				, ADDR_DETAIL addrDetail
 		     FROM  T_FORMINPUT TS
 			 WHERE  USE_YN='Y'	
 				 AND SEQ = #{seq}
 		]]>
 	</select>
-	
-	
 	
 	<select id="selectList" parameterType="cmmnDefaultVO" resultType="forminputVO">
 		/* Sample.selectList */
@@ -108,6 +111,12 @@
 				, HP 
 				, KEYWORD
 				, DATALIST    
+				, SOCIAL_SEC_NUM
+				, BUSINESS_LIC_NUM
+				, ADDR
+				, ZONECODE
+				, ADDR_DETAIL
+				
 			)
 			VALUES (
 				 (SELECT IFNULL(MAX(TS.SEQ)+1,1) FROM T_FORMINPUT TS)
@@ -125,6 +134,11 @@
 				,#{hp ,jdbcType=VARCHAR}
 				,#{keyword ,jdbcType=VARCHAR}
 				,#{datalist ,jdbcType=VARCHAR}
+				,#{socialSecNum ,jdbcType=VARCHAR}
+				,#{businessLicNum ,jdbcType=VARCHAR}
+				,#{addr ,jdbcType=VARCHAR}
+				,#{zonecode ,jdbcType=VARCHAR}
+				,#{addrDetail ,jdbcType=VARCHAR}
 			)
 		]]>
 	</insert>
@@ -163,6 +177,12 @@
 				, HP  = #{hp ,jdbcType=VARCHAR}
 				, KEYWORD   = #{keyword ,jdbcType=VARCHAR}
 				, DATALIST   = #{datalist ,jdbcType=VARCHAR}
+				, SOCIAL_SEC_NUM = #{socialSecNum ,jdbcType=VARCHAR}
+				, BUSINESS_LIC_NUM = #{businessLicNum ,jdbcType=VARCHAR}
+				, ADDR = #{addr ,jdbcType=VARCHAR}
+				, ZONECODE = #{zonecode ,jdbcType=VARCHAR}
+				, ADDR_DETAIL = #{addrDetail ,jdbcType=VARCHAR}
+				
 			WHERE  SEQ = #{seq}  
 		]]>
 	</update>
