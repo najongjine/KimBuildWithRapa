@@ -182,9 +182,12 @@ public class ManageInterceptor extends HandlerInterceptorAdapter implements Hand
 		HttpSession session = request.getSession();	
 		LOGGER.debug("=================================== Loading Report afterHandle ::: " + (endTime - loadingTime));
 		LOGGER.debug("=================================== request URI ::: " + request.getRequestURI());
-		LogManageVO logManageVO=new LogManageVO();
-		String id=(String)session.getAttribute("loginMgrId");
 		String url=request.getRequestURI();
+		if(url.contains("addList.do") || url.contains("Proc.do")) {
+			return;
+		}
+		LogManageVO logManageVO=new LogManageVO();
+		String id=(String)session.getAttribute("loginMgrSeq");
 		String ip = StringUtil.getClientIp(request);
 		String userkind="admin";
 		logManageVO.setId(id);

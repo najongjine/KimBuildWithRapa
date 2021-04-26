@@ -37,6 +37,8 @@ public class LogManageVO extends CmmnDefaultVO implements Serializable {
 	private String allow="N";
 	private String cont;
 	private String customPageUnit="";
+	private String resultListSeqList="";
+	private String banned="N";
 	
 	public String getSeq() {
 		return seq;
@@ -130,6 +132,18 @@ public class LogManageVO extends CmmnDefaultVO implements Serializable {
 	}
 	public void setCustomPageUnit(String customPageUnit) {
 		this.customPageUnit = customPageUnit;
+	}
+	public String getResultListSeqList() {
+		return resultListSeqList;
+	}
+	public void setResultListSeqList(String resultListSeqList) {
+		this.resultListSeqList = resultListSeqList;
+	}
+	public String getBanned() {
+		return banned;
+	}
+	public void setBanned(String banned) {
+		this.banned = banned;
 	}
 	
 }

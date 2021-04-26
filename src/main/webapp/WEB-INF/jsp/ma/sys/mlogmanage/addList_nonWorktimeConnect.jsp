@@ -1,10 +1,6 @@
 <%@ page contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
 <jsp:directive.include file="/WEB-INF/jsp/cmmn/incTagLib.jsp"/>
-<script type="text/javascript" src="/publish/ma/sys/mlogmanage/resultListCheckbox.js"></script>
-<script type="text/javaScript">
-$(document).ready(function(){
-});
-</script>
+
 <div class="tbl_top">
 	<div class="tbl_left">
 		<%-- 아이템 리스트용 체크박스 전체선택 --%>
@@ -17,6 +13,7 @@ $(document).ready(function(){
 	<table class="tbl_col_type01">
 		<caption>목록</caption>
 		<colgroup> 
+			<col style="width:5%"> 
 			<col style="width:5%">
 			<col style="width:5%">
 			<col style="width:10%">
@@ -26,6 +23,7 @@ $(document).ready(function(){
 		</colgroup>
 		<thead>
 			<tr>
+				<th scope="col"><input type="checkbox" id="resultListAllCheckbox" onclick="onclickResultListAllCheckbox()"></th>
 				<th scope="col">번호</th>
 				<th scope="col" class="">구분</th>
 				<th scope="col" class="">ID</th>
@@ -39,6 +37,10 @@ $(document).ready(function(){
 				<c:when test="${fn:length(resultList) > 0}">
 					<c:forEach var="result" items="${resultList}" varStatus="status">
 						<tr >
+							<td>
+								<%-- 아이템 리스트용 체크박스 --%>
+								<input type="checkbox" name="resultListCheckbox" id="addListCheckbox_${result.seq}">
+							</td>
 							<td>
 								<%-- 아이템 리스트용 체크박스 --%>
 								<input type="checkbox" name="resultListCheckbox" id="addListCheckbox_${result.seq}">
@@ -74,3 +76,9 @@ $(document).ready(function(){
 	</div>
 </div>
 <%-- //paging end--%>
+
+<script type="text/javascript" src="/publish/ma/sys/mlogmanage/resultListCheckbox.js"></script>
+<script type="text/javaScript">
+$(document).ready(function(){
+});
+</script>

@@ -8,23 +8,23 @@ $(document).ready(function(){
 var searchLog=function(cat){
 	
 	switch(cat){
-	case 0:
+	case 'all':
 		$("#schEtc01").val('');
 		fncPageBoard('list','list.do',pageIndexForCommonJs,'pageIndex');
 		break;
-	case 1:
+	case 'nonWorktimeConnect':
 		$("#schEtc01").val('nonWorktimeConnect');
 		fncPageBoard('list','nonWorktimeConnectlist.do',pageIndexForCommonJs,'pageIndex');
 		break;
-	case 2:
+	case 'multipleConAttemp':
 		$("#schEtc01").val('multipleConAttemp');
 		fncPageBoard('list','multipleConAttemplist.do',pageIndexForCommonJs,'pageIndex');
 		break;
-	case 3:
+	case 'bannedIpConAttemp':
 		$("#schEtc01").val('bannedIpConAttemp');
 		fncPageBoard('list','bannedIpConAttemplist.do',pageIndexForCommonJs,'pageIndex');
 		break;
-	case 4:
+	case 'loginFailed':
 		$("#schEtc01").val('loginFailed');
 		fncPageBoard('list','loginFailedlist.do',pageIndexForCommonJs,'pageIndex');
 		break;

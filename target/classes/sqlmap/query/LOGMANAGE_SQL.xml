@@ -20,6 +20,9 @@
 	</sql>
 	<sql id="WhereForBannedIpAttemp">
 		<if test="searchKeyword !=null and searchKeyword !=''">
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==0">
+				AND TB.IP LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
 			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==3">
 				AND TB.IP LIKE CONCAT('%',#{searchKeyword},'%')
 			</if>
@@ -53,20 +56,20 @@
 	<sql id="WhereWithDateTime">
 	 	<if test='schEtc01 == "nonWorktimeConnect"'>
 	 		<![CDATA[ 
-	 		AND  USERKIND = "admin" AND TIME(RGST_DT) >= "18:00:01"
+	 		AND  USERKIND = "admin" AND (TIME(RGST_DT) > "18:00:00" OR TIME(RGST_DT) < "08:00:00")
 	 		]]>
 	 	</if>
 	 	<if test='schEtc01 == "nonWorktimeConnect" and schEtc04!="" '>
 	 		<![CDATA[ 
-	 		AND  USERKIND = "admin" AND TIME(RGST_DT) >= "18:00:01"
+	 		AND  USERKIND = "admin" AND (TIME(RGST_DT) > "18:00:00" OR TIME(RGST_DT) < "08:00:00")
 	 		]]>
 	 	</if>
-	 	<if test="searchStartDate !='' and searchEndDate !='' and !searchStartDate.contains('--') and !searchEndDate.contains('--')">
+	 	<if test="searchStartDate !='' and searchEndDate !='' ">
 	 		<![CDATA[
 	 		AND DATE(TB.RGST_DT) BETWEEN #{searchStartDate} AND #{searchEndDate}
 	 		]]>
 	 	</if>
-	 	<if test="schEtc02 !='' and schEtc03 !='' and !schEtc02.contains('--') and !schEtc03.contains('--')">
+	 	<if test="schEtc02 !='' and schEtc03 !='' ">
 	 		<![CDATA[
 	 		AND TIME(TB.RGST_DT) BETWEEN #{schEtc02} AND #{schEtc03}
 	 		]]>
@@ -124,11 +127,11 @@
 		/* logmanage.selectList */
 		<![CDATA[
       	     SELECT  
-				  SEQ seq
+				  MAX(SEQ) seq
 				, USERKIND userkind
 				, ID id
-				, DATE_FORMAT(RGST_DT,'%Y.%m.%d %T') rgstDt
-				, RGST_ID rgstId
+				, DATE_FORMAT(RGST_DT,'%Y.%m.%d') rgstDt
+				, MAX(RGST_ID) rgstId
 				, F_USER_NM(ID) name
 				, URL url
 				, IP ip
@@ -139,6 +142,7 @@
 		     <include refid="WhereWithUserkind"/>
 		     <include refid="WhereWithDateTime"/>		 		 
 	     <![CDATA[ 
+	     		GROUP BY TB.USERKIND,TB.ID,DATE_FORMAT(TB.RGST_DT,'%Y.%m.%d'),TB.URL,TB.IP
 	    		ORDER BY SEQ DESC
 				LIMIT  #{firstIndex} , #{recordCountPerPage}
 		]]>
@@ -148,19 +152,22 @@
 		/* logmanage.selectList */
 		<![CDATA[
       	     SELECT 
-			 TB.SEQ
-			, TB.ID
-			, (SELECT NAME FROM T_AD_USER WHERE ID = TB.ID) name
-			, (SELECT IP FROM t_login_fail WHERE ID = TB.ID ORDER BY RGST_DT DESC LIMIT 1) ip
-			, (SELECT MAX(RGST_DT) FROM T_LOGIN_FAIL WHERE ID = TB.ID) rgstDt
+			 MAX(TB.SEQ) seq
+			, (SELECT ID FROM T_LOGIN_FAIL WHERE IP = TB.IP ORDER BY RGST_DT DESC LIMIT 1) id
+			, F_USER_NM(TB.ID) name
+			, TB.IP ip
+			, MAX(TB.RGST_DT) rgstDt
 			, COUNT(*) loginFailCount
+			, CASE 
+					WHEN COUNT(*) > 4 THEN 'Y'
+					ELSE 'N'
+				END banned
 			FROM T_LOGIN_FAIL as TB
-			JOIN T_AD_USER as TU ON TU.ID = TB.ID
 			 WHERE TB.USE_YN='Y'	
 	      ]]>
 		     <include refid="WhereForFailedLoginAttemp"/>
 		     <include refid="WhereWithDateTime"/>
-	     		GROUP BY TB.ID
+	     		GROUP BY TB.IP, DATE(TB.RGST_DT)
 	     	<include refid="loginFailedHaving"/>	 
 	    		ORDER BY TB.SEQ DESC
 				LIMIT  #{firstIndex} , #{recordCountPerPage}
@@ -188,10 +195,10 @@
 		/* logmanage.multipleConAttemp.selectList */
 		<![CDATA[
       	     SELECT  
-				  SEQ seq
-				, USERKIND userkind
+				  MAX(SEQ) seq
+				, MAX(USERKIND) userkind
 				, ID id
-				, DATE_FORMAT(RGST_DT,'%Y.%m.%d %H:%i') rgstDt
+				, MAX(DATE_FORMAT(RGST_DT,'%Y.%m.%d')) rgstDt
 				, F_USER_NM(ID) name
 				, URL url
 				, IP ip
@@ -201,7 +208,7 @@
 	      ]]>
 		     <include refid="Where"/>	 
 		     <include refid="WhereWithDateTime"/>
-	     		GROUP BY ID, URL, DATE_FORMAT(RGST_DT,'%Y.%m.%d %H:%i') 
+	     		GROUP BY ID, URL, DATE_FORMAT(RGST_DT,'%Y.%m.%d') ,IP
 	     		<include refid="multipleConAttempHaving"/>
 	    		ORDER BY SEQ DESC
 				LIMIT  #{firstIndex} , #{recordCountPerPage}
@@ -212,13 +219,13 @@
 		/* logmanage.selectCount */
 		SELECT COUNT(*) cnt FROM (
 			SELECT 
-			SEQ
+			MAX(SEQ)
 			, count(*) multipleConCount
 			FROM T_LOGMANAGE TB
 			WHERE USE_YN='Y'
 			<include refid="Where"/>
 			<include refid="WhereWithDateTime"/>
-			GROUP BY ID, URL, DATE_FORMAT(RGST_DT,'%Y.%m.%d %H:%i')
+			GROUP BY ID, URL, DATE_FORMAT(RGST_DT,'%Y.%m.%d') ,IP
 			<include refid="multipleConAttempHaving"/>
 			) as T1
 	</select>
@@ -228,25 +235,27 @@
 			SELECT 
 			 COUNT(*) loginFailCount
 			FROM T_LOGIN_FAIL as TB
-			JOIN T_AD_USER as TU ON TU.ID = TB.ID
 			WHERE TB.USE_YN='Y' 
 			 <include refid="WhereForFailedLoginAttemp"/>
 			 <include refid="WhereWithDateTime"/>
-			GROUP BY TB.ID
+			GROUP BY TB.IP, DATE(TB.RGST_DT)
 			<include refid="loginFailedHaving"/>
 		) as T1	
 	</select>
 	<select id="selectCount" parameterType="cmmnDefaultVO" resultType="int">
 		/* logmanage.selectCount */
+		SELECT COUNT(*) cnt FROM (
 		<![CDATA[
 			SELECT 
-				COUNT(SEQ) cnt 
+				MAX(TB.SEQ) seq 
 			FROM T_LOGMANAGE TB
 			WHERE USE_YN='Y' 
 		]]>
 			 <include refid="Where"/>
 			 <include refid="WhereWithUserkind"/>
 			 <include refid="WhereWithDateTime"/>
+			 GROUP BY TB.USERKIND,TB.ID,DATE_FORMAT(TB.RGST_DT,'%Y.%m.%d'),TB.URL,TB.IP
+		) as T1
 	</select>
 	
 	<select id="selectBannedIpConAttempCount" parameterType="cmmnDefaultVO" resultType="int">
@@ -259,6 +268,16 @@
 		]]>
 			 <include refid="WhereForBannedIpAttemp"/>
 			 <include refid="WhereWithDateTime"/>
+	</select>
+	
+	<select id="cntLoginFailedAttemp" parameterType="logmanageVO" resultType="int">
+		/* logmanage.selectCount */
+		<![CDATA[
+			SELECT
+			COUNT(*) cnt
+			FROM t_login_fail
+			WHERE IP = #{ip ,jdbcType=VARCHAR} AND DATE(RGST_DT) = CURDATE()
+		]]>
 	</select>
 	
 	<insert id="insertContents" parameterType="logmanageVO">
@@ -314,6 +333,18 @@
 			WHERE  SEQ = #{seq}  
 		]]>
 	</update>
+	
+	<update id="allowIpInLoginFail" parameterType="logmanageVO">
+		/* logmanage.updateContents */
+		            UPDATE T_LOGIN_FAIL
+		            SET
+		            	USE_YN = 'N' 
+		            WHERE IP = #{ip ,jdbcType=VARCHAR};
+	</update>
+	<delete id="allowIpInBannedIp" parameterType="logmanageVO">
+		/* logmanage.updateContents */
+		            DELETE FROM T_BANNEDIP WHERE IP = #{ip ,jdbcType=VARCHAR};
+	</delete>
 	
 	<update id="deleteContents" parameterType="logmanageVO">
 		/* logmanage.deleteContents */

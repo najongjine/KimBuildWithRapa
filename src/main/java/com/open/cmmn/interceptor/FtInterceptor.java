@@ -85,7 +85,7 @@ public class FtInterceptor extends HandlerInterceptorAdapter implements HandlerI
 		LOGGER.debug("=================================== Loading Report afterHandle ::: " + (endTime - loadingTime));
 		LOGGER.debug("=================================== request URI ::: " + request.getRequestURI());
 		LogManageVO logManageVO=new LogManageVO();
-		String id=(String)session.getAttribute("loginFtId");
+		String id=(String)session.getAttribute("loginFtSeq");
 		String url=request.getRequestURI();
 		String ip = StringUtil.getClientIp(request);
 		String userkind="user";
