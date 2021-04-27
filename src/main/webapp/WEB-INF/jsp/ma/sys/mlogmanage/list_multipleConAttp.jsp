@@ -7,9 +7,9 @@
 	<%-- 좌상단의 탭 메뉴  --%>
 	<ul class="tab js-tab tab_menu">
 	    <li><a href="javascript:void(0)" onclick="searchLog('all'); return false;">전체</a></li>
-	    <li class="current"><a href="javascript:void(0)" onclick="searchLog('nonWorktimeConnect'); return false;">업무시간 외 접속</a></li>
-	    <li><a href="javascript:void(0)" onclick="searchLog('multipleConAttemp'); return false;">과다 접속자관리</a></li>
-	    <li><a href="javascript:void(0)" onclick="searchLog('bannedIpConAttemp'); return false;">접속 지점이상</a></li>
+	    <li><a href="javascript:void(0)" onclick="searchLog('nonWorktimeCon'); return false;">업무시간 외 접속</a></li>
+	    <li class="current"><a href="#" onclick="searchLog('multipleConAttp'); return false;">과다 접속자관리</a></li>
+	    <li><a href="javascript:void(0)" onclick="searchLog('bannedIpConAttp'); return false;">접속 지점이상</a></li>
 	    <li><a href="javascript:void(0)" onclick="searchLog('loginFailed'); return false;">로그인 이상관리</a></li>
 	</ul>
 	
@@ -19,7 +19,7 @@
 			<input type="hidden" id="seq" name="seq"/>
 			<input type="hidden" id="pageIndex" name="pageIndex"/>
 			<input type="hidden" id="schEtc01" name="schEtc01" value="${searchVO.schEtc01}"/>
-			<input type="hidden" id="resultListSeqList" value="${searchVO.resultListSeqList}"/>
+			<input type="hidden" name="resultListSeqList" id="resultListSeqList" value="${searchVO.resultListSeqList}"/>
 			<fieldset>
 				<legend>검색</legend>
 				<div id="searchDefault" class="search_basic">
@@ -40,10 +40,13 @@
 					<span class="calendar_input w150 hideBtn2" >
 						<input id="searchEndDate" name="searchEndDate" class="text w80p" readonly="readonly" type="text"/>
 					</span>
-					
 					<span class="search_btns">
 						<button type="button" class="btn btn_search" id="btn_search">검색</button>
 					</span>
+				</div>
+				<div class="search_basic mar_t5">
+					<strong class="tit">접속횟수</strong>
+					<input type="number" name="schEtc04" id="schEtc04" class="text w12p numOnly" />
 				</div>
 			</fieldset>
 		</form:form>
@@ -54,8 +57,7 @@
 </div>
 
 <script type="text/javascript" src="/publish/ma/js/board.js"></script>
+<script type="text/javascript" src="/publish/ma/sys/mlogmanage/shareScript.js"></script>
 <script type="text/javaScript">
-/*자바스크립트를 별도의 파일로 분리하면 model 에 담겨온 변수 참조가 안되서 해주는 추가작업*/
 var pageIndexForCommonJs='${searchVO.pageIndex}' + "";
 </script>
-<script type="text/javascript" src="/publish/ma/sys/mlogmanage/shareScript.js"></script>

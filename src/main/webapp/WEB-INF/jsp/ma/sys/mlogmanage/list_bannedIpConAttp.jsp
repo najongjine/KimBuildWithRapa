@@ -7,9 +7,9 @@
 	<%-- 좌상단의 탭 메뉴  --%>
 	<ul class="tab js-tab tab_menu">
 	    <li><a href="javascript:void(0)" onclick="searchLog('all'); return false;">전체</a></li>
-	    <li><a href="javascript:void(0)" onclick="searchLog('nonWorktimeConnect'); return false;">업무시간 외 접속</a></li>
-	    <li ><a href="#" onclick="searchLog('multipleConAttemp'); return false;">과다 접속자관리</a></li>
-	    <li class="current"><a href="javascript:void(0)" onclick="searchLog('bannedIpConAttemp'); return false;">접속 지점이상</a></li>
+	    <li><a href="javascript:void(0)" onclick="searchLog('nonWorktimeCon'); return false;">업무시간 외 접속</a></li>
+	    <li ><a href="#" onclick="searchLog('multipleConAttp'); return false;">과다 접속자관리</a></li>
+	    <li class="current"><a href="javascript:void(0)" onclick="searchLog('bannedIpConAttp'); return false;">접속 지점이상</a></li>
 	    <li><a href="javascript:void(0)" onclick="searchLog('loginFailed'); return false;">로그인 이상관리</a></li>
 	</ul>
 	
@@ -19,7 +19,7 @@
 			<input type="hidden" id="seq" name="seq"/>
 			<input type="hidden" id="pageIndex" name="pageIndex"/>
 			<input type="hidden" id="schEtc01" name="schEtc01" value="${searchVO.schEtc01}"/>
-			<input type="hidden" id="resultListSeqList" value="${searchVO.resultListSeqList}"/>
+			<input type="hidden" name="resultListSeqList" id="resultListSeqList" value="${searchVO.resultListSeqList}"/>
 			<fieldset>
 				<legend>검색</legend>
 				<div id="searchDefault" class="search_basic">

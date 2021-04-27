@@ -218,6 +218,14 @@ var daumAddress=function(){
 						</td>
 					</tr>
 					
+					<!-- 전화번호 입력(hp) -->
+					<tr>
+						<th scope="row"><strong class="">전화번호</strong></th>
+						<td colspan="3">
+							<input type="tel" name="hp" id="hp" class="text w20p numOnly" value="<c:out value="${forumInputVO.hp}"/>">
+						</td>
+					</tr>
+					
 					<!-- URL 주소 입력(url) -->
 					<tr>
 						<th scope="row"><strong class="">URL 주소 입력(url)</strong></th>

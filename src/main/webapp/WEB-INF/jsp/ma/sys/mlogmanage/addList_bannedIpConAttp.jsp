@@ -8,25 +8,17 @@
 	<table class="tbl_col_type01">
 		<caption>목록</caption>
 		<colgroup> 
-			<col style="width:5%"> 
-			<col style="width:5%">
-			<col style="width:5%">
+			<col style="width:10%"> 
+			<col style="width:10%">
 			<col style="width:10%">
 			<col >
-			<col style="width:10%">
-			<col style="width:10%">
-			<col style="width:5%">
 		</colgroup>
 		<thead>
 			<tr>
 				<th scope="col"><input type="checkbox" id="resultListAllCheckbox" onclick="onclickResultListAllCheckbox()"></th>
 				<th scope="col">번호</th>
-				<th scope="col" class="">구분</th>
-				<th scope="col" class="">ID</th>
-				<th scope="col" class="">URL</th>
+				<th scope="col" class="">접속시간</th>
 				<th scope="col" class="">IP</th>
-				<th scope="col">접속시간</th>
-				<th scope="col">접속횟수</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -41,22 +33,13 @@
 							<td>
 								${paginationInfo.totalRecordCount+1 - ((searchVO.pageIndex-1) * searchVO.pageSize + status.count)}
 							</td>
-							<td class="" >
-								<c:choose>
-									<c:when test="${result.userkind eq 'admin'}">관리자</c:when>
-									<c:otherwise>사용자</c:otherwise>
-								</c:choose>
-							</td>
-							<td><c:out value="${result.id }"/></td>
-							<td><c:out value="${result.url }"/></td>
-							<td><c:out value="${result.ip }"/></td>
 							<td><c:out value="${result.rgstDt }"/></td>
-							<td><c:out value="${result.multipleConCount }"/></td>
+							<td><c:out value="${result.ip }"/></td>
 						</tr>
 					</c:forEach>
 				</c:when>
 				<c:otherwise>
-					<tr><td colspan="7" class="no_data">데이터가 없습니다.</td></tr>
+					<tr><td colspan="3" class="no_data">데이터가 없습니다.</td></tr>
 				</c:otherwise>
 			</c:choose>
 		</tbody>

@@ -34,7 +34,10 @@
 				, COLOR color
 				, DATE1 date1
 				, URL url
-				, HP hp
+				, CASE LENGTH(HP)
+			       WHEN 11 THEN CONCAT(LEFT(hp, 3), '-', MID(hp, 4, 4), '-', RIGHT(hp, 4))
+			       WHEN 10 THEN CONCAT(LEFT(hp, 3), '-', MID(hp, 4, 3), '-', RIGHT(hp, 4))
+			      END hp
 				, KEYWORD keyword
 				, DATALIST datalist
 				, SOCIAL_SEC_NUM

@@ -154,7 +154,9 @@ public class MIpManageController {
 	@SuppressWarnings("unchecked")
 	@RequestMapping(folderPath +"view.do")
 	public String view(@ModelAttribute("searchVO") LogManageVO searchVO, Model model, HttpServletRequest request) throws Exception {
-		
+		System.out.println("## schEtc13: "+searchVO.getSchEtc13());
+		System.out.println("## schEtc14: "+searchVO.getSchEtc14());
+		System.out.println("## schEtc15: "+searchVO.getSchEtc15());
 		/* 게시판 상세정보 */
 		LogManageVO ipVO = new LogManageVO();
 		ipVO = (LogManageVO) cmmnService.selectContents(searchVO, PROGRAM_ID +".selectDetailContents");
@@ -222,8 +224,9 @@ public class MIpManageController {
 			
 			if(procType.equals("update")){
 				model.addAttribute("message", "수정되었습니다.");
-				model.addAttribute("pName", "seq");	
-				model.addAttribute("pValue", searchVO.getSeq());
+				// cmmn/execute 에 변수 여러개 실어 보내기
+				model.addAttribute("pName", "seq,schEtc13,schEtc14,schEtc15");	
+				model.addAttribute("pValue", searchVO.getSeq()+",13"+",14"+",15");
 				model.addAttribute("cmmnScript", "view.do");
 				return "cmmn/execute";
 	    	}else if(procType.equals("insert")){

@@ -54,12 +54,12 @@
 	 	</if>
 	</sql>
 	<sql id="WhereWithDateTime">
-	 	<if test='schEtc01 == "nonWorktimeConnect"'>
+	 	<if test='schEtc01 == "nonWorktimeCon"'>
 	 		<![CDATA[ 
 	 		AND  USERKIND = "admin" AND (TIME(RGST_DT) > "18:00:00" OR TIME(RGST_DT) < "08:00:00")
 	 		]]>
 	 	</if>
-	 	<if test='schEtc01 == "nonWorktimeConnect" and schEtc04!="" '>
+	 	<if test='schEtc01 == "nonWorktimeCon" and schEtc04!="" '>
 	 		<![CDATA[ 
 	 		AND  USERKIND = "admin" AND (TIME(RGST_DT) > "18:00:00" OR TIME(RGST_DT) < "08:00:00")
 	 		]]>
@@ -76,7 +76,7 @@
 	 	</if>
 	</sql>
 	
-	<sql id="multipleConAttempHaving">
+	<sql id="multipleConAttpHaving">
 		<choose>
 			<when test='schEtc04 == "" '>
 				<![CDATA[
@@ -120,6 +120,20 @@
 		     FROM  T_LOGMANAGE TB
 			 WHERE  USE_YN='Y'	
 				 AND SEQ = #{seq}
+		]]>
+	</select>
+	<select id="selectLoginFailedForIpList" parameterType="logmanageVO" resultType="logmanageVO">
+		/* logmanage.selectContents */
+		<![CDATA[
+			 SELECT  
+				  SEQ seq
+				, ID id
+				, RGST_DT rgstDt
+		     FROM  T_LOGIN_FAIL TB
+			 WHERE  USE_YN='Y'	
+				 AND IP = #{ip}
+			 ORDER BY SEQ DESC
+			 LIMIT 100
 		]]>
 	</select>
 	
@@ -192,7 +206,7 @@
 	</select>	
 	
 	<select id="selectMulipleConAttempList" parameterType="cmmnDefaultVO" resultType="logmanageVO">
-		/* logmanage.multipleConAttemp.selectList */
+		/* logmanage.multipleConAttp.selectList */
 		<![CDATA[
       	     SELECT  
 				  MAX(SEQ) seq
@@ -209,7 +223,7 @@
 		     <include refid="Where"/>	 
 		     <include refid="WhereWithDateTime"/>
 	     		GROUP BY ID, URL, DATE_FORMAT(RGST_DT,'%Y.%m.%d') ,IP
-	     		<include refid="multipleConAttempHaving"/>
+	     		<include refid="multipleConAttpHaving"/>
 	    		ORDER BY SEQ DESC
 				LIMIT  #{firstIndex} , #{recordCountPerPage}
 	</select>	
@@ -226,7 +240,7 @@
 			<include refid="Where"/>
 			<include refid="WhereWithDateTime"/>
 			GROUP BY ID, URL, DATE_FORMAT(RGST_DT,'%Y.%m.%d') ,IP
-			<include refid="multipleConAttempHaving"/>
+			<include refid="multipleConAttpHaving"/>
 			) as T1
 	</select>
 	<select id="selectLoginFailedCount" parameterType="cmmnDefaultVO" resultType="int">

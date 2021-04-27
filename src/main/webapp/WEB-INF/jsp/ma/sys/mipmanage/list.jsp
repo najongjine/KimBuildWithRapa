@@ -36,24 +36,13 @@ var resetTime=function(){
 					
 					<strong class="tit hideBtn2">기간</strong>
 					<span class="calendar_input w150 hideBtn2" >
-						<input id="searchStartDate" name="searchStartDate" class="text w80p" readonly="readonly" type="text" value="----"/>
+						<input id="searchStartDate" name="searchStartDate" class="text w80p" readonly="readonly" type="text"/>
 					</span>
 					<span class="input_wave hideBtn2">~</span>
 					<span class="calendar_input w150 hideBtn2" >
-						<input id="searchEndDate" name="searchEndDate" class="text w80p" readonly="readonly" type="text" value="----"/>
+						<input id="searchEndDate" name="searchEndDate" class="text w80p" readonly="readonly" type="text"/>
 					</span>
-					<div style="float:right;">
-						<strong class="tit hideBtn2">시간</strong>
-						<span class="tit hideBtn2" >
-							<input id="schEtc02" name="schEtc02" class="text w100p" type="time" value="----"/>
-						</span>
-						<span class="input_wave hideBtn2">~</span>
-						<span class="tit hideBtn2" >
-							<input id="schEtc03" name="schEtc03" class="text w100p" type="time" value="----"/>
-							<span onclick="resetTime(); return false;"><a href="#">x</a></span>
-						</span>
-						
-					</div>
+					
 					<span class="search_btns">
 						<button type="button" class="btn btn_search" id="btn_search">검색</button>
 					</span>

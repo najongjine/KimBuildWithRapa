@@ -12,55 +12,51 @@
 			<col style="width:10%">
 			<col style="width:10%">
 			<col style="width:10%">
-			<col>
+			<col >
 			<col style="width:10%">
 			<col style="width:10%">
+			<col style="width:5%">
 		</colgroup>
 		<thead>
 			<tr>
 				<th scope="col"><input type="checkbox" id="resultListAllCheckbox" onclick="onclickResultListAllCheckbox()"></th>
 				<th scope="col">번호</th>
+				<th scope="col" class="">구분</th>
 				<th scope="col" class="">ID</th>
-				<th scope="col" class="">최근 로그인 시도</th>
-				<th scope="col">최근 IP</th>
-				<th scope="col">실패횟수</th>
-				<th scope="col">기능</th>
+				<th scope="col" class="">URL</th>
+				<th scope="col" class="">IP</th>
+				<th scope="col">접속시간</th>
+				<th scope="col">접속횟수</th>
 			</tr>
 		</thead>
 		<tbody>
 			<c:choose>
 				<c:when test="${fn:length(resultList) > 0}">
 					<c:forEach var="result" items="${resultList}" varStatus="status">
-						<tr>
+						<tr >
 							<td>
 								<%-- 아이템 리스트용 체크박스 --%>
 								<input type="checkbox" name="resultListCheckbox" id="addListCheckbox_${result.seq}">
 							</td>
-							<td class="cursor" onclick="fncPageBoard('view','loginFailedview.do?ip=${result.ip }','${result.seq}','seq')">
+							<td>
 								${paginationInfo.totalRecordCount+1 - ((searchVO.pageIndex-1) * searchVO.pageSize + status.count)}
 							</td>
-								<td class="cursor" onclick="fncPageBoard('view','loginFailedview.do?ip=${result.ip }','${result.seq}','seq')">
-									<c:out value="${result.id }"/>
-								</td>
-								<td class="cursor" onclick="fncPageBoard('view','loginFailedview.do?ip=${result.ip }','${result.seq}','seq')">
-									<c:out value="${result.rgstDt }"/>
-								</td>
-								<td class="cursor" onclick="fncPageBoard('view','loginFailedview.do?ip=${result.ip }','${result.seq}','seq')">
-									<c:out value="${result.ip }"/>
-								</td>
-								<td class="cursor" onclick="fncPageBoard('view','loginFailedview.do?ip=${result.ip }','${result.seq}','seq')">
-									<c:out value="${result.loginFailCount }"/>
-								</td>
-							<td>
-								<c:if test="${result.banned eq 'Y' }">
-									<a href="#" class="btn btn_mdl btn_save" onclick="allowIp('${result.ip}'); return false;">차단해재</a>
-								</c:if>
+							<td class="" >
+								<c:choose>
+									<c:when test="${result.userkind eq 'admin'}">관리자</c:when>
+									<c:otherwise>사용자</c:otherwise>
+								</c:choose>
 							</td>
+							<td><c:out value="${result.id }"/></td>
+							<td><c:out value="${result.url }"/></td>
+							<td><c:out value="${result.ip }"/></td>
+							<td><c:out value="${result.rgstDt }"/></td>
+							<td><c:out value="${result.multipleConCount }"/></td>
 						</tr>
 					</c:forEach>
 				</c:when>
 				<c:otherwise>
-					<tr><td colspan="6" class="no_data">데이터가 없습니다.</td></tr>
+					<tr><td colspan="7" class="no_data">데이터가 없습니다.</td></tr>
 				</c:otherwise>
 			</c:choose>
 		</tbody>
@@ -82,17 +78,4 @@
 $(document).ready(function(){
 	
 });
-var allowIp=function(ip){
-	alert(ip)
-	$.ajax({
-		url:'allowIp.json?ip='+ip
-		,success:function(data){
-			fncPageBoard('addList','addList.do',pageIndexForCommonJs);
-		}
-		,error:function(error){
-			alert("통신오류")
-		}
-	})
-	return false;
-}
 </script>

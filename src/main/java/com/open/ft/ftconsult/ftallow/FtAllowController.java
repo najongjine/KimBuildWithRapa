@@ -1,4 +1,4 @@
-package com.open.ma.sample;
+package com.open.ft.ftconsult.ftallow;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,13 +38,12 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
-import com.open.cmmn.model.CmmnDefaultVO;
 import com.open.cmmn.model.FileVO;
 import com.open.cmmn.service.CmmnService;
 import com.open.cmmn.service.FileMngService;
 import com.open.cmmn.util.SessionUtil;
 import com.open.cmmn.util.StringUtil;
-import com.open.ma.sample.service.SampleVO;
+import com.open.vo.AllowPendRejectVO;
 import com.open.vo.TestExcelVO;
 
 import egovframework.rte.fdl.idgnr.EgovIdGnrService;
@@ -57,7 +56,7 @@ import net.sf.ehcache.Element;
  * 공지사항 게시판을 관리하는 컨트롤러 클래스를 정의한다.
  */
 @Controller
-public class SampleController {
+public class FtAllowController {
 
 	@Resource(name = "cmmnService")
 	protected CmmnService cmmnService;
@@ -83,10 +82,10 @@ public class SampleController {
 	private MappingJackson2JsonView ajaxView;
 
 	/** Program ID **/
-	private final static String PROGRAM_ID = "Sample";
+	private final static String PROGRAM_ID = "AllowPendReject";
 
 	/** folderPath **/
-	private final static String folderPath = "/ma/sam/sample/";
+	private final static String folderPath = "/ft/ftconsult/ftallow/";
 
 	// @Resource(name = "beanValidator")
 	// protected DefaultBeanValidator beanValidator;
@@ -106,10 +105,10 @@ public class SampleController {
 	 * @throws Exception
 	 */
 	@RequestMapping(folderPath + "list.do")
-	public String list(@ModelAttribute("searchVO") CmmnDefaultVO searchVO, ModelMap model, HttpServletRequest request)
+	public String list(@ModelAttribute("searchVO") AllowPendRejectVO searchVO, ModelMap model, HttpServletRequest request)
 			throws Exception {
 
-		return ".mLayout:" + folderPath + "list";
+		return ".fLayout:" + folderPath + "list";
 	}
 
 	/**
@@ -123,7 +122,7 @@ public class SampleController {
 	 */
 	@SuppressWarnings("deprecation")
 	@RequestMapping(folderPath + "addList.do")
-	public String addList(@ModelAttribute("searchVO") CmmnDefaultVO searchVO, ModelMap model,
+	public String addList(@ModelAttribute("searchVO") AllowPendRejectVO searchVO, ModelMap model,
 			HttpServletRequest request) throws Exception {
 
 		/** Cache sample */
@@ -157,7 +156,7 @@ public class SampleController {
 		model.addAttribute("paginationInfo", paginationInfo);
 
 		@SuppressWarnings("unchecked")
-		List<SampleVO> resultList = (List<SampleVO>) cmmnService.selectList(searchVO, PROGRAM_ID);
+		List<AllowPendRejectVO> resultList = (List<AllowPendRejectVO>) cmmnService.selectList(searchVO, PROGRAM_ID+".selectNList");
 		model.addAttribute("resultList", resultList);
 
 		return folderPath + "addList";
@@ -174,15 +173,15 @@ public class SampleController {
 	 */
 	@SuppressWarnings("unchecked")
 	@RequestMapping(folderPath + "view.do")
-	public String view(@ModelAttribute("searchVO") SampleVO searchVO, Model model, HttpServletRequest request)
+	public String view(@ModelAttribute("searchVO") AllowPendRejectVO searchVO, Model model, HttpServletRequest request)
 			throws Exception {
 
 		/* 게시판 상세정보 */
-		SampleVO sampleVO = new SampleVO();
-		sampleVO = (SampleVO) cmmnService.selectContents(searchVO, PROGRAM_ID);
-		model.addAttribute("sampleVO", sampleVO);
+		AllowPendRejectVO alwpdrjVO = new AllowPendRejectVO();
+		alwpdrjVO = (AllowPendRejectVO) cmmnService.selectContents(searchVO, PROGRAM_ID);
+		model.addAttribute("alwpdrjVO", alwpdrjVO);
 
-		return ".mLayout:" + folderPath + "view";
+		return ".fLayout:" + folderPath + "view";
 	}
 
 	/**
@@ -196,14 +195,14 @@ public class SampleController {
 	 * @throws Exception
 	 */
 	@RequestMapping(folderPath + "{procType}Form.do")
-	public String form(@ModelAttribute("searchVO") SampleVO searchVO, Model model, @PathVariable String procType,
+	public String form(@ModelAttribute("searchVO") AllowPendRejectVO searchVO, Model model, @PathVariable String procType,
 			HttpServletRequest request) throws Exception {
 
-		SampleVO sampleVO = new SampleVO();
+		AllowPendRejectVO alwpdrjVO = new AllowPendRejectVO();
 		if (procType.equals("update")) {
-			sampleVO = (SampleVO) cmmnService.selectContents(searchVO, PROGRAM_ID);
+			alwpdrjVO = (AllowPendRejectVO) cmmnService.selectContents(searchVO, PROGRAM_ID);
 			if (!StringUtil.nullString(SessionUtil.getUserDetails().getAuthCode()).equals("1")
-					&& !StringUtil.nullString(sampleVO.getRgstId())
+					&& !StringUtil.nullString(alwpdrjVO.getRgstId())
 							.equals(StringUtil.nullString(SessionUtil.getUserDetails().getLoginSeq()))) {
 				model.addAttribute("message", "비정상적인 접근입니다.");
 				model.addAttribute("cmmnScript", "list.do");
@@ -211,10 +210,10 @@ public class SampleController {
 			}
 		}
 		searchVO.setProcType(procType);
-		sampleVO.setSearchVO(searchVO);
-		model.addAttribute("sampleVO", sampleVO);
+		alwpdrjVO.setSearchVO(searchVO);
+		model.addAttribute("alwpdrjVO", alwpdrjVO);
 
-		return ".mLayout:" + folderPath + "form";
+		return ".fLayout:" + folderPath + "form";
 	}
 
 	/**
@@ -229,7 +228,7 @@ public class SampleController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = folderPath + "{procType}Proc.do", method = RequestMethod.POST)
-	public String proc(@ModelAttribute("searchVO") SampleVO searchVO, Model model, SessionStatus status,
+	public String proc(@ModelAttribute("searchVO") AllowPendRejectVO searchVO, Model model, SessionStatus status,
 			@PathVariable String procType, HttpServletRequest request) throws Exception {
 
 		if (procType != null) {

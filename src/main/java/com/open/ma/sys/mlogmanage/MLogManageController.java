@@ -97,12 +97,12 @@ public class MLogManageController {
 			searchVO.setSearchEndDate(strTodate);
 		}
 
-		if (listType.equals("multipleConAttemp")) {
-			listType = "_multipleConAttemp";
-		} else if (listType.equals("nonWorktimeConnect")) {
-			listType = "_nonWorktimeConnect";
-		} else if (listType.equals("bannedIpConAttemp")) {
-			listType = "_bannedIpConAttemp";
+		if (listType.equals("multipleConAttp")) {
+			listType = "_multipleConAttp";
+		} else if (listType.equals("nonWorktimeCon")) {
+			listType = "_nonWorktimeCon";
+		} else if (listType.equals("bannedIpConAttp")) {
+			listType = "_bannedIpConAttp";
 		} else if (listType.equals("loginFailed")) {
 			listType = "_loginFailed";
 		}
@@ -155,10 +155,10 @@ public class MLogManageController {
 
 		String sql = "";
 		String cntSql = "";
-		if ("multipleConAttemp".equals(searchVO.getSchEtc01())) {
+		if ("multipleConAttp".equals(searchVO.getSchEtc01())) {
 			cntSql = ".selectMulitpleConAttempCount";
 			sql = ".selectMulipleConAttempList";
-		} else if ("bannedIpConAttemp".equals(searchVO.getSchEtc01())) {
+		} else if ("bannedIpConAttp".equals(searchVO.getSchEtc01())) {
 			cntSql = ".selectBannedIpConAttempCount";
 			sql = ".selectBannedIpConAttempList";
 		} else if ("loginFailed".equals(searchVO.getSchEtc01())) {
@@ -172,14 +172,15 @@ public class MLogManageController {
 
 		model.addAttribute("resultList", resultList);
 
-		if ("multipleConAttemp".equals(searchVO.getSchEtc01())) {
-			return folderPath + "addList_multipleConAttemp";
-		} else if ("bannedIpConAttemp".equals(searchVO.getSchEtc01())) {
-			return folderPath + "addList_bannedIpConAttemp";
+		String jsp="";
+		if ("multipleConAttp".equals(searchVO.getSchEtc01())) {
+			jsp= "_multipleConAttp";
+		} else if ("bannedIpConAttp".equals(searchVO.getSchEtc01())) {
+			jsp= "_bannedIpConAttp";
 		} else if ("loginFailed".equals(searchVO.getSchEtc01())) {
-			return folderPath + "addList_loginfail";
+			jsp= "_loginfail";
 		}
-		return folderPath + "addList";
+		return folderPath + "addList"+jsp;
 	}
 
 	/**
@@ -192,16 +193,25 @@ public class MLogManageController {
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
-	@RequestMapping(folderPath + "view.do")
-	public String view(@ModelAttribute("searchVO") LogManageVO searchVO, Model model, HttpServletRequest request)
-			throws Exception {
+	@RequestMapping(folderPath + "{viewType}view.do")
+	public String view(@ModelAttribute("searchVO") LogManageVO searchVO, @PathVariable String viewType, Model model,
+			HttpServletRequest request) throws Exception {
+		viewType = StringUtil.nullString(viewType);
+		String sql = "";
+		if (viewType.equals("loginFailed")) {
+			viewType = "_" + viewType;
+			sql = ".selectLoginFailedForIpList";
+			List<LogManageVO> loginFailedList = (List<LogManageVO>) cmmnService.selectList(searchVO,
+					PROGRAM_ID + sql);
+			model.addAttribute("loginFailedList", loginFailedList);
+		} else {
+			/* 게시판 상세정보 */
+			LogManageVO logManageVO = new LogManageVO();
+			logManageVO = (LogManageVO) cmmnService.selectContents(searchVO, PROGRAM_ID + sql);
+			model.addAttribute("logManageVO", logManageVO);
+		}
 
-		/* 게시판 상세정보 */
-		LogManageVO logManageVO = new LogManageVO();
-		logManageVO = (LogManageVO) cmmnService.selectContents(searchVO, PROGRAM_ID);
-		model.addAttribute("logManageVO", logManageVO);
-
-		return ".mLayout:" + folderPath + "view";
+		return ".mLayout:" + folderPath + "view" + viewType;
 	}
 
 	/**

@@ -12,17 +12,17 @@ var searchLog=function(cat){
 		$("#schEtc01").val('');
 		fncPageBoard('list','list.do',pageIndexForCommonJs,'pageIndex');
 		break;
-	case 'nonWorktimeConnect':
-		$("#schEtc01").val('nonWorktimeConnect');
-		fncPageBoard('list','nonWorktimeConnectlist.do',pageIndexForCommonJs,'pageIndex');
+	case 'nonWorktimeCon':
+		$("#schEtc01").val('nonWorktimeCon');
+		fncPageBoard('list','nonWorktimeConlist.do',pageIndexForCommonJs,'pageIndex');
 		break;
-	case 'multipleConAttemp':
-		$("#schEtc01").val('multipleConAttemp');
-		fncPageBoard('list','multipleConAttemplist.do',pageIndexForCommonJs,'pageIndex');
+	case 'multipleConAttp':
+		$("#schEtc01").val('multipleConAttp');
+		fncPageBoard('list','multipleConAttplist.do',pageIndexForCommonJs,'pageIndex');
 		break;
-	case 'bannedIpConAttemp':
-		$("#schEtc01").val('bannedIpConAttemp');
-		fncPageBoard('list','bannedIpConAttemplist.do',pageIndexForCommonJs,'pageIndex');
+	case 'bannedIpConAttp':
+		$("#schEtc01").val('bannedIpConAttp');
+		fncPageBoard('list','bannedIpConAttplist.do',pageIndexForCommonJs,'pageIndex');
 		break;
 	case 'loginFailed':
 		$("#schEtc01").val('loginFailed');

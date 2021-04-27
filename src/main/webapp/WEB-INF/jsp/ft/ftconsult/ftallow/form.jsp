@@ -3,7 +3,7 @@
 <c:set var="url" value="${requestScope['javax.servlet.forward.request_uri']}"/>
 
 <div class="content_box">
-	<form:form commandName="sampleVO" name="defaultFrm" id="defaultFrm" method="post">
+	<form:form commandName="alwpdrjVO" name="defaultFrm" id="defaultFrm" method="post">
 		<form:hidden path="seq" id="seq"/>
 		<form:hidden path="pageIndex" id="pageIndex"/> 
 		<form:hidden path="atchFileId" id="atchFileId"/>
@@ -21,25 +21,25 @@
 					<tr>
 						<th scope="row"><strong class="th_tit">제목</strong></th>
 						<td colspan="3">
-							<input type="text" name="title" id="title" class="text w100p"  required="required"  maxlength="50" value="${util:unEscape(sampleVO.title) }" />
+							<input type="text" name="title" id="title" class="text w100p"  required="required"  maxlength="50" value="${util:unEscape(alwpdrjVO.title) }" />
 							<form:errors path="title" cssClass="error" cssStyle="color:#ff0000" /> 
 						</td>
 					</tr>
 					<tr>
 						<th scope="row"><strong class="th_tit">내용</strong></th>
 						<td colspan="3">
-							<textarea name="cont" id="cont" class="txt_area w_100p" >${util:unEscape(sampleVO.cont)}</textarea>
+							<textarea name="cont" id="cont" class="txt_area w_100p" >${util:unEscape(alwpdrjVO.cont)}</textarea>
 						</td> 
 					</tr>
 					<tr>
 						<th scope="row"><strong>첨부파일</strong></th>
 						<td colspan="3">
-							<iframe name="atchFileIdFrame" id="atchFileIdFrame" src="/atch/fileUpload.do?atchFileId=${sampleVO.atchFileId }&fileCnt=5&atchFileIdNm=atchFileId&updateType=upload" style="width: 100%;" height="50" frameborder="0" title="파일 업로드 폼"></iframe>
+							<iframe name="atchFileIdFrame" id="atchFileIdFrame" src="/atch/fileUpload.do?atchFileId=${alwpdrjVO.atchFileId }&fileCnt=5&atchFileIdNm=atchFileId&updateType=upload" style="width: 100%;" height="50" frameborder="0" title="파일 업로드 폼"></iframe>
 						</td>
 					</tr> 
 					<tr>
 						<td colspan="3">
-							<a href="#" class="btn btn_mdl btn_excel" onclick="fncExcelUp();">엑셀업로드</a>
+							<a href="#" class="btn btn_middle btn_excel" onclick="fncExcelUp();">엑셀업로드</a>
 							<input type="hidden" name="excelFileId" id="excelFileId" />
 							<iframe name="excelFileIdFrame" id="excelFileIdFrame" src="/atch/fileUpload.do?atchFileId=&fileCnt=1&atchFileIdNm=excelFileId&updateType=upload" style="width: 100%;" height="50" frameborder="0" title="파일 업로드 폼"></iframe>
 						</td>
@@ -48,12 +48,12 @@
 			</table>
 		</div>
 		<div class="btn_area">
-			<a href="#" class="btn btn_mdl btn_${searchVO.procType eq 'update'? 'rewrite':'save'}" id="btn_submit">${searchVO.procType eq  'update' ? '수정' : '등록'}</a>
+			<a href="#" class="btn btn_middle btn_purple" id="btn_submit">${searchVO.procType eq  'update' ? '수정' : '등록'}</a>
 			<c:if test="${searchVO.procType ==  'update'}">
-				<a href="#" class="btn btn_mdl btn_cancel" id="btn_returnView">취소</a>
+				<a href="#" class="btn btn_middle btn_gray" id="btn_returnView">취소</a>
 			</c:if>
 			<c:if test="${searchVO.procType ne  'update'}">
-				<a href="#" class="btn btn_mdl btn_cancel" id="btn_list">취소</a>
+				<a href="#" class="btn btn_middle btn_gray" id="btn_list">취소</a>
 			</c:if>
 		</div>
 	</form:form>

@@ -14,8 +14,8 @@
 		<caption>목록</caption>
 		<colgroup> 
 			<col style="width:5%"> 
-			<col style="width:5%">
-			<col style="width:5%">
+			<col style="width:10%">
+			<col style="width:10%">
 			<col style="width:10%">
 			<col >
 			<col style="width:10%">
