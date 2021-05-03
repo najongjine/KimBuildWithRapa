@@ -30,7 +30,7 @@ public class AllowPendRejectVO extends CmmnDefaultVO implements Serializable {
 	private String rgstId;
 	private String cnt;
 	private String name;
-	private String bStatus="N";
+	private String bStatus="";
 	
 	public String getSeq() {
 		return seq;

@@ -99,6 +99,25 @@
 		]]>
 	</insert>
 	
+	<insert id="insertExcelContents" parameterType="sampleVO">
+		/* Sample.insertContents */
+			INSERT INTO T_SAMPLE(
+				 TITLE 
+				, CONT
+				, RGST_ID 
+				, ATCH_FILE_ID 
+			)
+			VALUES 
+				<foreach item="item" index="index" collection="excelList" separator=" , ">
+					(
+					#{item.title}
+					,#{item.cont}
+					, '5'
+					,#{item.atchFileId}
+					)
+				</foreach>
+	</insert>
+	
 	<update id="updateContents" parameterType="sampleVO">
 		/* Sample.updateContents */
 		<![CDATA[

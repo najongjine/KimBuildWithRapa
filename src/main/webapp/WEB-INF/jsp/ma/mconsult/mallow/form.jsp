@@ -7,7 +7,7 @@
 		<form:hidden path="seq" id="seq"/>
 		<form:hidden path="pageIndex" id="pageIndex"/> 
 		<form:hidden path="atchFileId" id="atchFileId"/>
-		<form:input path="bStatus" id="bStatus"/>
+		<form:hidden path="bStatus" id="bStatus"/>
 		<jsp:directive.include file="/WEB-INF/jsp/cmmn/inc/incSearchForm.jsp"/>
 		<div class="tbl_wrap">
 			<table class="tbl_row_type01"> 
@@ -41,21 +41,21 @@
 				</tbody>
 			</table>
 		</div>
-		<div class="tbl_btns c">
+		<div class="btn_area">
 			<c:choose>
 				<c:when test="${searchVO.bStatus eq 'R'}">
-					<a href="#" class="btn btn_middle btn_purple" id="btn_submit">재승인요청</a>
+					<a href="#" class="btn btn_mdl btn_save" id="btn_submit">재승인요청</a>
 				</c:when>
 				<c:otherwise>
-					<a href="#" class="btn btn_middle btn_purple" id="btn_submit">${searchVO.procType eq  'update' ? '수정' : '등록'}</a>
+					<a href="#" class="btn btn_mdl btn_save" id="btn_submit">${searchVO.procType eq  'update' ? '수정' : '등록'}</a>
 				</c:otherwise>
 			</c:choose>
 			<c:choose>
 				<c:when test="${searchVO.procType ==  'update'}">
-					<a href="#" class="btn btn_middle btn_gray" id="btn_returnView">취소</a>
+					<a href="#" class="btn btn_mdl btn_list" id="btn_returnView">취소</a>
 				</c:when>
 				<c:otherwise>
-					<a href="#" class="btn btn_middle btn_gray" id="btn_list">취소</a>
+					<a href="#" class="btn btn_mdl btn_list" id="btn_list">취소</a>
 				</c:otherwise>
 			</c:choose>
 		</div>
@@ -92,6 +92,8 @@ $(document).ready(function(){
 		
 		if('${alwpdrjVO.bStatus}' == 'R' || '${alwpdrjVO.bStatus}' == 'P'){
 			$("#bStatus").val('P')
+		}else{
+			$("#bStatus").val('N')
 		}
 		
 		fncPageBoard('submit','${searchVO.procType}Proc.do');

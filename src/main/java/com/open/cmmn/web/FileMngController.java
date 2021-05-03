@@ -327,7 +327,6 @@ public class FileMngController {
 	 */
 	@RequestMapping(value = "/atch/fileUpload.do")
 	public final String fileUpload(@ModelAttribute("fileVO") final FileVO fileVO, final Model model) throws Exception {
-	System.out.println("## /atch/fileUpload getAtchFileId: "+fileVO.getAtchFileId());
 		//첨부파일 갯수
 		int intFileCnt = 0;
 		try {

@@ -36,9 +36,8 @@
 	
 	
 	
-	<select id="selectNList" parameterType="cmmnDefaultVO" resultType="allowPendRejectVO">
+	<select id="selectList" parameterType="allowPendRejectVO" resultType="allowPendRejectVO">
 		/* AllowPendReject.selectList */
-		<![CDATA[
       	     SELECT  
 				  SEQ seq
 				, TITLE title
@@ -47,10 +46,12 @@
 				, RGST_ID rgstId
 				, F_USER_NM(RGST_ID) name
 				, ATCH_FILE_ID atchFileId
+				, B_STATUS bStatus
 		     FROM T_ACCEPT_REJECT_PENDING TS
 			 WHERE USE_YN='Y'	
-			 	AND B_STATUS = 'N'
-	      ]]>
+			 	<if test="bStatus != null and bStatus != ''">
+			 		AND B_STATUS = #{bStatus ,jdbcType=VARCHAR}
+			 	</if>
 		     <include refid="Where"/>	 
 	     <![CDATA[ 
 	    		ORDER BY SEQ DESC
@@ -61,12 +62,13 @@
 
 	<select id="selectCount" parameterType="cmmnDefaultVO" resultType="int">
 		/* AllowPendReject.selectCount */
-		<![CDATA[
 			SELECT 
 				COUNT(SEQ) cnt 
 			FROM T_ACCEPT_REJECT_PENDING
 			WHERE USE_YN='Y' 
-		]]>
+				<if test="bStatus != null and bStatus != ''">
+			 		AND B_STATUS = #{bStatus ,jdbcType=VARCHAR}
+			 	</if>
 			 <include refid="Where"/>
 	</select>
 	
@@ -101,10 +103,18 @@
 				, CONT = #{cont ,jdbcType=VARCHAR}
 				, RVSE_DT = NOW()
 				, ATCH_FILE_ID = #{atchFileId ,jdbcType=VARCHAR}
-				, STA_DATE = #{staDate ,jdbcType=VARCHAR}
-				, END_DATE  = #{endDate ,jdbcType=VARCHAR}
-				, NOTI_YN  = #{notiYn ,jdbcType=VARCHAR}
+				, B_STATUS = #{bStatus ,jdbcType=VARCHAR}
 			WHERE  SEQ = #{seq}  
+		]]>
+	</update>
+	
+	<update id="updateBstatus" parameterType="allowPendRejectVO">
+		/* AllowPendReject.updateContents */
+		<![CDATA[
+			UPDATE T_ACCEPT_REJECT_PENDING     
+			 SET 
+				  B_STATUS = #{bStatus ,jdbcType=VARCHAR}
+			WHERE  SEQ = #{seq ,jdbcType=VARCHAR}  
 		]]>
 	</update>
 	

@@ -39,13 +39,13 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import com.open.cmmn.model.CmmnDefaultVO;
+import com.open.cmmn.model.ExcelImgRowCellVO;
 import com.open.cmmn.model.FileVO;
 import com.open.cmmn.service.CmmnService;
 import com.open.cmmn.service.FileMngService;
 import com.open.cmmn.util.SessionUtil;
 import com.open.cmmn.util.StringUtil;
 import com.open.ma.sample.service.SampleVO;
-import com.open.vo.TestExcelVO;
 
 import egovframework.rte.fdl.idgnr.EgovIdGnrService;
 import egovframework.rte.fdl.property.EgovPropertyService;
@@ -272,9 +272,9 @@ public class SampleController {
 
 	// jsp 페이지에서 엑셀 업로드를 위해 호출하는 controller
 	@RequestMapping(folderPath + "saveExcel.json")
-	public ModelAndView COUNTRY_01_excelProc(@ModelAttribute("searchVO") TestExcelVO searchVO, ModelMap model,
+	public ModelAndView COUNTRY_01_excelProc(@ModelAttribute("searchVO") SampleVO searchVO, ModelMap model,
 			HttpServletRequest request) throws Exception {
-		List<TestExcelVO> list = null;
+		List<SampleVO> list = null;
 		FileVO fileVO = new FileVO();
 
 		int total = 0;// 총건수
@@ -321,12 +321,12 @@ public class SampleController {
 				cnt = 0;// 성공건수
 				fail = 0;// 실패건수
 
-				TestExcelVO inData = new TestExcelVO();
+				SampleVO inData = new SampleVO();
 				inData.setExcelList(list);
 				inData.setAtchFileId(atchFileId);
 
 				try {
-					cmmnService.insertContents(inData, "TestExcel.insertTestExcel");
+					cmmnService.insertContents(inData, PROGRAM_ID+".insertExcelContents");
 					cnt++;
 
 				} catch (FileNotFoundException fe) {
@@ -356,12 +356,12 @@ public class SampleController {
 	 * @throws Exception
 	 */
 	@SuppressWarnings({ "resource", "deprecation" })
-	public List<TestExcelVO> xlsxReadList(String filePath) throws Exception {
+	public List<SampleVO> xlsxReadList(String filePath) throws Exception {
 
-		List<TestExcelVO> outArray = new ArrayList<>();
+		List<SampleVO> outArray = new ArrayList<>();
 		FileInputStream fis = null;
 		XSSFWorkbook workbook = null;
-
+		
 		try {
 
 			fis = new FileInputStream(filePath);
@@ -370,7 +370,7 @@ public class SampleController {
 			XSSFSheet curSheet;
 			XSSFRow curRow;
 			XSSFCell curCell;
-			TestExcelVO outData;
+			SampleVO outData;
 			// 현재 sheet 반환 (첫번째시트 : 0)
 			curSheet = workbook.getSheetAt(0);
 
@@ -379,14 +379,14 @@ public class SampleController {
 
 			// row(세로데이터) 탐색 for문 (row 0은 헤더정보이기 때문에 1부터 시작)
 			for (int rowIndex = 1; rowIndex < rowLength; rowIndex++) {
-
+				String atchFileId="";
 				// 현재 row 반환
 				curRow = curSheet.getRow(rowIndex);
-				outData = new TestExcelVO();
+				outData = new SampleVO();
 				String value;
 
 				// cell 길이
-				int cellLength = curRow.getPhysicalNumberOfCells();
+				int cellLength = curRow.getLastCellNum();
 
 				// cell(가로데이터) 탐색 for문
 				for (int cellIndex = 0; cellIndex <= cellLength; cellIndex++) {
@@ -419,27 +419,40 @@ public class SampleController {
 					}
 
 					if (cellIndex == 0) {
-						outData.setTestCol1(value);
+						outData.setTitle(value);
 					}
 					if (cellIndex == 1) {
-						outData.setTestCol2(value);
-					}
-					if (cellIndex == 2) {
-						outData.setTestCol3(value);
-					}
-					if (cellIndex == 3) {
-						outData.setTestCol4(value);
-					}
-					if (cellIndex == 4) {
-						outData.setTestCol5(value);
+						outData.setCont(value);
 					}
 
-					if (cellIndex == 5) {
-						String atchFileId = imageUp(curSheet, rowIndex, cellIndex);
+					if (cellIndex == 2) {
+						if("".equals(atchFileId)) {
+							String _atchFileId = imageUp(curSheet, rowIndex, cellIndex);
+							if(!StringUtil.nullConvert(_atchFileId).equals("")) {
+								atchFileId=_atchFileId;
+							}
+						}else {
+							imageUpWithSameAtchFileId(atchFileId,curSheet, rowIndex, cellIndex);
+						}
+						
 						if (!StringUtil.nullConvert(atchFileId).equals("")) {
-							outData.setImgCol1(atchFileId);
+							outData.setAtchFileId(atchFileId);
 						}
 					} // 첨부파일A
+					if (cellIndex == 3) {
+						if("".equals(atchFileId)) {
+							String _atchFileId = imageUp(curSheet, rowIndex, cellIndex);
+							if(!StringUtil.nullConvert(_atchFileId).equals("")) {
+								atchFileId=_atchFileId;
+							}
+						}else {
+							imageUpWithSameAtchFileId(atchFileId,curSheet, rowIndex, cellIndex);
+						}
+						
+						if (!StringUtil.nullConvert(atchFileId).equals("")) {
+							outData.setAtchFileId(atchFileId);
+						}
+					} // 첨부파일B
 
 				}
 				outArray.add(outData);
@@ -510,7 +523,71 @@ public class SampleController {
 					fileVO.setStreFileNm(newName);
 					fileVO.setFileExtsn(ext);
 					fileVO.setFileType(fileType);
+					fileVO.setImageWidth((int)( (anchor.getDx2() - anchor.getDx1())/1000) );
+					fileVO.setImageHeight((int)( (anchor.getDy2() - anchor.getDy1())/1000) );
 					fileMngService.insertFileInf(fileVO);
+					break;
+				}
+			}
+		}
+
+		afterTime = System.currentTimeMillis();
+		double secDiffTime = (afterTime - beforeTime) / 1000;
+		reTime = String.format("%.1f", secDiffTime);
+		System.out.println("re :: " + reTime);
+		return atchFileIdString;
+
+	}
+	
+	public String imageUpWithSameAtchFileId(String atchFileIdString, XSSFSheet curSheet, int rowIdx, int cellIdx) throws Exception {
+		if("".equals(atchFileIdString)) {
+			return null;
+		}
+		double beforeTime = System.currentTimeMillis();
+		double afterTime = 0;
+		String reTime = "-1";
+		XSSFDrawing drawing = curSheet.createDrawingPatriarch();
+		for (XSSFShape shape : drawing.getShapes()) {
+			if (shape instanceof XSSFPicture) {
+				XSSFPicture picture = (XSSFPicture) shape;
+				if (picture.getPictureData() == null) {
+					continue;
+				}
+				XSSFPictureData xssfPictureData = picture.getPictureData();
+				ClientAnchor anchor = picture.getPreferredSize();
+				int row1 = anchor.getRow1();
+				int row2 = anchor.getRow2();
+				int col1 = anchor.getCol1();
+				int col2 = anchor.getCol2();
+				if (rowIdx == row1 && cellIdx == col1) { // 시트,셀위치 검사
+
+					String ext = xssfPictureData.suggestFileExtension(); // 확장자
+					String fileType = xssfPictureData.getMimeType(); // 파일타입
+					byte[] data = xssfPictureData.getData(); // 파일 byte
+					String fileUploadPath = fileUploadProperties.getProperty("file.upload.path").replaceAll("\\.\\.",
+							"");
+					String storePathString = fileUploadPath + getFolderPath();
+					if (storePathString != null && !"".equals(storePathString)) {
+						File saveFolder = new File(storePathString);
+						if (!saveFolder.exists() || saveFolder.isFile()) {
+							saveFolder.mkdirs();
+						}
+					}
+					String newName = "EXCEL" + StringUtil.getTimeStamp() + atchFileIdString;
+					FileOutputStream out = new FileOutputStream(storePathString + File.separator + newName);
+					out.write(data);
+					out.close();
+
+					FileVO fileVO = new FileVO();
+					fileVO.setFileStreCours(storePathString);
+					fileVO.setAtchFileId(atchFileIdString);
+					fileVO.setOrignFileNm("다운받을이미지." + ext);
+					fileVO.setStreFileNm(newName);
+					fileVO.setFileExtsn(ext);
+					fileVO.setFileType(fileType);
+					fileVO.setImageWidth((int)( (anchor.getDx2() - anchor.getDx1())/1000) );
+					fileVO.setImageHeight((int)( (anchor.getDy2() - anchor.getDy1())/1000) );
+					cmmnService.insertContents(fileVO, "FileManageDAO.insertFileDetail");
 					break;
 				}
 			}

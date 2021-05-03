@@ -47,7 +47,7 @@
 					</c:forEach>
 				</c:when>
 				<c:otherwise>
-					<tr><td colspan="5" class="no_data">데이터가 없습니다.</td></tr>
+					<tr><td colspan="4" class="no_data">데이터가 없습니다.</td></tr>
 				</c:otherwise>
 			</c:choose>
 		</tbody>
@@ -60,7 +60,7 @@
 		<ui:pagination paginationInfo="${paginationInfo}" type="manage" jsFunction="fncPageBoard" />
 	</div>
 	<div class="btn_right">
-		<a href="#" class="btn btn_middle btn_purple" onclick="checkLoggedIn(); return false;">등록</a>
+		<a href="#" class="btn btn_mdl btn_save" onclick="fncPageBoard('write','insertForm.do');">등록</a>
 	</div>
 </div>
 <%-- //paging end--%>

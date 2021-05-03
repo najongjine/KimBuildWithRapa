@@ -70,7 +70,7 @@ $(document).ready(function(){
 		<ui:pagination paginationInfo="${paginationInfo}" type="manage" jsFunction="fncPageBoard" />
 	</div>
 	<div class="btn_right">
-		<a href="#" class="btn btn_middle btn_purple" onclick="checkLoggedIn();">등록</a>
+		<a href="#" class="btn btn_middle btn_purple" onclick="checkLoggedIn(); return false;">등록</a>
 	</div>
 </div>
 <%-- //paging end--%>

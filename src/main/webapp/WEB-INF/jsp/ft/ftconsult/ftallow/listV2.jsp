@@ -4,6 +4,15 @@
 
 <%-- content --%>
 <div class="content_box">
+	<%-- 좌상단의 탭 메뉴  --%>
+	<ul class="tab js-tab tab_menu">
+	    <li class="${empty searchVO.schEtc01 ? 'current' : ''}"><a href="javascript:void(0)" onclick="searchLog('all'); return false;">전체</a></li>
+	    <li class="${searchVO.schEtc01 eq 'nonWorktimeConnect' ? 'current' : ''}"><a href="javascript:void(0)" onclick="searchLog('nonWorktimeCon'); return false;">업무시간 외 접속</a></li>
+	    <li><a href="javascript:void(0)" onclick="searchLog('multipleConAttp'); return false;">과다 접속자관리</a></li>
+	    <li><a href="javascript:void(0)" onclick="searchLog('bannedIpConAttp'); return false;">접속 지점이상</a></li>
+	    <li><a href="javascript:void(0)" onclick="searchLog('loginFailed'); return false;">로그인 이상관리</a></li>
+	</ul>
+	
 	<%-- search  --%>
 	<div class="search_box">
 		<form:form commandName="searchVO" name="defaultFrm" id="defaultFrm" method="post"  onsubmit="return false;">

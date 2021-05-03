@@ -96,6 +96,7 @@ public class FileMngServiceImpl extends EgovAbstractServiceImpl implements FileM
 
 		return atchFileId;
 	}
+	
 
 	/**
 	 * 여러 개의 파일에 대한 정보(속성 및 상세)를 등록한다.

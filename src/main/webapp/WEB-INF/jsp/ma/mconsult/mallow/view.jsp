@@ -11,7 +11,7 @@
 		<form:hidden path="seq" id="seq"/>
 		<form:hidden path="pageIndex" id="pageIndex"/> 
 		<form:hidden path="atchFileId" id="atchFileId"/>
-		<form:input path="bStatus" id="bStatus"/>
+		<form:hidden path="bStatus" id="bStatus"/>
 		<jsp:directive.include file="/WEB-INF/jsp/cmmn/inc/incSearchForm.jsp"/>
 		<!-- tbl -->
 		<div class="tbl_wrap">
@@ -24,6 +24,20 @@
 					<col style="width:35%;">
 				</colgroup>
 				<tbody>
+					<tr>
+						<th scope="row"><strong>제목</strong></th>
+						<td>
+							<c:out value="${alwpdrjVO.title }"/>
+						</td>
+	                    <th scope="row"><strong>상태변경</strong></th>
+						<td>
+							<select id="bStatusChangeSelectBox">
+							  <option value="O" <c:if test="${alwpdrjVO.bStatus eq 'O'}">selected</c:if> >승인</option>
+							  <option value="R" <c:if test="${alwpdrjVO.bStatus eq 'R'}">selected</c:if>>발료</option>
+							  <option value="D" <c:if test="${alwpdrjVO.bStatus eq 'D'}">selected</c:if>>영구발료</option>
+							</select>
+						</td>
+					</tr> 
 					<tr>
 						<th scope="row"><strong>등록자</strong></th>
 						<td>
@@ -50,35 +64,44 @@
 			</table>
 		</div>
 		
-	<div class="tbl_btns">
+	<div class="btn_area">
 		<c:choose>
-			<c:when test="${alwpdrjVO.bStatus eq 'R' and alwpdrjVO.rgstId eq loginFtSeq}">
-				<a href="#" id="btn_to_pending" class="btn btn_middle btn_purple" >수정(재승인 요청)</a>
+			<c:when test="${searchVO.bStatus eq 'R' }">
+				<a href="#" id="btn_to_pending" class="btn btn_mdl btn_save" >수정(재승인 요청)</a>
+			</c:when>
+			<c:when test="${searchVO.bStatus eq 'O' }">
+				<a href="#" id="btn_reject" class="btn btn_mdl btn_save" >게시글 강등처리</a>
 			</c:when>
 			<c:otherwise>
-				<c:if test="${alwpdrjVO.rgstId eq loginFtSeq }">
-					<a href="#" id="btn_update" class="btn btn_middle btn_purple" >수정</a>
-				</c:if>
+				<a href="#" id="btn_allow" class="btn btn_mdl btn_save" >승인</a>
+				<a href="#" id="btn_pdisallow" class="btn btn_mdl btn_del" >영구미승인</a>
 			</c:otherwise>
 		</c:choose>
-		<a href="#" id="btn_list" class="btn btn_middle btn_gray" >목록</a>
+		<a href="#" id="btn_list" class="btn btn_mdl btn_list" >목록</a>
 	</div>	
 	</form:form>
 </div>
 
 <script type="text/javaScript">
 $(document).ready(function(){
-	$("#btn_allow").on("click",function(){
-		$("#bStatus").val('O');		
-		fncPageBoard('update','allowProc.do');
-		return false;
-	})
-	
-	$("#btn_reject").on("click",function(){
-		$("#bStatus").val('R');		
-		fncPageBoard('update','rejectProc.do');
-		return false;
-	})
+	$(document).on('change','#bStatusChangeSelectBox',function(){
+		var cat=$("#bStatusChangeSelectBox").val();
+		switch(cat){
+		case 'O':
+			$("#bStatus").val('O');
+			fncPageBoard('update','allowProc.do');
+			break;
+		case 'R':
+			$("#bStatus").val('R');
+			fncPageBoard('update','rejectProc.do');
+			break;
+		case 'D':
+			$("#bStatus").val('D');
+			fncPageBoard('update','pdisallowProc.do');
+			break;
+		}
+        return false;
+   });
 	
 	$("#btn_to_pending").on("click",function(){
 		$("#bStatus").val('P');		
@@ -86,10 +109,5 @@ $(document).ready(function(){
 		return false;
 	})
 	
-	$("#btn_pdisallow").on("click",function(){
-		$("#bStatus").val('D');		
-		fncPageBoard('update','pdisallowProc.do');
-		return false;
-	})
 });
 </script>

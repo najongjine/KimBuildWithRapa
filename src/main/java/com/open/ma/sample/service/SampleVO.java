@@ -38,6 +38,8 @@ public class SampleVO extends CmmnDefaultVO implements Serializable {
 	private String cnt;
 	private String name;
 	
+	private List<SampleVO> excelList;
+	
 	public String getSeq() {
 		return seq;
 	}
@@ -122,6 +124,12 @@ public class SampleVO extends CmmnDefaultVO implements Serializable {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public List<SampleVO> getExcelList() {
+		return excelList;
+	}
+	public void setExcelList(List<SampleVO> excelList) {
+		this.excelList = excelList;
 	}
 	
 	

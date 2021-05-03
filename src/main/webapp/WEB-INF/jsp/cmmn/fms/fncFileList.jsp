@@ -380,7 +380,14 @@
 							                    <div class="file_tit">
 							                        <span>
 							                        	<a href="/atch/fileDown.do?atchFileId=${result.atchFileId }&fileSn=${result.fileSn}" target="_brank"><c:out value="${result.orignFileNm}" /></a>
+							                        	
+							                        	<%-- 옛날코드 
 							                        	<c:if test="${fn:indexOf(result.orignFileNm, 'jpg') > -1 || fn:indexOf(result.orignFileNm, 'png') > -1 || fn:indexOf(result.orignFileNm, 'gif') > -1 }">
+								                        	<a href="javascript:void(0);" class="btn_preview" onclick="fncImgPreview('${result.atchFileId}','${result.fileSn}','${result.imageWidth }','${result.imageHeight }');">미리보기</a>
+							                        	</c:if>
+							                        	--%>
+							                        	
+							                        	<c:if test="${fn:indexOf(result.fileType, 'image') > -1}">
 								                        	<a href="javascript:void(0);" class="btn_preview" onclick="fncImgPreview('${result.atchFileId}','${result.fileSn}','${result.imageWidth }','${result.imageHeight }');">미리보기</a>
 							                        	</c:if>
 							                        </span>

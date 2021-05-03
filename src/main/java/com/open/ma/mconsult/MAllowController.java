@@ -1,4 +1,4 @@
-package com.open.ft.ftconsult.ftallow;
+package com.open.ma.mconsult;
 
 import java.util.List;
 import java.util.Properties;
@@ -35,7 +35,7 @@ import net.sf.ehcache.Element;
  * 공지사항 게시판을 관리하는 컨트롤러 클래스를 정의한다.
  */
 @Controller
-public class FtAllowController {
+public class MAllowController {
 
 	@Resource(name = "cmmnService")
 	protected CmmnService cmmnService;
@@ -64,7 +64,7 @@ public class FtAllowController {
 	private final static String PROGRAM_ID = "AllowPendReject";
 
 	/** folderPath **/
-	private final static String folderPath = "/ft/ftconsult/ftallow/";
+	private final static String folderPath = "/ma/mconsult/mallow/";
 
 	// @Resource(name = "beanValidator")
 	// protected DefaultBeanValidator beanValidator;
@@ -74,11 +74,20 @@ public class FtAllowController {
 
 	Logger log = Logger.getLogger(this.getClass());
 
+	/**
+	 * 메뉴권한 목록화면
+	 * 
+	 * @param searchVO
+	 * @param model
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping(folderPath + "list.do")
 	public String list(@ModelAttribute("searchVO") AllowPendRejectVO searchVO, ModelMap model,
 			HttpServletRequest request) throws Exception {
 
-		return ".fLayout:" + folderPath + "listV2";
+		return ".mLayout:" + folderPath + "list";
 	}
 
 	/**
@@ -94,7 +103,7 @@ public class FtAllowController {
 	@RequestMapping(folderPath + "addList.do")
 	public String addList(@ModelAttribute("searchVO") AllowPendRejectVO searchVO, ModelMap model,
 			HttpServletRequest request) throws Exception {
-
+		System.out.println("## bstatis in addlist.do: "+searchVO.getbStatus());
 		/** Cache sample */
 		Ehcache cache = cacheManager.getCacheManager().getCache("properties");
 		Element pageUnit = cache.get("pageUnit");
@@ -149,9 +158,10 @@ public class FtAllowController {
 		/* 게시판 상세정보 */
 		AllowPendRejectVO alwpdrjVO = new AllowPendRejectVO();
 		alwpdrjVO = (AllowPendRejectVO) cmmnService.selectContents(searchVO, PROGRAM_ID);
+		searchVO.setbStatus(alwpdrjVO.getbStatus());
 		model.addAttribute("alwpdrjVO", alwpdrjVO);
 
-		return ".fLayout:" + folderPath + "view";
+		return ".mLayout:" + folderPath + "view";
 	}
 
 	/**
@@ -185,7 +195,7 @@ public class FtAllowController {
 		alwpdrjVO.setbStatus(searchVO.getbStatus());
 		model.addAttribute("alwpdrjVO", alwpdrjVO);
 
-		return ".fLayout:" + folderPath + "form";
+		return ".mLayout:" + folderPath + "form";
 	}
 
 	/**
@@ -210,7 +220,10 @@ public class FtAllowController {
 			cmmnService.updateContents(searchVO, PROGRAM_ID);
 		} else if (procType.equals("delete")) {
 			cmmnService.deleteContents(searchVO, PROGRAM_ID);
-		} 
+		} else if (procType.equals("allow") || procType.equals("reject") || procType.equals("pdisallow")) {
+			cmmnService.updateContents(searchVO, PROGRAM_ID + ".updateBstatus");
+		}
+
 		status.setComplete(); // 중복 Submit 방지 : 세션에 저장된 model 을 삭제한다.
 
 		if (procType.equals("update")) {
@@ -223,6 +236,22 @@ public class FtAllowController {
 			model.addAttribute("cmmnScript", "list.do");
 		} else if (procType.equals("delete")) {
 			model.addAttribute("message", "삭제되었습니다..");
+			model.addAttribute("cmmnScript", "list.do");
+		} else if (procType.equals("allow")) {
+			model.addAttribute("message", "게시물이 승인 되었습니다.");
+			model.addAttribute("pName", "bStatus");
+			model.addAttribute("pValue", "N");
+			model.addAttribute("cmmnScript", "list.do");
+		} else if (procType.equals("reject")) {
+			model.addAttribute("message", "게시물을 강등처리 하였습니다.");
+			model.addAttribute("pName", "bStatus");
+			model.addAttribute("pValue", "R");
+			model.addAttribute("cmmnScript", "list.do");
+		} 
+		else if (procType.equals("pdisallow")) {
+			model.addAttribute("message", "게시물을 영구미승인 처리하였습니다.");
+			model.addAttribute("pName", "bStatus");
+			model.addAttribute("pValue", "D");
 			model.addAttribute("cmmnScript", "list.do");
 		} 
 		else {
