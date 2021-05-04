@@ -28,6 +28,7 @@
 				, ATCH_FILE_ID atchFileId
 				, F_USER_NM(RGST_ID) name
 				, B_STATUS bStatus
+				, COMMENT comment
 		     FROM  T_ACCEPT_REJECT_PENDING TS
 			 WHERE  USE_YN='Y'	
 				 AND SEQ = #{seq}
@@ -114,6 +115,7 @@
 			UPDATE T_ACCEPT_REJECT_PENDING     
 			 SET 
 				  B_STATUS = #{bStatus ,jdbcType=VARCHAR}
+				  ,COMMENT = #{comment ,jdbcType=VARCHAR}
 			WHERE  SEQ = #{seq ,jdbcType=VARCHAR}  
 		]]>
 	</update>

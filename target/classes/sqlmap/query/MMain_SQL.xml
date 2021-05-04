@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.open.MMain">
+
+	<sql id="Where">
+		<if test="searchKeyword !=null and searchKeyword !=''">
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==0">
+				AND (TITLE LIKE CONCAT('%',#{searchKeyword},'%') OR CONT like CONCAT('%',#{searchKeyword},'%'))
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==1">
+				AND TITLE LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==2">
+				AND CONT LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+	 	</if>
+	</sql>
+	
+	<select id="selectContents" parameterType="mmainVO" resultType="mmainVO">
+		/* mmain.selectContents */
+		<![CDATA[
+			 SELECT  
+				  SEQ seq
+				 ,MAIN_TITLE mainTitle
+				,MAIN_SUBTITLE mainSubtitle
+				,MAIN_ADDR mainAddr
+				,MAIN_HP mainHp
+				,MAIN_FAX mainFax
+				,RPRSNTR rprsntr
+				,RGST_ID rgstId
+				,RVSE_DT rvseDt
+				,RVSE_ID rvseId
+				,USE_YN useYn
+				,BG_IMG bgImg
+				,M_BG_IMG mBgImg
+				,M_AD_BOARD1_SEQ mAdBoard1Seq
+				,M_AD_BOARD2_SEQ mAdBoard2Seq
+				,M_AD_BOARD3_SEQ mAdBoard3Seq
+				,M_AD_BOARD4_SEQ mAdBoard4Seq
+				, DATE_FORMAT(RGST_DT,'%Y.%m.%d') rgstDt
+		     FROM  T_MMAIN TS
+			 WHERE  USE_YN='Y'	
+				 AND SEQ = #{seq}
+		]]>
+	</select>
+	
+	
+	
+	<select id="selectList" parameterType="cmmnDefaultVO" resultType="mmainVO">
+		/* mmain.selectList */
+		<![CDATA[
+      	     SELECT  
+				  SEQ seq
+				 ,MAIN_TITLE mainTitle
+				,MAIN_SUBTITLE mainSubtitle
+				,MAIN_ADDR mainAddr
+				,MAIN_HP mainHp
+				,MAIN_FAX mainFax
+				,RPRSNTR rprsntr
+				,RGST_ID rgstId
+				,RVSE_DT rvseDt
+				,RVSE_ID rvseId
+				,USE_YN useYn
+				,BG_IMG bgImg
+				,M_BG_IMG mBgImg
+				,M_AD_BOARD1_SEQ mAdBoard1Seq
+				,M_AD_BOARD2_SEQ mAdBoard2Seq
+				,M_AD_BOARD3_SEQ mAdBoard3Seq
+				,M_AD_BOARD4_SEQ mAdBoard4Seq
+				, DATE_FORMAT(RGST_DT,'%Y.%m.%d') rgstDt
+		     FROM T_MMAIN TS
+			 WHERE USE_YN='Y'	
+	      ]]>
+		     <include refid="Where"/>	 
+	     <![CDATA[ 
+	    		ORDER BY SEQ DESC
+				LIMIT  #{firstIndex} , #{recordCountPerPage}
+		]]>
+	</select>	
+
+	<select id="selectMainBannerList" parameterType="mmainVO" resultType="mmainbannerVO">
+		/* mainbanner.selectList */
+		<![CDATA[
+      	     SELECT  
+				  SEQ seq
+				 ,MAIN_TITLE mainTitle
+				,MAIN_SUBTITLE mainSubtitle
+				,MAIN_ADDR mainAddr
+				,MAIN_HP mainHp
+				,MAIN_FAX mainFax
+				,RPRSNTR rprsntr
+				,RGST_ID rgstId
+				,RVSE_DT rvseDt
+				,RVSE_ID rvseId
+				,USE_YN useYn
+				,BG_IMG bgImg
+				,M_BG_IMG mBgImg
+				,M_AD_BOARD1_SEQ mAdBoard1Seq
+				,M_AD_BOARD2_SEQ mAdBoard2Seq
+				,M_AD_BOARD3_SEQ mAdBoard3Seq
+				,M_AD_BOARD4_SEQ mAdBoard4Seq
+				, DATE_FORMAT(RGST_DT,'%Y.%m.%d') rgstDt
+		     FROM T_MMAIN_BANNER
+			 WHERE USE_YN='Y'	
+	      ]]>
+		     <include refid="Where"/>	 
+	     <![CDATA[ 
+	    		ORDER BY SEQ DESC
+				LIMIT  #{firstIndex} , #{recordCountPerPage}
+		]]>
+	</select>	
+
+	<select id="selectCount" parameterType="cmmnDefaultVO" resultType="int">
+		/* mmain.selectCount */
+		<![CDATA[
+			SELECT 
+				COUNT(SEQ) cnt 
+			FROM T_MMAIN
+			WHERE USE_YN='Y' 
+		]]>
+			 <include refid="Where"/>
+	</select>
+	
+	<insert id="insertContents" parameterType="mmainVO">
+		/* mmain.insertContents */
+		<![CDATA[
+			INSERT INTO T_MMAIN(
+           	  	  SEQ 
+				, TITLE 
+				, CONT
+				, RGST_ID 
+				, ATCH_FILE_ID 
+				, STA_DATE
+				, END_DATE 
+				, NOTI_YN 
+			)
+			VALUES (
+				 (SELECT IFNULL(MAX(TS.SEQ)+1,1) FROM T_MMAIN TS)
+				,#{title ,jdbcType=VARCHAR}
+				,#{cont ,jdbcType=VARCHAR}
+				,#{loginSeq ,jdbcType=VARCHAR}
+				,#{atchFileId ,jdbcType=VARCHAR}
+				,#{staDate ,jdbcType=VARCHAR}
+				,#{endDate ,jdbcType=VARCHAR}
+				,#{notiYn ,jdbcType=VARCHAR}
+			)
+		]]>
+	</insert>
+	
+	<update id="updateContents" parameterType="mmainVO">
+		/* mmain.updateContents */
+		<![CDATA[
+			UPDATE T_MMAIN     
+			 SET 
+				  TITLE = #{title ,jdbcType=VARCHAR} 
+				, CONT = #{cont ,jdbcType=VARCHAR}
+				, RVSE_DT = NOW()
+				, ATCH_FILE_ID = #{atchFileId ,jdbcType=VARCHAR}
+				, STA_DATE = #{staDate ,jdbcType=VARCHAR}
+				, END_DATE  = #{endDate ,jdbcType=VARCHAR}
+				, NOTI_YN  = #{notiYn ,jdbcType=VARCHAR}
+			WHERE  SEQ = #{seq}  
+		]]>
+	</update>
+	
+	<update id="deleteContents" parameterType="mmainVO">
+		/* mmain.deleteContents */
+		<![CDATA[
+			UPDATE T_MMAIN
+		       SET
+	          	 USE_YN='N'
+			WHERE SEQ=#{seq}
+		]]>
+	</update>
+
+	
+</mapper>

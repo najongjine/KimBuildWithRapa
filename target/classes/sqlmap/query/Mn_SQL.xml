@@ -75,6 +75,33 @@
 				LIMIT  #{firstIndex} , #{recordCountPerPage}
 		]]>
 	</select>	
+	
+	<select id="selectMainContentList" parameterType="cmmnDefaultVO" resultType="mnVO">
+		/* Mn.selectList */
+		<![CDATA[
+		      	  SELECT 
+					MENU_SEQ menuSeq
+					, MENU_GROUP_SEQ menuGroupSeq
+					, LVL lvl
+					, NO no
+					, MENU_NM menuNm
+					, MENU_CD menuCd
+					, URL url
+					, DATE_FORMAT(RGST_DT,'%Y.%m.%d') rgstDt
+					, F_USER_NM(RGST_ID) rgstId
+					, MENU_CL menuCl
+					, DESCRIPTION description
+					, BOARD_CL boardCl
+	             FROM  T_MENU_INFO 			
+			     WHERE  USE_YN='Y' 
+			     	AND MENU_CL = 'ft'
+			     	AND LVL = 2
+	      ]]>
+		     <include refid="Where"/>	 
+	     <![CDATA[ 
+	    		ORDER BY  MENU_SEQ DESC
+		]]>
+	</select>	
 
 
 	<select id="selectCount" parameterType="cmmnDefaultVO" resultType="int">

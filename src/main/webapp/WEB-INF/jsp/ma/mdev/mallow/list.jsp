@@ -13,12 +13,11 @@
 				<legend>검색</legend>
 				<div class="search_basic">
 					<form:select path="bStatus" id="bStatusSelectBox" title="게시글 상태 선택" cssClass="w100"  onchange="searchLog();">  
-						<form:option value="" label="전체"/>
-						<form:option value="D" label="미승인"/>
+						<form:option value="" label="전체상태"/>
+						<form:option value="D" label="신청"/>
 						<form:option value="O" label="승인"/>
 						<form:option value="P" label="재승인 요청"/>
-						<form:option value="R" label="강등글"/>
-						<form:option value="D" label="영구 미승인"/>
+						<form:option value="R" label="반려"/>
 					</form:select>
 					<strong class="tit">검색구분</strong>
 					<form:select path="searchCondition" id="searchCondition" title="구분 선택" cssClass="w100"  >  
@@ -64,10 +63,6 @@ var searchLog=function(){
 		break;
 	case 'P':
 		$("#bStatus").val('P');
-		fncPageBoard('addList','addList.do','${searchVO.pageIndex}');
-		break;
-	case 'D':
-		$("#bStatus").val('D');
 		fncPageBoard('addList','addList.do','${searchVO.pageIndex}');
 		break;
 	default:

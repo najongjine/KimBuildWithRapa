@@ -31,6 +31,7 @@ public class AllowPendRejectVO extends CmmnDefaultVO implements Serializable {
 	private String cnt;
 	private String name;
 	private String bStatus="";
+	private String comment;
 	
 	public String getSeq() {
 		return seq;
@@ -88,6 +89,12 @@ public class AllowPendRejectVO extends CmmnDefaultVO implements Serializable {
 	}
 	public static long getSerialversionuid() {
 		return serialVersionUID;
+	}
+	public String getComment() {
+		return comment;
+	}
+	public void setComment(String comment) {
+		this.comment = comment;
 	}
 	
 	

@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.open.Excel">
+
+	<sql id="Where">
+		<if test="searchKeyword !=null and searchKeyword !=''">
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==0">
+				AND (FCT_NM LIKE CONCAT('%',#{searchKeyword},'%') OR RS_NM like CONCAT('%',#{searchKeyword},'%') OR MNGER like CONCAT('%',#{searchKeyword},'%'))
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==1">
+				AND FCT_NM LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==2">
+				AND RS_NM LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==3">
+				AND MNGER LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+	 	</if>
+	</sql>
+	
+	<select id="selectImgList" parameterType="bimgVO" resultType="imgVO">
+		/* img.selectList */
+		<![CDATA[
+      	     SELECT  
+				 ATCH_FILE_ID atchFileId
+				, FILE_SN fileSn
+		     FROM T_ATCH_FILE_DETAIL 
+			 WHERE DEL_YN='N'	
+			 	AND ATCH_FILE_ID = #{atchFileId}
+	      ]]>
+	</select>
+	
+	<select id="selectContents" parameterType="kaWireVO" resultType="kaWireVO">
+		/* excel.selectContents */
+		<![CDATA[
+			 SELECT  
+				SEQ seq
+				,FCT_NM fctNm
+				,SRVC_CLS srvcCls
+				,RS_NM rsNm
+				,PERMS_SEQ permsSeq
+				,INSP_DT inspDt
+				,WI_ADDR wiAddr
+				,ATCH_FILE_ID atchFileId
+				,MNGER mnger 
+				,MNGER_HP mngerHp
+				,WI_ENT_MTHD wiEntMthd
+				,TX_FREQ_FROM txFreqFrom
+				,TX_FREQ_TO txFreqTo
+				,ANTH_PWR_SUM anthPwrSum
+				,ANTH_KIND anthKind
+				,ANTH_BNFT anthBnft
+				,ANTH_HGHT anthHght
+				,GRND_HGHT grndHght
+				,ANTH_BM_CNT anthBmCnt
+				,ANTH_BM_KIND anthBmKind
+				,ISTR_RAD_PWR istrRadPwr
+				,CNTR_FREQ cntrFreq
+				,BNDWTH bndwth
+				,REF_SIG_FREQ refSigFreq
+				,ANTH_TILT_ANG anthTiltAng
+				,MAX_VERT_BEAM_ANG maxVertBeamAng
+				,MAX_HORIZ_BEAM_ANG maxHorizBeamAng
+				,SYNC_SIG_GRPFRQ syncSigGrpfrq
+				,SLOT_FMT_CNT slotFmtCnt
+				,FREQRC_BLOCK_CNT freqrcBlockCnt
+				,SUB_WV_CNT subWvCnt
+				,ABV_GRDSMB_CNT abvGrdsmbCnt
+				,ONESLOT_SMB_CNT oneslotSmbCnt
+				,SLOT_FMT_INFO slotFmtInfo
+				,MNFCTR mnfctr
+				,BSN_MNG_ID bsnMngId
+				,DATE_FORMAT(RGST_DT,'%Y.%m.%d') rgstDt
+				,RGST_ID rgstId
+				,RVSE_DT rvseDt
+				,RVSE_ID rvseId
+				,USE_YN useYn
+				
+		     FROM  T_EXCEL TS
+			 WHERE  USE_YN='Y'	
+				 AND SEQ = #{seq}
+		]]>
+	</select>
+	
+	
+	
+	<select id="selectList" parameterType="cmmnDefaultVO" resultType="kaWireVO">
+		/* excel.selectList */
+		<![CDATA[
+      	     SELECT  
+				SEQ seq
+				,FCT_NM fctNm
+				,SRVC_CLS srvcCls
+				,RS_NM rsNm
+				,PERMS_SEQ permsSeq
+				,INSP_DT inspDt
+				,WI_ADDR wiAddr
+				,ATCH_FILE_ID atchFileId
+				,MNGER mnger 
+				,MNGER_HP mngerHp
+				,WI_ENT_MTHD wiEntMthd
+				,TX_FREQ_FROM txFreqFrom
+				,TX_FREQ_TO txFreqTo
+				,ANTH_PWR_SUM anthPwrSum
+				,ANTH_KIND anthKind
+				,ANTH_BNFT anthBnft
+				,ANTH_HGHT anthHght
+				,GRND_HGHT grndHght
+				,ANTH_BM_CNT anthBmCnt
+				,ANTH_BM_KIND anthBmKind
+				,ISTR_RAD_PWR istrRadPwr
+				,CNTR_FREQ cntrFreq
+				,BNDWTH bndwth
+				,REF_SIG_FREQ refSigFreq
+				,ANTH_TILT_ANG anthTiltAng
+				,MAX_VERT_BEAM_ANG maxVertBeamAng
+				,MAX_HORIZ_BEAM_ANG maxHorizBeamAng
+				,SYNC_SIG_GRPFRQ syncSigGrpfrq
+				,SLOT_FMT_CNT slotFmtCnt
+				,FREQRC_BLOCK_CNT freqrcBlockCnt
+				,SUB_WV_CNT subWvCnt
+				,ABV_GRDSMB_CNT abvGrdsmbCnt
+				,ONESLOT_SMB_CNT oneslotSmbCnt
+				,SLOT_FMT_INFO slotFmtInfo
+				,MNFCTR mnfctr
+				,BSN_MNG_ID bsnMngId
+				,DATE_FORMAT(RGST_DT,'%Y.%m.%d') rgstDt
+				,RGST_ID rgstId
+				,RVSE_DT rvseDt
+				,RVSE_ID rvseId
+				,USE_YN useYn
+		     FROM T_EXCEL TS
+			 WHERE USE_YN='Y'	
+	      ]]>
+		     <include refid="Where"/>	 
+	     <![CDATA[ 
+	    		ORDER BY SEQ DESC
+				LIMIT  #{firstIndex} , #{recordCountPerPage}
+		]]>
+	</select>	
+
+
+	<select id="selectCount" parameterType="cmmnDefaultVO" resultType="int">
+		/* excel.selectCount */
+		<![CDATA[
+			SELECT 
+				COUNT(SEQ) cnt 
+			FROM T_EXCEL
+			WHERE USE_YN='Y' 
+		]]>
+			 <include refid="Where"/>
+	</select>
+	
+	<insert id="insertContents" parameterType="kaWireVO">
+		/* excel.insertContents */
+		<![CDATA[
+			INSERT INTO T_EXCEL(
+           	  	  SEQ 
+				,FCT_NM
+				,SRVC_CLS
+				,RS_NM
+				,PERMS_SEQ
+				,INSP_DT
+				,WI_ADDR
+				,ATCH_FILE_ID
+				,MNGER
+				,MNGER_HP
+				,WI_ENT_MTHD
+				,TX_FREQ_FROM
+				,TX_FREQ_TO
+				,ANTH_PWR_SUM
+				,ANTH_KIND
+				,ANTH_BNFT
+				,ANTH_HGHT
+				,GRND_HGHT
+				,ANTH_BM_CNT
+				,ANTH_BM_KIND
+				,ISTR_RAD_PWR
+				,CNTR_FREQ
+				,BNDWTH
+				,REF_SIG_FREQ
+				,ANTH_TILT_ANG
+				,MAX_VERT_BEAM_ANG
+				,MAX_HORIZ_BEAM_ANG
+				,SYNC_SIG_GRPFRQ
+				,SLOT_FMT_CNT
+				,FREQRC_BLOCK_CNT
+				,SUB_WV_CNT
+				,ABV_GRDSMB_CNT
+				,ONESLOT_SMB_CNT
+				,SLOT_FMT_INFO
+				,MNFCTR
+				,BSN_MNG_ID
+			)
+			VALUES (
+				 (SELECT IFNULL(MAX(TS.SEQ)+1,1) FROM T_EXCEL TS)
+				,#{fctNm ,jdbcType=VARCHAR}
+				,#{srvcCls ,jdbcType=VARCHAR}
+				,#{rsNm ,jdbcType=VARCHAR}
+				,#{permsSeq ,jdbcType=VARCHAR}
+				,#{inspDt ,jdbcType=VARCHAR}
+				,#{wiAddr ,jdbcType=VARCHAR}
+				,#{atchFileId ,jdbcType=VARCHAR}
+				,#{mnger ,jdbcType=VARCHAR}
+				,#{mngerHp ,jdbcType=VARCHAR}
+				,#{wiEntMthd ,jdbcType=VARCHAR}
+				,#{txFreqFrom ,jdbcType=VARCHAR}
+				,#{txFreqTo ,jdbcType=VARCHAR}
+				,#{anthPwrSum ,jdbcType=VARCHAR}
+				,#{anthKind ,jdbcType=VARCHAR}
+				,#{anthBnft ,jdbcType=VARCHAR}
+				,#{anthHght ,jdbcType=VARCHAR}
+				,#{grndHght ,jdbcType=VARCHAR}
+				,#{anthBmCnt ,jdbcType=VARCHAR}
+				,#{anthBmKind ,jdbcType=VARCHAR}
+				,#{istrRadPwr ,jdbcType=VARCHAR}
+				,#{cntrFreq ,jdbcType=VARCHAR}
+				,#{bndwth ,jdbcType=VARCHAR}
+				,#{refSigFreq ,jdbcType=VARCHAR}
+				,#{anthTiltAng ,jdbcType=VARCHAR}
+				,#{maxVertBeamAng ,jdbcType=VARCHAR}
+				,#{maxHorizBeamAng ,jdbcType=VARCHAR}
+				,#{syncSigGrpfrq ,jdbcType=VARCHAR}
+				,#{slotFmtCnt ,jdbcType=VARCHAR}
+				,#{freqrcBlockCnt ,jdbcType=VARCHAR}
+				,#{subWvCnt ,jdbcType=VARCHAR}
+				,#{abvGrdsmbCnt ,jdbcType=VARCHAR}
+				,#{oneslotSmbCnt ,jdbcType=VARCHAR}
+				,#{slotFmtInfo ,jdbcType=VARCHAR}
+				,#{mnfctr ,jdbcType=VARCHAR}
+				,#{bsnMngId ,jdbcType=VARCHAR}
+			)
+		]]>
+	</insert>
+	
+	<!-- 엑셀파일 업로드 -->
+	<insert id="excelInsertContents" parameterType="kaWireVO">
+<!-- 	<selectKey resultType="String" keyProperty="wiSeq" order="BEFORE">
+		SELECT IFNULL(MAX(WI_SEQ)+1,1) FROM T_KA_WIRE
+    </selectKey>  -->
+		INSERT INTO T_EXCEL(
+				FCT_NM
+				,SRVC_CLS
+				,RS_NM
+				,PERMS_SEQ
+				,INSP_DT
+				,WI_ADDR
+				,ATCH_FILE_ID
+				,MNGER
+				,MNGER_HP
+				,WI_ENT_MTHD
+				,TX_FREQ_FROM
+				,TX_FREQ_TO
+				,ANTH_PWR_SUM
+				,ANTH_KIND
+				,ANTH_BNFT
+				,ANTH_HGHT
+				,GRND_HGHT
+				,ANTH_BM_CNT
+				,ANTH_BM_KIND
+				,ISTR_RAD_PWR
+				,CNTR_FREQ
+				,BNDWTH
+				,REF_SIG_FREQ
+				,ANTH_TILT_ANG
+				,MAX_VERT_BEAM_ANG
+				,MAX_HORIZ_BEAM_ANG
+				,SYNC_SIG_GRPFRQ
+				,SLOT_FMT_CNT
+				,FREQRC_BLOCK_CNT
+				,SUB_WV_CNT
+				,ABV_GRDSMB_CNT
+				,ONESLOT_SMB_CNT
+				,SLOT_FMT_INFO
+				,MNFCTR
+				,BSN_MNG_ID		
+		)
+		VALUES 
+		<foreach item="item" index="index" collection="excelList" separator=" , ">
+			(
+				#{item.fctNm ,jdbcType=VARCHAR}
+				,#{item.srvcCls ,jdbcType=VARCHAR}
+				,#{item.rsNm ,jdbcType=VARCHAR}
+				,#{item.permsSeq ,jdbcType=VARCHAR}
+				,#{item.inspDt ,jdbcType=VARCHAR}
+				,#{item.wiAddr ,jdbcType=VARCHAR}
+				,#{item.atchFileId ,jdbcType=VARCHAR}
+				,#{item.mnger ,jdbcType=VARCHAR}
+				,#{item.mngerHp ,jdbcType=VARCHAR}
+				,#{item.wiEntMthd ,jdbcType=VARCHAR}
+				,#{item.txFreqFrom ,jdbcType=VARCHAR}
+				,#{item.txFreqTo ,jdbcType=VARCHAR}
+				,#{item.anthPwrSum ,jdbcType=VARCHAR}
+				,#{item.anthKind ,jdbcType=VARCHAR}
+				,#{item.anthBnft ,jdbcType=VARCHAR}
+				,#{item.anthHght ,jdbcType=VARCHAR}
+				,#{item.grndHght ,jdbcType=VARCHAR}
+				,#{item.anthBmCnt ,jdbcType=VARCHAR}
+				,#{item.anthBmKind ,jdbcType=VARCHAR}
+				,#{item.istrRadPwr ,jdbcType=VARCHAR}
+				,#{item.cntrFreq ,jdbcType=VARCHAR}
+				,#{item.bndwth ,jdbcType=VARCHAR}
+				,#{item.refSigFreq ,jdbcType=VARCHAR}
+				,#{item.anthTiltAng ,jdbcType=VARCHAR}
+				,#{item.maxVertBeamAng ,jdbcType=VARCHAR}
+				,#{item.maxHorizBeamAng ,jdbcType=VARCHAR}
+				,#{item.syncSigGrpfrq ,jdbcType=VARCHAR}
+				,#{item.slotFmtCnt ,jdbcType=VARCHAR}
+				,#{item.freqrcBlockCnt ,jdbcType=VARCHAR}
+				,#{item.subWvCnt ,jdbcType=VARCHAR}
+				,#{item.abvGrdsmbCnt ,jdbcType=VARCHAR}
+				,#{item.oneslotSmbCnt ,jdbcType=VARCHAR}
+				,#{item.slotFmtInfo ,jdbcType=VARCHAR}
+				,#{item.mnfctr ,jdbcType=VARCHAR}
+				,#{item.bsnMngId ,jdbcType=VARCHAR}
+				)
+		</foreach>
+	</insert>
+	
+	<update id="updateContents" parameterType="kaWireVO">
+		/* excel.updateContents */
+		<![CDATA[
+			UPDATE T_EXCEL     
+			 SET 
+				,FCT_NM = #{fctNm ,jdbcType=VARCHAR}
+				,SRVC_CLS = #{srvcCls ,jdbcType=VARCHAR}
+				,RS_NM = #{rsNm ,jdbcType=VARCHAR}
+				,PERMS_SEQ = #{permsSeq ,jdbcType=VARCHAR}
+				,INSP_DT = #{inspDt ,jdbcType=VARCHAR}
+				,WI_ADDR = #{wiAddr ,jdbcType=VARCHAR}
+				,ATCH_FILE_ID = #{atchFileId ,jdbcType=VARCHAR}
+				,MNGER = #{mnger ,jdbcType=VARCHAR}
+				,MNGER_HP = #{mngerHp ,jdbcType=VARCHAR}
+				,WI_ENT_MTHD = #{wiEntMthd ,jdbcType=VARCHAR}
+				,TX_FREQ_FROM = #{txFreqFrom ,jdbcType=VARCHAR}
+				,TX_FREQ_TO = #{txFreqTo ,jdbcType=VARCHAR}
+				,ANTH_PWR_SUM = #{anthPwrSum ,jdbcType=VARCHAR}
+				,ANTH_KIND = #{anthKind ,jdbcType=VARCHAR}
+				,ANTH_BNFT = #{anthBnft ,jdbcType=VARCHAR}
+				,ANTH_HGHT = #{anthHght ,jdbcType=VARCHAR}
+				,GRND_HGHT = #{grndHght ,jdbcType=VARCHAR}
+				,ANTH_BM_CNT = #{anthBmCnt ,jdbcType=VARCHAR}
+				,ANTH_BM_KIND = #{anthBmKind ,jdbcType=VARCHAR}
+				,ISTR_RAD_PWR = #{istrRadPwr ,jdbcType=VARCHAR}
+				,CNTR_FREQ = #{cntrFreq ,jdbcType=VARCHAR}
+				,BNDWTH = #{bndwth ,jdbcType=VARCHAR}
+				,REF_SIG_FREQ = #{refSigFreq ,jdbcType=VARCHAR}
+				,ANTH_TILT_ANG = #{anthTiltAng ,jdbcType=VARCHAR}
+				,MAX_VERT_BEAM_ANG = #{maxVertBeamAng ,jdbcType=VARCHAR}
+				,MAX_HORIZ_BEAM_ANG = #{maxHorizBeamAng ,jdbcType=VARCHAR}
+				,SYNC_SIG_GRPFRQ = #{syncSigGrpfrq ,jdbcType=VARCHAR}
+				,SLOT_FMT_CNT = #{slotFmtInfo ,jdbcType=VARCHAR}
+				,FREQRC_BLOCK_CNT = #{freqrcBlockCnt ,jdbcType=VARCHAR}
+				,SUB_WV_CNT = #{subWvCnt ,jdbcType=VARCHAR}
+				,ABV_GRDSMB_CNT = #{abvGrdsmbCnt ,jdbcType=VARCHAR}
+				,ONESLOT_SMB_CNT = #{oneslotSmbCnt ,jdbcType=VARCHAR}
+				,SLOT_FMT_INFO = #{slotFmtInfo ,jdbcType=VARCHAR}
+				,MNFCTR = #{mnfctr ,jdbcType=VARCHAR}
+				,BSN_MNG_ID = #{bsnMngId ,jdbcType=VARCHAR}
+			WHERE  SEQ = #{seq}  
+		]]>
+	</update>
+	
+	<update id="deleteContents" parameterType="kaWireVO">
+		/* excel.deleteContents */
+		<![CDATA[
+			UPDATE T_EXCEL
+		       SET
+	          	 USE_YN='N'
+			WHERE SEQ=#{seq}
+		]]>
+	</update>
+
+
+	
+	
+	
+	
+</mapper>

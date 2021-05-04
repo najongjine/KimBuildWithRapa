@@ -14,12 +14,14 @@
 			<col>
 			<col style="width:10%">
 			<col style="width:10%">
+			<col style="width:10%">
 		</colgroup>
 		<thead>
 			<tr>
 				<th scope="col">번호</th>
-				<th scope="col" class="subject">제목</th>
-				<th scope="col">등록자</th>
+				<th scope="col" class="subject">시설명</th>
+				<th scope="col">무선국명</th>
+				<th scope="col">관리담당자</th>
 				<th scope="col">등록일</th>
 			</tr>
 		</thead>
@@ -31,8 +33,9 @@
 							<td onclick="fncPageBoard('view','view.do','${result.seq}','seq')">
 								${paginationInfo.totalRecordCount+1 - ((searchVO.pageIndex-1) * searchVO.pageSize + status.count)}
 							</td>
-							<td class="subject" onclick="fncPageBoard('view','view.do','${result.seq}','seq')">${util:cutText(result.title,30,'...') }</td>
-							<td onclick="fncPageBoard('view','view.do','${result.seq}','seq')">${result.name }</td>
+							<td class="" onclick="fncPageBoard('view','view.do','${result.seq}','seq')"><c:out value="${util:cutText(result.fctNm,30,'...') }"/></td>
+							<td onclick="fncPageBoard('view','view.do','${result.seq}','seq')">${result.rsNm }</td>
+							<td onclick="fncPageBoard('view','view.do','${result.seq}','seq')">${result.mnger }</td>
 							<td onclick="fncPageBoard('view','view.do','${result.seq}','seq')">${result.rgstDt }</td>
 						</tr>
 					</c:forEach>
@@ -53,7 +56,7 @@
 	<div class="btn_left">
 		<a href="#" class="btn btn_mdl btn_excel" onclick="fncExcelUp();">엑셀업로드</a>
 		<input type="hidden" name="excelFileId" id="excelFileId" />
-		<iframe name="excelFileIdFrame" id="excelFileIdFrame" src="/atch/fileUpload.do?atchFileId=&fileCnt=1&atchFileIdNm=excelFileId&updateType=imageUpload" style="width: 100%;" height="50" frameborder="0" title="파일 업로드 폼"></iframe>
+		<iframe name="excelFileIdFrame" id="excelFileIdFrame" src="/atch/fileUpload.do?atchFileId=&fileCnt=1&atchFileIdNm=excelFileId&updateType=upload" style="width: 100%;" height="50" frameborder="0" title="파일 업로드 폼"></iframe>
 	</div>
 	<div class="btn_right">
 		<a href="#" class="btn btn_mdl btn_save" onclick="fncPageBoard('write','insertForm.do');">등록</a>
