@@ -25,6 +25,7 @@ import com.open.cmmn.service.FileMngService;
 import com.open.cmmn.util.SessionUtil;
 import com.open.cmmn.util.StringUtil;
 import com.open.ma.sys.mn.service.MnVO;
+import com.open.vo.MMainBannerVO;
 import com.open.vo.MMainVO;
 
 import egovframework.rte.fdl.idgnr.EgovIdGnrService;
@@ -158,11 +159,14 @@ public class MMainController {
 			throws Exception {
 
 		/* 게시판 상세정보 */
+		/*
 		MMainVO mmainVO = new MMainVO();
 		mmainVO = (MMainVO) cmmnService.selectContents(searchVO, PROGRAM_ID);
 		model.addAttribute("mmainVO", mmainVO);
 
 		return ".mLayout:" + folderPath + "view";
+		*/
+		return "forward:"+folderPath+"updateForm.do";
 	}
 
 	/**
@@ -182,6 +186,14 @@ public class MMainController {
 		MMainVO mmainVO = new MMainVO();
 		if (procType.equals("update")) {
 			mmainVO = (MMainVO) cmmnService.selectContents(searchVO, PROGRAM_ID);
+			List<MMainBannerVO> bannerList=(List<MMainBannerVO>) cmmnService.selectList(mmainVO, PROGRAM_ID+".selectMainBannerList");
+			System.out.println("## size: "+bannerList.size());
+			for (MMainBannerVO e : bannerList) {
+				System.out.println("## "+e.getSeq());
+				System.out.println("## "+e.getBannerTitle());
+				System.out.println("## "+e.getMmainSeq());
+			}
+			mmainVO.setMmainbannerList(bannerList);
 			if (!StringUtil.nullString(SessionUtil.getUserDetails().getAuthCode()).equals("1")
 					&& !StringUtil.nullString(mmainVO.getRgstId())
 							.equals(StringUtil.nullString(SessionUtil.getUserDetails().getLoginSeq()))) {
@@ -190,11 +202,9 @@ public class MMainController {
 				return "cmmn/execute";
 			}
 		}
-		List<MnVO> mnList = (List<MnVO>) cmmnService.selectList(searchVO, "Mn.selectMainContentList");
 		searchVO.setProcType(procType);
 		mmainVO.setSearchVO(searchVO);
 		model.addAttribute("mmainVO", mmainVO);
-		model.addAttribute("mnList", mnList);
 
 		return ".mLayout:" + folderPath + "form";
 	}
@@ -213,13 +223,27 @@ public class MMainController {
 	@RequestMapping(value = folderPath + "{procType}Proc.do", method = RequestMethod.POST)
 	public String proc(@ModelAttribute("searchVO") MMainVO searchVO, Model model, SessionStatus status,
 			@PathVariable String procType, HttpServletRequest request) throws Exception {
-
+		for (MMainBannerVO data : searchVO.getMmainbannerList()) {
+			if("".equals(data.getStaDate())) {
+				data.setStaDate(null);
+			}
+			if("".equals(data.getEndDate())) {
+				data.setEndDate(null);
+			}
+			System.out.println("## getBannerTitle: "+data.getBannerTitle());
+			System.out.println("## order: "+data.getIorder());
+			System.out.println("## getAtchFileId: "+data.getAtchFileId());
+		}
 		if (procType != null) {
 
 			if (procType.equals("insert")) {
 
 				cmmnService.insertContents(searchVO, PROGRAM_ID);
-
+				for (MMainBannerVO e : searchVO.getMmainbannerList()) {
+					e.setMmainSeq(searchVO.getSeq());
+					//cmmnService.insertContents(e, PROGRAM_ID+".insertMainBannerContent");
+				}
+				cmmnService.insertContents(searchVO.getMmainbannerList(), PROGRAM_ID+".insertMainBannerList");
 			} else if (procType.equals("update")) {
 				cmmnService.updateContents(searchVO, PROGRAM_ID);
 			} else if (procType.equals("delete")) {

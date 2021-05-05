@@ -1,11 +1,6 @@
 package com.open.vo;
 
-import java.io.Serializable;
-import java.util.List;
-
 import org.apache.ibatis.type.Alias;
-
-import com.open.cmmn.model.CmmnDefaultVO;
 
 /**
  * Content VO 클래스
@@ -17,11 +12,10 @@ import com.open.cmmn.model.CmmnDefaultVO;
  
  */
 @Alias("mmainbannerVO")
-public class MMainBannerVO  {
+public class MMainBannerVO {
 	/**
 	 * 
 	 */
-	
 	private String seq;
 	private String mmainSeq;
 	private String bannerTitle;
@@ -34,7 +28,7 @@ public class MMainBannerVO  {
 	private String useYn;
 	private String staDate;
 	private String endDate;
-	private String order;
+	private String iorder;
 	private String newtab;
 	private String atchFileId;
 
@@ -106,12 +100,6 @@ public class MMainBannerVO  {
 	public void setEndDate(String endDate) {
 		this.endDate = endDate;
 	}
-	public String getOrder() {
-		return order;
-	}
-	public void setOrder(String order) {
-		this.order = order;
-	}
 	public String getNewtab() {
 		return newtab;
 	}
@@ -141,6 +129,12 @@ public class MMainBannerVO  {
 	}
 	public void setBannerTitle(String bannerTitle) {
 		this.bannerTitle = bannerTitle;
+	}
+	public String getIorder() {
+		return iorder;
+	}
+	public void setIorder(String iorder) {
+		this.iorder = iorder;
 	}
 	
 }

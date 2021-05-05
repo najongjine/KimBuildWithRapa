@@ -77,38 +77,35 @@
 				LIMIT  #{firstIndex} , #{recordCountPerPage}
 		]]>
 	</select>	
-
+	
 	<select id="selectMainBannerList" parameterType="mmainVO" resultType="mmainbannerVO">
-		/* mainbanner.selectList */
+		/* mmain.selectList */
 		<![CDATA[
       	     SELECT  
 				  SEQ seq
-				 ,MAIN_TITLE mainTitle
-				,MAIN_SUBTITLE mainSubtitle
-				,MAIN_ADDR mainAddr
-				,MAIN_HP mainHp
-				,MAIN_FAX mainFax
-				,RPRSNTR rprsntr
-				,RGST_ID rgstId
-				,RVSE_DT rvseDt
-				,RVSE_ID rvseId
-				,USE_YN useYn
-				,BG_IMG bgImg
-				,M_BG_IMG mBgImg
-				,M_AD_BOARD1_SEQ mAdBoard1Seq
-				,M_AD_BOARD2_SEQ mAdBoard2Seq
-				,M_AD_BOARD3_SEQ mAdBoard3Seq
-				,M_AD_BOARD4_SEQ mAdBoard4Seq
+				, MMAIN_SEQ mmainSeq
+				, BANNER_TITLE bannerTitle
+				, URL url
+				, NOTI_YN notiYn
+				, RGST_ID rgstId
+				, RVSE_DT rvseDt
+				, RVSE_ID rvseId
+				, USE_YN useYn
+				, DATE(STA_DATE) staDate
+				, DATE(END_DATE) endDate
+				, IORDER iorder
+				, NEWTAB newtab
+				, ATCH_FILE_ID atchFileId
 				, DATE_FORMAT(RGST_DT,'%Y.%m.%d') rgstDt
 		     FROM T_MMAIN_BANNER
 			 WHERE USE_YN='Y'	
+			 	AND MMAIN_SEQ = #{seq ,jdbcType=VARCHAR}
 	      ]]>
-		     <include refid="Where"/>	 
 	     <![CDATA[ 
-	    		ORDER BY SEQ DESC
-				LIMIT  #{firstIndex} , #{recordCountPerPage}
+	    		ORDER BY IORDER
 		]]>
 	</select>	
+
 
 	<select id="selectCount" parameterType="cmmnDefaultVO" resultType="int">
 		/* mmain.selectCount */
@@ -121,30 +118,94 @@
 			 <include refid="Where"/>
 	</select>
 	
-	<insert id="insertContents" parameterType="mmainVO">
+	<insert id="insertContents" parameterType="mmainVO" useGeneratedKeys="true" keyProperty="seq">
 		/* mmain.insertContents */
 		<![CDATA[
 			INSERT INTO T_MMAIN(
-           	  	  SEQ 
-				, TITLE 
-				, CONT
-				, RGST_ID 
-				, ATCH_FILE_ID 
-				, STA_DATE
-				, END_DATE 
-				, NOTI_YN 
+				 MAIN_TITLE 
+				,MAIN_SUBTITLE 
+				,MAIN_ADDR 
+				,MAIN_HP 
+				,MAIN_FAX 
+				,RPRSNTR 
+				,BG_IMG 
+				,M_BG_IMG 
+				,M_AD_BOARD1_SEQ 
+				,M_AD_BOARD2_SEQ 
+				,M_AD_BOARD3_SEQ 
+				,M_AD_BOARD4_SEQ 
 			)
 			VALUES (
-				 (SELECT IFNULL(MAX(TS.SEQ)+1,1) FROM T_MMAIN TS)
-				,#{title ,jdbcType=VARCHAR}
-				,#{cont ,jdbcType=VARCHAR}
-				,#{loginSeq ,jdbcType=VARCHAR}
-				,#{atchFileId ,jdbcType=VARCHAR}
-				,#{staDate ,jdbcType=VARCHAR}
-				,#{endDate ,jdbcType=VARCHAR}
-				,#{notiYn ,jdbcType=VARCHAR}
+				#{mainTitle ,jdbcType=VARCHAR}
+				,#{mainSubtitle ,jdbcType=VARCHAR}
+				,#{mainAddr ,jdbcType=VARCHAR}
+				,#{mainHp ,jdbcType=VARCHAR}
+				,#{mainFax ,jdbcType=VARCHAR}
+				,#{rprsntr ,jdbcType=VARCHAR}
+				,#{bgImg ,jdbcType=VARCHAR}
+				,#{mBgImg ,jdbcType=VARCHAR}
+				,#{mAdBoard1Seq ,jdbcType=VARCHAR}
+				,#{mAdBoard2Seq ,jdbcType=VARCHAR}
+				,#{mAdBoard3Seq ,jdbcType=VARCHAR}
+				,#{mAdBoard4Seq ,jdbcType=VARCHAR}
 			)
 		]]>
+	</insert>
+	
+	<insert id="insertMainBannerList" parameterType="mmainbannerVO" >
+		/* mmain.insertContents */
+			INSERT INTO T_MMAIN_BANNER(
+				MMAIN_SEQ
+				, BANNER_TITLE
+				, URL
+				, NOTI_YN
+				, STA_DATE
+				, END_DATE
+				, IORDER
+				, NEWTAB
+				, ATCH_FILE_ID
+			)
+			VALUES 
+			<foreach collection="list" index="index" item="item" separator=","> 
+			(
+				#{item.mmainSeq ,jdbcType=VARCHAR}
+				,#{item.bannerTitle ,jdbcType=VARCHAR}
+				,#{item.url ,jdbcType=VARCHAR}
+				,#{item.notiYn ,jdbcType=VARCHAR}
+				,#{item.staDate ,jdbcType=VARCHAR}
+				,#{item.endDate ,jdbcType=VARCHAR}
+				,#{item.iorder ,jdbcType=VARCHAR}
+				,#{item.newtab ,jdbcType=VARCHAR}
+				,#{item.atchFileId ,jdbcType=VARCHAR}
+			)
+			</foreach>
+	</insert>
+	
+	<insert id="insertMainBannerContent" parameterType="mmainbannerVO" >
+		/* mmain.insertContents */
+			INSERT INTO T_MMAIN_BANNER(
+				MMAIN_SEQ
+				, BANNER_TITLE
+				, URL
+				, NOTI_YN
+				, STA_DATE
+				, END_DATE
+				, IORDER
+				, NEWTAB
+				, ATCH_FILE_ID
+			)
+			VALUES 
+			(
+				#{mmainSeq ,jdbcType=VARCHAR}
+				,#{bannerTitle ,jdbcType=VARCHAR}
+				,#{url ,jdbcType=VARCHAR}
+				,#{notiYn ,jdbcType=VARCHAR}
+				,#{staDate ,jdbcType=VARCHAR}
+				,#{endDate ,jdbcType=VARCHAR}
+				,#{iorder ,jdbcType=VARCHAR}
+				,#{newtab ,jdbcType=VARCHAR}
+				,#{atchFileId ,jdbcType=VARCHAR}
+			)
 	</insert>
 	
 	<update id="updateContents" parameterType="mmainVO">
