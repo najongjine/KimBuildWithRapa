@@ -44,6 +44,34 @@
 		]]>
 	</select>
 	
+	<select id="selectLatestContents" parameterType="mmainVO" resultType="mmainVO">
+		/* mmain.selectContents */
+		<![CDATA[
+			 SELECT  
+				  SEQ seq
+				 ,MAIN_TITLE mainTitle
+				,MAIN_SUBTITLE mainSubtitle
+				,MAIN_ADDR mainAddr
+				,MAIN_HP mainHp
+				,MAIN_FAX mainFax
+				,RPRSNTR rprsntr
+				,RGST_ID rgstId
+				,RVSE_DT rvseDt
+				,RVSE_ID rvseId
+				,USE_YN useYn
+				,BG_IMG bgImg
+				,M_BG_IMG mBgImg
+				,M_AD_BOARD1_SEQ mAdBoard1Seq
+				,M_AD_BOARD2_SEQ mAdBoard2Seq
+				,M_AD_BOARD3_SEQ mAdBoard3Seq
+				,M_AD_BOARD4_SEQ mAdBoard4Seq
+				, DATE_FORMAT(RGST_DT,'%Y.%m.%d') rgstDt
+		     FROM  T_MMAIN TS
+			 WHERE  USE_YN='Y'	
+			 ORDER BY RGST_DT DESC LIMIT 1
+		]]>
+	</select>
+	
 	
 	
 	<select id="selectList" parameterType="cmmnDefaultVO" resultType="mmainVO">
@@ -97,7 +125,8 @@
 				, NEWTAB newtab
 				, ATCH_FILE_ID atchFileId
 				, DATE_FORMAT(RGST_DT,'%Y.%m.%d') rgstDt
-		     FROM T_MMAIN_BANNER
+				, (SELECT MIN(FILE_SN) FROM T_ATCH_FILE_DETAIL WHERE ATCH_FILE_ID = TMB.ATCH_FILE_ID AND DEL_YN = 'N') minFileSn
+		     FROM T_MMAIN_BANNER TMB
 			 WHERE USE_YN='Y'	
 			 	AND MMAIN_SEQ = #{seq ,jdbcType=VARCHAR}
 	      ]]>
@@ -155,7 +184,8 @@
 	<insert id="insertMainBannerList" parameterType="mmainbannerVO" >
 		/* mmain.insertContents */
 			INSERT INTO T_MMAIN_BANNER(
-				MMAIN_SEQ
+				SEQ
+				,MMAIN_SEQ
 				, BANNER_TITLE
 				, URL
 				, NOTI_YN
@@ -167,8 +197,9 @@
 			)
 			VALUES 
 			<foreach collection="list" index="index" item="item" separator=","> 
-			(
-				#{item.mmainSeq ,jdbcType=VARCHAR}
+			(	
+				(SELECT IFNULL(MAX(TS.SEQ)+1,1) FROM T_MMAIN_BANNER TS)+#{index}+1
+				,#{item.mmainSeq ,jdbcType=VARCHAR}
 				,#{item.bannerTitle ,jdbcType=VARCHAR}
 				,#{item.url ,jdbcType=VARCHAR}
 				,#{item.notiYn ,jdbcType=VARCHAR}
@@ -213,13 +244,36 @@
 		<![CDATA[
 			UPDATE T_MMAIN     
 			 SET 
-				  TITLE = #{title ,jdbcType=VARCHAR} 
-				, CONT = #{cont ,jdbcType=VARCHAR}
-				, RVSE_DT = NOW()
-				, ATCH_FILE_ID = #{atchFileId ,jdbcType=VARCHAR}
+				  MAIN_TITLE = #{mainTitle ,jdbcType=VARCHAR}
+				,MAIN_SUBTITLE = #{mainSubtitle ,jdbcType=VARCHAR}
+				,MAIN_ADDR = #{mainAddr ,jdbcType=VARCHAR}
+				,MAIN_HP = #{mainHp ,jdbcType=VARCHAR}
+				,MAIN_FAX = #{mainFax ,jdbcType=VARCHAR}
+				,RPRSNTR = #{rprsntr ,jdbcType=VARCHAR}
+				,BG_IMG = #{bgImg ,jdbcType=VARCHAR}
+				,M_BG_IMG = #{mBgImg ,jdbcType=VARCHAR}
+				,M_AD_BOARD1_SEQ = #{mAdBoard1Seq ,jdbcType=VARCHAR}
+				,M_AD_BOARD2_SEQ = #{mAdBoard2Seq ,jdbcType=VARCHAR}
+				,M_AD_BOARD3_SEQ = #{mAdBoard3Seq ,jdbcType=VARCHAR}
+				,M_AD_BOARD4_SEQ = #{mAdBoard4Seq ,jdbcType=VARCHAR}
+			WHERE  SEQ = #{seq}  
+		]]>
+	</update>
+	<update id="updateBannerContents" parameterType="mmainbannerVO">
+		/* mmainbanner.updateContents */
+		<![CDATA[
+			UPDATE T_MMAIN_BANNER     
+			 SET 
+				  MMAIN_SEQ = #{mmainSeq ,jdbcType=VARCHAR}
+				, BANNER_TITLE = #{bannerTitle ,jdbcType=VARCHAR}
+				, URL = #{url ,jdbcType=VARCHAR}
+				, NOTI_YN = #{notiYn ,jdbcType=VARCHAR}
 				, STA_DATE = #{staDate ,jdbcType=VARCHAR}
-				, END_DATE  = #{endDate ,jdbcType=VARCHAR}
-				, NOTI_YN  = #{notiYn ,jdbcType=VARCHAR}
+				, END_DATE = #{endDate ,jdbcType=VARCHAR}
+				, IORDER = #{iorder ,jdbcType=VARCHAR}
+				, NEWTAB = #{newtab ,jdbcType=VARCHAR}
+				, ATCH_FILE_ID = #{atchFileId ,jdbcType=VARCHAR}
+				, USE_YN = 'Y'
 			WHERE  SEQ = #{seq}  
 		]]>
 	</update>
@@ -231,6 +285,16 @@
 		       SET
 	          	 USE_YN='N'
 			WHERE SEQ=#{seq}
+		]]>
+	</update>
+	
+	<update id="deleteBannerList" parameterType="mmainVO">
+		/* mmain.deleteContents */
+		<![CDATA[
+			UPDATE T_MMAIN_BANNER
+				SET
+	          	 USE_YN='N'
+			WHERE MMAIN_SEQ=#{seq}
 		]]>
 	</update>
 

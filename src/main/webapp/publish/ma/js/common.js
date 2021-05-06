@@ -61,12 +61,9 @@
             }
         });
         
-        $('.numOnly').keydown(function(event) {
-		 	this.value=this.value.replace(/[^0-9]/g,'');
-		 });
-		 $('.numOnly').keyup(function(event) {
-		 	this.value=this.value.replace(/[^0-9]/g,'');
-		 });
+        $('.numOnly').on('input', function(){
+        	this.value=this.value.replace(/[^0-9]/g,'');
+        });
 	     $('body').mousedown(function(event) {
 			 $('.numOnly').each(function(){
 		 		this.value=this.value.replace(/[^0-9]/g,'');

@@ -50,3 +50,9 @@ function isValidEmail(el) {
 	return pattern.test(value)
 }
 
+/*전화번호 패턴검사 함수 샘플*/
+function isValidPhone(el) {
+	var value = el;
+	var pattern =  /^\d{2,3}\d{3,4}\d{4}$/;
+	return pattern.test(value)
+}

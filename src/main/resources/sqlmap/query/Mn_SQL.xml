@@ -41,6 +41,7 @@
 				, MENU_CL menuCl
 				, DESCRIPTION description
 				, BOARD_CL boardCl
+				, PROGRAM_ID programId
 		     FROM  T_MENU_INFO
 			 WHERE  USE_YN='Y'	
 				 AND MENU_SEQ = #{menuSeq}
@@ -65,6 +66,7 @@
 					, MENU_CL menuCl
 					, DESCRIPTION description
 					, BOARD_CL boardCl
+					, PROGRAM_ID programId
 	             FROM  T_MENU_INFO 			
 			     WHERE  USE_YN='Y' 
 			     	AND MENU_SEQ = MENU_GROUP_SEQ
@@ -92,10 +94,12 @@
 					, MENU_CL menuCl
 					, DESCRIPTION description
 					, BOARD_CL boardCl
+					, PROGRAM_ID programId
 	             FROM  T_MENU_INFO 			
 			     WHERE  USE_YN='Y' 
 			     	AND MENU_CL = 'ft'
 			     	AND LVL = 2
+			     	AND PROGRAM_ID IS NOT NULL
 	      ]]>
 		     <include refid="Where"/>	 
 	     <![CDATA[ 

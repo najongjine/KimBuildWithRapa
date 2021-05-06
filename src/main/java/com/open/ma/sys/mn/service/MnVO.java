@@ -78,6 +78,8 @@ public class MnVO extends CmmnDefaultVO implements Serializable {
 	
 	private String hide="N";
 	
+	private String programId="";
+	
 	
 	public String getRgstDt() {
 		return rgstDt;
@@ -246,6 +248,14 @@ public class MnVO extends CmmnDefaultVO implements Serializable {
 
 	public void setHide(String hide) {
 		this.hide = hide;
+	}
+
+	public String getProgramId() {
+		return programId;
+	}
+
+	public void setProgramId(String programId) {
+		this.programId = programId;
 	}
 
 	

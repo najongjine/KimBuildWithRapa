@@ -1,5 +1,6 @@
 package com.open.ma.mdev.mmain;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
@@ -187,12 +188,6 @@ public class MMainController {
 		if (procType.equals("update")) {
 			mmainVO = (MMainVO) cmmnService.selectContents(searchVO, PROGRAM_ID);
 			List<MMainBannerVO> bannerList=(List<MMainBannerVO>) cmmnService.selectList(mmainVO, PROGRAM_ID+".selectMainBannerList");
-			System.out.println("## size: "+bannerList.size());
-			for (MMainBannerVO e : bannerList) {
-				System.out.println("## "+e.getSeq());
-				System.out.println("## "+e.getBannerTitle());
-				System.out.println("## "+e.getMmainSeq());
-			}
 			mmainVO.setMmainbannerList(bannerList);
 			if (!StringUtil.nullString(SessionUtil.getUserDetails().getAuthCode()).equals("1")
 					&& !StringUtil.nullString(mmainVO.getRgstId())
@@ -202,9 +197,12 @@ public class MMainController {
 				return "cmmn/execute";
 			}
 		}
+		List<MnVO> mnList=(List<MnVO>) cmmnService.selectList(searchVO, "Mn.selectMainContentList");
 		searchVO.setProcType(procType);
 		mmainVO.setSearchVO(searchVO);
+		model.addAttribute("mnList", mnList);
 		model.addAttribute("mmainVO", mmainVO);
+		model.addAttribute("exBannerListSize", mmainVO.getMmainbannerList().size());
 
 		return ".mLayout:" + folderPath + "form";
 	}
@@ -223,6 +221,13 @@ public class MMainController {
 	@RequestMapping(value = folderPath + "{procType}Proc.do", method = RequestMethod.POST)
 	public String proc(@ModelAttribute("searchVO") MMainVO searchVO, Model model, SessionStatus status,
 			@PathVariable String procType, HttpServletRequest request) throws Exception {
+		Iterator<MMainBannerVO> i = searchVO.getMmainbannerList().iterator();
+		while (i.hasNext()) {
+			MMainBannerVO e = i.next(); // must be called before you can call i.remove()
+			if (e.getBannerTitle() == null ) {
+				i.remove();
+			}
+		}
 		for (MMainBannerVO data : searchVO.getMmainbannerList()) {
 			if("".equals(data.getStaDate())) {
 				data.setStaDate(null);
@@ -230,9 +235,6 @@ public class MMainController {
 			if("".equals(data.getEndDate())) {
 				data.setEndDate(null);
 			}
-			System.out.println("## getBannerTitle: "+data.getBannerTitle());
-			System.out.println("## order: "+data.getIorder());
-			System.out.println("## getAtchFileId: "+data.getAtchFileId());
 		}
 		if (procType != null) {
 
@@ -246,6 +248,16 @@ public class MMainController {
 				cmmnService.insertContents(searchVO.getMmainbannerList(), PROGRAM_ID+".insertMainBannerList");
 			} else if (procType.equals("update")) {
 				cmmnService.updateContents(searchVO, PROGRAM_ID);
+				cmmnService.deleteContents(searchVO, PROGRAM_ID+".deleteBannerList");
+				for (MMainBannerVO e : searchVO.getMmainbannerList()) {
+					e.setMmainSeq(searchVO.getSeq());
+					if(StringUtil.nullString(e.getSeq()).equals("") ){
+						cmmnService.insertContents(e, PROGRAM_ID+".insertMainBannerContent");
+					}
+					else {
+						cmmnService.updateContents(e, PROGRAM_ID+".updateBannerContents");
+					}
+				}
 			} else if (procType.equals("delete")) {
 				cmmnService.deleteContents(searchVO, PROGRAM_ID);
 

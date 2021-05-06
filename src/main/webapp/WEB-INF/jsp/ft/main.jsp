@@ -10,7 +10,7 @@
 	<link rel="stylesheet" type="text/css" href="/publish/ft/css/font-awesome.css">
 	<link rel="stylesheet" type="text/css" href="/publish/ft/css/style.css">
 	<link rel="stylesheet" href="/publish/ft/css/swiper.min.css"/>
-	<%-- <link rel="stylesheet" href="/publish/ft/css/main.css"/> --%>
+	<link rel="stylesheet" href="/publish/ft/css/main.css"/>
 	<script type="text/javascript" src="/publish/ft/js/jquery-1.11.3.min.js"></script>
 	<script type="text/javascript" src="/publish/ft/js/common.js"></script>
 	<script type="text/javascript" src="/publish/ma/js/board.js"></script>
@@ -20,6 +20,7 @@
 	<script type="text/javascript" src="/publish/ft/js/swiper.min.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function() {
+			cateTab();
 			mainResponse();
 			
 			$('.slider').bxSlider({
@@ -125,6 +126,19 @@
 		function view_hide(num) {
 			$("#dispay_view"+num).css("display", "none");
 		}
+		
+		var cateTab=function(){	
+			$(".cate_cont").hide();
+			$(".cate_cont:first").show();
+			$("#cate_board a").click(function(event) {			
+				event.preventDefault();
+				$(this).parent().addClass("on");
+				$(this).parent().siblings().removeClass("on");
+				var tab = $(this).attr("href");
+				$(".cate_cont").not(tab).css("display", "none");
+				$(tab).fadeIn();			
+			});
+		}
 	</script>
  </head>
  <body>
@@ -180,18 +194,98 @@
 		<div id="container">
 			<div class="main_slider">
 				<ul class="slider">
-					<li>
-						<img src="/publish/ft/images/main/slider01.png" alt="완벽한 시공 · 확실한 A/S 김건축은 고객맞춤형 서비스를 추구합니다">
-					</li>
-					<li>
-						<img src="/publish/ft/images/main/slider02.png" alt="">
-					</li>
-					<li>
-						<img src="/publish/ft/images/main/slider03.png" alt="">
-					</li>
+					<c:forEach var="result" items="${bannerList }" varStatus="status">
+						<li>
+							<p>${result.url }</p>
+							<a href="${result.url }" target="${result.newtab eq 'Y' ? '_blank' : '' }">
+								<img src="/atch/getImage.do?atchFileId=${result.atchFileId}&fileSn=${result.minFileSn}" alt=""
+					  					onerror="this.src='/publish/ma/images/no_img.png'" style=" margin-left: auto; margin-right: auto;">
+					  		</a>
+						</li>
+					</c:forEach>
+					
 				</ul>
 			</div>
 			<div id="main_content">
+				<%-- 동적 컨텐츠 --%>
+				<div>
+					<div class="cate_board">
+						<ul id="cate_board" class="cate_menu clear">
+							<c:if test="${not empty dynamicContMap1}">
+								<li class="on"><a href="#cate1">${dynamicContMap1.dyCat }</a></li>
+							</c:if>
+							<c:if test="${not empty dynamicContMap2}">
+								<li class=""><a href="#cate2">${dynamicContMap2.dyCat }</a></li>
+							</c:if>
+							<c:if test="${not empty dynamicContMap3}">
+								<li class=""><a href="#cate3">${dynamicContMap3.dyCat }</a></li>
+							</c:if>
+							<c:if test="${not empty dynamicContMap4}">
+								<li class=""><a href="#cate4">${dynamicContMap4.dyCat }</a></li>
+							</c:if>
+						</ul>
+						<div id="cate1" class="cate_cont">
+							<ul class="list_type01">
+								<c:forEach items="${dynamicContMap1.data}" var="noti01" begin="0" end="2">
+									<li>
+										<a href="${dynamicContMap1.url }?seq=${noti01.seq}">
+											<strong class="tit">${util:unEscape(noti01.title) }</strong>
+												<span class="txt"><c:out value='${util:cutText(noti01.cont,"100","...")}' /></span>
+											<span class="date">${noti01.rgstDt}</span>
+											<span class="btn_more">자세히보기</span>
+										</a>
+									</li>
+								</c:forEach>
+							</ul>
+							<a href="#" class="more">더보기</a>
+						</div>
+						<div id="cate2" class="cate_cont">
+							<ul class="list_type01">
+								<c:forEach items="${dynamicContMap2.data}" var="noti02" begin="0" end="2">
+									<li>
+										<a href="${dynamicContMap2.url }?seq=${noti02.seq}">
+											<strong class="tit">${util:unEscape(noti02.title) }</strong>
+												<span class="txt"><c:out value='${util:cutText(noti02.cont,"100","...")}' /></span>
+		                                    <span class="date">${noti02.rgstDt}</span>
+											<span class="btn_more"><span>자세히보기</span></span>
+										</a>
+									</li>
+								</c:forEach>
+							</ul>
+							<a href="#" class="more" >더보기</a>
+						</div>
+						<div id="cate3" class="cate_cont">
+							<ul class="list_type01">
+								<c:forEach items="${dynamicContMap3.data}" var="noti03" begin="0" end="2">
+									<li>
+										<a href="${dynamicContMap3.url }?seq=${noti03.seq}" >
+											<strong class="tit">${util:unEscape(noti03.title) }</strong>
+												<span class="txt"><c:out value='${util:cutText(noti03.cont,"100","...")}' /></span>
+		                                    <span class="date">${noti03.rgstDt}</span>
+											<span class="btn_more"><span>자세히보기</span></span>
+										</a>
+									</li>
+								</c:forEach>
+							</ul>
+							<a href="#" class="more" >더보기</a>
+						</div>
+						<div id="cate4" class="cate_cont">
+							<ul class="list_type01">
+								<c:forEach items="${dynamicContMap4.data}" var="noti04" begin="0" end="2">
+									<li>
+										<a href="${dynamicContMap4.url }?seq=${noti04.seq}" >
+											<strong class="tit">${util:unEscape(noti04.title) }</strong>
+												<span class="txt"><c:out value='${util:cutText(noti04.cont,"100","...")}' /></span>
+											<span class="date">${noti04.rgstDt}</span>
+											<span class="btn_more"><span>자세히보기</span></span>
+										</a>
+									</li>
+								</c:forEach>
+							</ul>
+							<a href="#" class="more" >더보기</a>
+						</div>
+					</div>
+				</div>
 				<div class="main_conts clear">
 					<div class="business_box">
 						<h3>사업분야</h3>

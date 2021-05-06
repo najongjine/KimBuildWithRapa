@@ -31,6 +31,7 @@ public class MMainBannerVO {
 	private String iorder;
 	private String newtab;
 	private String atchFileId;
+	private String minFileSn="0";
 
 	private String cnt;
 	private String name;
@@ -135,6 +136,12 @@ public class MMainBannerVO {
 	}
 	public void setIorder(String iorder) {
 		this.iorder = iorder;
+	}
+	public String getMinFileSn() {
+		return minFileSn;
+	}
+	public void setMinFileSn(String minFileSn) {
+		this.minFileSn = minFileSn;
 	}
 	
 }
