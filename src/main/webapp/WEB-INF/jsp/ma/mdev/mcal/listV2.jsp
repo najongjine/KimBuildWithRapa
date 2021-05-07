@@ -5,10 +5,10 @@
 <head>
 <title>달력게시판</title>
 </head>
-<c:set var="nowDate" value="${util:getNowDate('yyyy-MM-dd') }" />
+<c:set var="nowDate" value="${util:getNowDate('yyyy.MM.dd') }" />
 <c:set var="selectedDate" value="${searchVO.selectedYear}${searchVO.selectedMonth}${util:getNowDate('dd')}" />
 <c:set var="firstWeekdayOfMonth" value='${util:getFirstWeekdayOfMonth(selectedDate, "yyyyMMdd")+1 }' />
-<c:set var="lastDayOfMonth" value='${util:getLastDayOfMonth(selectedDate, "yyyyMMdd") }' />
+<c:set var="lastDateOfMonth" value='${util:getLastDayOfMonth(selectedDate, "yyyyMMdd") }' />
 <c:set var="prevYear" value='${fn:substring(util:addYearMonthDay(selectedDate, 0, -1, 0),0,4) }' />
 <c:set var="prevMonth" value='${fn:substring(util:addYearMonthDay(selectedDate, 0, -1, 0),4,6) }' />
 <c:set var="nextYear" value='${fn:substring(util:addYearMonthDay(selectedDate,  0, 1, 0),0,4) }' />
@@ -17,7 +17,7 @@
 nowDate: 2021-05-07
 selectedDate: 20210507
 firstWeekdayOfMonth: 7(토)
-lastDayOfMonth: 31
+lastDateOfMonth: 31
 prevYear: 2021
 prevMonth: 04
 nextYear: 2021
@@ -28,7 +28,9 @@ var fncGoMonth = function(year, month) {
 	$("#selectedYear").val(year);
 	$("#selectedMonth").val(month);
 	$("#schYearMonth").val(year+month);
-	$("#defaultFrm").attr({"action" : "list.do", "method" : "post", "target":"_self"}).submit();
+	fncPageBoard('list','list.do');
+	return false;
+	//$("#defaultFrm").attr({"action" : "list.do", "method" : "post", "target":"_self"}).submit();
 };
 
 function fncInsert(date){
@@ -40,13 +42,25 @@ function fncInsert(date){
 	<p>nowDate: ${nowDate }</p>
 	<p>selectedDate: ${selectedDate }</p>
 	<p>firstWeekdayOfMonth: ${firstWeekdayOfMonth }</p>
-	<p>lastDayOfMonth: ${lastDayOfMonth }</p>
+	<p>lastDateOfMonth: ${lastDateOfMonth }</p>
 	<p>prevYear: ${prevYear }</p>
 	<p>prevMonth: ${prevMonth }</p>
 	<p>nextYear: ${nextYear }</p>
 	<p>nextMonth: ${nextMonth }</p>
 </div>
 
+<%--
+k: 13
+firstWeekdayOfMonth-1: 6
+
+printDate: 2021-05-07
+
+prtDate: 2021.05.07
+
+detailDate: 2021.05.07
+
+lastDayOfMonth: 31
+ --%>
 <div class="content_box">
 	<div class="wrap_cal marTy01">
 		<form:form commandName="searchVO" name="defaultFrm" id="defaultFrm" method="post">
@@ -58,10 +72,10 @@ function fncInsert(date){
 				<legend>달력 게시판</legend>
 				<div class="cal_top">
 					<div class="monthly">
-						<a href="#" class="btn_prev_cal" onclick="fncGoMonth('${prevYear }','${prevMonth }');">&lt;<span class="hide">이전</span></a>
+						<a href="javascript:void(0)" class="btn_prev_cal" onclick="fncGoMonth('${prevYear }','${prevMonth }');">&lt;<span class="hide">이전</span></a>
 						<strong class="cal_tit"><span class="inlineBlock"><c:out value="${searchVO.selectedYear }" />년</span> 
 						<span class="inlineBlock"><c:out value="${searchVO.selectedMonth }" />월</span></strong>
-						<a href="#" class="btn_next_cal" onclick="fncGoMonth('${nextYear }','${nextMonth }');">&gt;<span class="hide">다음</span></a>
+						<a href="javascript:void(0)" class="btn_next_cal" onclick="fncGoMonth('${nextYear }','${nextMonth }');">&gt;<span class="hide">다음</span></a>
 					</div>
 				</div>
 				<table class="table_cal" summary="일정 상세정보 달력입니다.">
@@ -95,37 +109,16 @@ function fncInsert(date){
 									<%-- --%><td><div class="td_cont blank"><div class="day"></div></div></td>
 								</c:forEach>
 							</c:if>
-							<%-- 한주 시작부터 첫째날 전까지 빈칸 삽입 끝 --%>
 							<%-- 시작일부터 마지막 일자까지 달력 생성 --%>
-							<c:forEach var="printDay" begin="1" end="${lastDayOfMonth }" step="1" varStatus="status">
-								<%-- 헤더 공백포함 총 갯수 . 즉 달력을 만드는데 필요한 칸의 갯수를 계속 업데이트 하면서 관리하는 함수 
-								 printDay + firstWeekdayOfMonth-1 := yyyy-MM-dd 에서 dd+firstWeekdayOfMonth(int요일) --%>
+							<c:forEach var="printDay" begin="1" end="${lastDateOfMonth }" step="1" varStatus="status">
 								<c:set var="caBlockIdx" value="${printDay + firstWeekdayOfMonth-1 }" />
 								<c:set var="prtDate" value="${searchVO.selectedYear }.${searchVO.selectedMonth }.${util:lpad(printDay, 2, '0') }" />
-								<td onclick="fncInsert('${prtDate }');">
-									<div class="td_cont ${printDate eq nowDate ? 'today' : '' }">
+								<td>
+									<div class="td_cont ${prtDate eq nowDate ? 'today' : '' }">
 										<div class="day">
-											<c:if test="${printDate eq nowDate}"><span class="txt_today">today</span></c:if>
+											<c:if test="${prtDate eq nowDate}"><span class="txt_today">today</span></c:if>
 											<a><c:out value="${printDay }" /></a>
 										</div>
-										<%-- debugging 
-										<div>
-											<p>k: ${k }</p>
-											<p>firstWeekdayOfMonth-1: ${firstWeekdayOfMonth-1}</p>
-											<p>prtDate: ${prtDate }</p>
-											<p>lastDayOfMonth: ${lastDayOfMonth }</p>
-										</div>
-										--%>
-										<%-- 하나의 달력칸에 Holiday, 메모등을 출력해주는 코드 --%>
-										<c:forEach items="${resultList }" var="result" varStatus="status">
-											<div>
-												<c:if test="${result.dataDate eq prtDate }">
-													<a href="#" class="cutText">
-														<div class="<c:if test="${result.holYn eq 'Y' }">txt_holiday</c:if>">${result.calCont }</div>
-													</a>
-												</c:if>
-											</div>
-										</c:forEach>
 									</div>
 								</td>
 								<c:if test="${caBlockIdx % 7 == 0}">
@@ -142,7 +135,6 @@ function fncInsert(date){
 									</td>
 								</c:forEach>
 							</c:if>
-							<%-- 마지막날부터 한주 끝까지 빈칸 삽입 끝 --%>
 						</tr>
 					</tbody>
 				</table>

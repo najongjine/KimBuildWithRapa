@@ -27,7 +27,7 @@
 		/* 해당 일의 데이터 조회  */
 		<![CDATA[
 		SELECT
-			CAL_SEQ calSeq,
+			SEQ seq,
 			DATE_FORMAT(DATA_DATE, '%Y.%m.%d') dataDate,
 			HOL_YN holYn,
 			CAL_CONT calCont,
@@ -40,7 +40,7 @@
 		UNION
 		
 		SELECT
-			CAL_SEQ calSeq,
+			SEQ seq,
 			DATE_FORMAT(DATA_DATE, '%Y.%m.%d') dataDate,
 			HOL_YN holYn,
 			CAL_CONT calCont,
@@ -57,7 +57,7 @@
 		/* 데이터 삭제 */
 		UPDATE T_CALENDAR
 		SET USE_YN = 'N'
-		WHERE CAL_SEQ = #{calSeq}
+		WHERE SEQ = #{seq}
 	</update>
 	
 	<insert id="insertContents" parameterType="caVO">
@@ -82,7 +82,7 @@
 			HOL_YN = NVL(#{holYn ,jdbcType=VARCHAR}, 'N'),
 			RVSE_ID = #{loginSeq},
 			RVSE_DT = NOW()
-		WHERE CAL_SEQ = #{calSeq}	
+		WHERE SEQ = #{seq}	
 	</update>
 	
 

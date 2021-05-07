@@ -224,7 +224,7 @@
 											 value="${result.endDate }"/>
 										</span>
 									</td>
-									<th scope="row"><strong class="th_tit">새창여부</strong></th>
+									<th scope="row"><strong class="">새창여부</strong></th>
 									<td>
 										<label for="newtabY_${status.index}"><input type="radio" name="mmainbannerList[${status.index}].newtab" id="newtabY_${status.index}" class="radio" value="Y" 
 											<c:if test="${empty result.newtab or result.newtab eq 'Y' }">checked="checked"</c:if>/>사용</label>
@@ -233,7 +233,7 @@
 									</td>
 								</tr>
 								<tr>
-									<th scope="row"><strong class="th_tit">전시여부</strong></th>
+									<th scope="row"><strong class="">전시여부</strong></th>
 									<td>
 										<label for="notiYnY_${status.index}"><input type="radio" name="mmainbannerList[${status.index}].notiYn" id="notiYnY_${status.index}" class="radio" value="Y" 
 											<c:if test="${empty result.notiYn or result.notiYn eq 'Y' }">checked="checked"</c:if>/> 사용</label>
@@ -281,12 +281,35 @@
 <script type="text/javascript" src="/publish/ma/js/myjs/myValidationFunc.js"></script>
 <script type="text/babel">
 var mmainbannerListIndex = 1;
+var exOrder=[];
 $(document).ready(function(){	
 	mmainbannerListIndex='${exBannerListSize}' < 1 ? mmainbannerListIndex : '${exBannerListSize}' ;
 	for(var i=0;i<mmainbannerListIndex;i++){
 		fncDate(`staDate_\${i}`,`endDate_\${i}`);		
 	}
 	
+	<%-- 배너 순서를 정할때 중복되는 순서가 있는기 검사하는 코드 --%>
+	var prevVal='';
+	var currentOrderId='';
+	<%-- 동적으로 추가한 html 코드는 document.on 으로 해줘야한다 --%>
+	$(document).on("focus","[ID^=order_]",function(){
+		prevVal=$(this).val();
+		currentOrderId=$(this).attr('id');
+	}).on("change",function(e){
+		var bnnrOrderBoxs=$("[ID^=order_]");
+		var selectedOrders=[];
+		bnnrOrderBoxs.each(function(index){
+			var bnnrOrderBoxVal=$(this).val();
+			selectedOrders.push(bnnrOrderBoxVal);
+		});
+		if(checkForDuplicates(selectedOrders)){	
+			alert($("#"+currentOrderId).val()+"번은 이미 정해진 순서입니다");
+			$("#"+currentOrderId).val(prevVal).prop("selected", true);
+		}
+		prevVal=''
+		return false;
+	})
+
 	$("#btn_submit").on("click", function(){
 		$("[ID^=msg_]").remove();
 		var subChk = true;
@@ -445,7 +468,7 @@ var fncBnrInsertAdd=function(){
 									 value="${result.endDate }"/>
 								</span>
 							</td>
-							<th scope="row"><strong class="th_tit">새창여부</strong></th>
+							<th scope="row"><strong class="">새창여부</strong></th>
 							<td>
 								<label for="newtabY_\${mmainbannerListIndex}"><input type="radio" name="mmainbannerList[\${mmainbannerListIndex}].newtab" id="newtabY_\${mmainbannerListIndex}" class="radio" value="Y" 
 									<c:if test="${empty result.newtab or result.newtab eq 'Y' }">checked="checked"</c:if>/>사용</label>
@@ -454,7 +477,7 @@ var fncBnrInsertAdd=function(){
 							</td>
 						</tr>
 						<tr>
-							<th scope="row"><strong class="th_tit">전시여부</strong></th>
+							<th scope="row"><strong class="">전시여부</strong></th>
 							<td>
 								<label for="notiYnY_\${mmainbannerListIndex}"><input type="radio" name="mmainbannerList[\${mmainbannerListIndex}].notiYn" id="notiYnY_\${mmainbannerListIndex}" class="radio" value="Y" 
 									<c:if test="${empty result.notiYn or result.notiYn eq 'Y' }">checked="checked"</c:if>/> 사용</label>
@@ -489,12 +512,18 @@ var fncBnrDel=function(num){
 	if($("a[id^=btn_del]").length < 1){
 		fncBnrInsertAdd();
 	}
+	<%--exOrder := 순서 select 박스의 상태를 관리하기 위한 객체--%>
+	<%--exOrder 에 x라는 id를 가진 select 박스가 없으면 관리를 위해 추가해준다--%>
+	var exOrderIndex=exOrder.getIndexOf("order_"+num);
+	if (exOrderIndex > -1) {
+ 	 exOrder.splice(exOrderIndex, 1);
+	}
 	
 	fncBnrNo();
 }
 
 var fncBnrNo=function(){
-	var exOrder=[];
+	<%--update 시 기존데이터의 순서 유지시키는 코드--%>
 	var bnnrOrderBoxs=$("[ID^=order_]");
 	bnnrOrderBoxs.each(function(index){
 		var bnnrOrderBoxId=$(this).attr('id');
@@ -503,9 +532,15 @@ var fncBnrNo=function(){
 			"id":bnnrOrderBoxId
 			,"val":bnnrOrderBoxVal
 		};
-		exOrder.push(bnnrOrderBoxJson);
+		<%--exOrder := 순서 select 박스의 상태를 관리하기 위한 객체--%>
+		<%--exOrder 에 x라는 id를 가진 select 박스가 없으면 관리를 위해 추가해준다--%>
+		var exOrderIndex=exOrder.getIndexOf(bnnrOrderBoxId);
+		if(exOrderIndex < 0){
+			exOrder.push(bnnrOrderBoxJson);
+		}
 	});
 
+	<%--순서 selectbox 에 새로운 순서목록을 넣어주는 코드--%>
 	var bnrLength = $("#bnrTable tbody").size();
 	var bnrAddNo = '<option value="" label="선택"/>';
 	if(bnrLength > 0){
@@ -516,8 +551,73 @@ var fncBnrNo=function(){
 		$(".bnrNo").html('');
 		$(".bnrNo").append(bnrAddNo);
 	} 
+
+	<%--update 시 기존데이터의 순서 유지시키는 코드--%>
 	exOrder.forEach(function(e){
 		$("#"+e.id).val(e.val).prop("selected", true);
+	});
+	
+}
+
+<%-- 순번을 자동으로 지정해주는 코드. 경우의 수가 많아서 보류--%>
+var fncBnrNoAutoOrdering=function(){
+	<%--update 시 기존데이터의 순서 유지시키는 코드--%>
+	var bnnrOrderBoxs=$("[ID^=order_]");
+	bnnrOrderBoxs.each(function(index){
+		var bnnrOrderBoxId=$(this).attr('id');
+		var bnnrOrderBoxVal=$(this).val();
+		var bnnrOrderBoxJson={
+			"id":bnnrOrderBoxId
+			,"val":bnnrOrderBoxVal
+		};
+		<%--exOrder := 순서 select 박스의 상태를 관리하기 위한 객체--%>
+		<%--exOrder 에 x라는 id를 가진 select 박스가 없으면 관리를 위해 추가해준다--%>
+		var exOrderIndex=exOrder.getIndexOf(bnnrOrderBoxId);
+		if(exOrderIndex < 0){
+			exOrder.push(bnnrOrderBoxJson);
+		}
+	});
+
+	<%--순서 selectbox 에 새로운 순서목록을 넣어주는 코드--%>
+	var bnrLength = $("#bnrTable tbody").size();
+	var bnrAddNo = '<option value="" label="선택"/>';
+	var availableNum = [];
+	if(bnrLength > 0){
+		for(var i=1;i<=bnrLength;i++)
+		{
+			availableNum.push(i);
+			bnrAddNo += '<option value="'+i+'" label="'+i+'"/>';
+		}
+		$(".bnrNo").html('');
+		$(".bnrNo").append(bnrAddNo);
+	} 
+
+	<%--update 시 기존데이터의 순서 유지시키는 코드--%>
+	exOrder.forEach(function(e){
+		$("#"+e.id).val(e.val).prop("selected", true);
+		
+		var avlNumIndex = availableNum.indexOf(+e.val);
+		if (avlNumIndex > -1) {
+ 		 availableNum.splice(avlNumIndex, 1);
+		
+		}		
+	});
+	
+	<%--새로 생성된 배너박스에 순서 자동으로 주기--%>
+	
+	var bnnrOrderBoxs=$("[ID^=order_]");
+	bnnrOrderBoxs.each(function(e){
+		var bnnrOrderBoxId=$(this).attr('id');
+		var orderIndex = exOrder.indexOf(bnnrOrderBoxId);
+		var bnnrOrderBoxVal=$(this).val();
+		if(orderIndex<0 && !bnnrOrderBoxVal){
+			if(availableNum && availableNum[0]){
+				$("#"+bnnrOrderBoxId).val(availableNum[0]).prop("selected", true);
+				availableNum.splice(0, 1);
+			}else{
+				//$("#"+e.id).val('').prop("selected", true);
+			}
+		}
 	});
 	
 }
@@ -530,5 +630,37 @@ var fncRedMsg=function(id, msg){
 <%-- iframeLoad 용 함수. 파일 iframe은 첨부된 파일을 지우거나 파일을 선택하면 onload 이벤트가 발생한다 --%>
 var fileIframeLoad=function(id){
 	$("#msg_"+id).remove();
+}
+
+<%-- 특정 json 객체에 key값이 있나 확인하는 코드--%>
+Array.prototype.getIndexOf = function(el) {
+
+  var arr = this;
+
+  for (var i=0; i<arr.length; i++){
+     //console.log(arr[i].id);
+     if(arr[i].id==el){
+       return i;
+     }
+     
+  }
+  
+  return -1;
+
+}
+
+<%--primitive type 배열 중복 검사--%>
+var checkForDuplicates=function(array) {
+  let valuesAlreadySeen = []
+
+  for (let i = 0; i < array.length; i++) {
+	if(array[i] == ''){continue}
+    let value = array[i]
+    if (valuesAlreadySeen.indexOf(value) !== -1) {
+      return true
+    }
+    valuesAlreadySeen.push(value)
+  }
+  return false
 }
 </script>

@@ -88,10 +88,10 @@ public class MMainController {
 	 * @throws Exception
 	 */
 	@RequestMapping(folderPath + "list.do")
-	public String list(@ModelAttribute("searchVO") CmmnDefaultVO searchVO, ModelMap model, HttpServletRequest request)
+	public String list(@ModelAttribute("searchVO") MMainVO searchVO, ModelMap model, HttpServletRequest request)
 			throws Exception {
-
-		return ".mLayout:" + folderPath + "list";
+		//return ".mLayout:" + folderPath + "list";
+		return "forward:"+folderPath+"updateForm.do";
 	}
 
 	/**
@@ -183,12 +183,10 @@ public class MMainController {
 	@RequestMapping(folderPath + "{procType}Form.do")
 	public String form(@ModelAttribute("searchVO") MMainVO searchVO, Model model, @PathVariable String procType,
 			HttpServletRequest request) throws Exception {
-
-		MMainVO mmainVO = new MMainVO();
-		if (procType.equals("update")) {
-			mmainVO = (MMainVO) cmmnService.selectContents(searchVO, PROGRAM_ID);
-			List<MMainBannerVO> bannerList=(List<MMainBannerVO>) cmmnService.selectList(mmainVO, PROGRAM_ID+".selectMainBannerList");
-			mmainVO.setMmainbannerList(bannerList);
+		procType=StringUtil.nullString(procType);
+		MMainVO mmainVO = (MMainVO) cmmnService.selectContents(searchVO, PROGRAM_ID+".selectLatestContents");
+			
+		if(mmainVO!=null) {
 			if (!StringUtil.nullString(SessionUtil.getUserDetails().getAuthCode()).equals("1")
 					&& !StringUtil.nullString(mmainVO.getRgstId())
 							.equals(StringUtil.nullString(SessionUtil.getUserDetails().getLoginSeq()))) {
@@ -196,6 +194,11 @@ public class MMainController {
 				model.addAttribute("cmmnScript", "list.do");
 				return "cmmn/execute";
 			}
+			List<MMainBannerVO> bannerList=(List<MMainBannerVO>) cmmnService.selectList(mmainVO, PROGRAM_ID+".selectMainBannerList");
+			mmainVO.setMmainbannerList(bannerList);
+		}
+		else {
+			mmainVO = new MMainVO();
 		}
 		List<MnVO> mnList=(List<MnVO>) cmmnService.selectList(searchVO, "Mn.selectMainContentList");
 		searchVO.setProcType(procType);

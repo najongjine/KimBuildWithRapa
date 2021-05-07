@@ -53,7 +53,7 @@ function fnc(){
 	<input type="hidden" name="selectedYear" id="selectedYear" />
 	<input type="hidden" name="selectedMonth" id="selectedMonth" />
 	<input type="hidden" name="schYearMonth" id="schYearMonth"/>
-	<input type="hidden" name="calSeq" id="calSeq" value="${caVO.calSeq }"/>
+	<input type="hidden" name="seq" id="seq" value="${caVO.seq }"/>
 	<div class="content_box">
 		<div class="tbl_wrap mar_t20">
 			<table class="tbl_row_type01">

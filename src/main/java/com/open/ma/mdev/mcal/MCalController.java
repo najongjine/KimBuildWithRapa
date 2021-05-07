@@ -75,14 +75,15 @@ public class MCalController {
     @RequestMapping(folderPath + "list.do")
 	public String list(@ModelAttribute("searchVO") CaVO searchVO, Model model,
 			HttpServletRequest request) throws IOException, InvocationTargetException, SQLException, Exception {
-		
+		//<c:set var="lastDateOfMonth" value='${util:getLastDayOfMonth(selectedDate, "yyyyMMdd") }' />
     	// 데이터 초기화
     	// DateUtils를 이용하여 현재 날짜 조회
 		if(StringUtil.nullString(searchVO.getSelectedYear()).equals("") || StringUtil.nullString(searchVO.getSchYearMonth()).equals("")){
-			String nowDate = DateUtils.getNowDate("yyyyMM");
-			searchVO.setSelectedYear(nowDate.substring(0,4));
-			searchVO.setSelectedMonth(nowDate.substring(4));
-			searchVO.setSchYearMonth(nowDate);
+			String nowDate = DateUtils.getNowDate("yyyy.MM.dd");
+			searchVO.setNowDate(nowDate);
+			searchVO.setSelectedYear(DateUtils.getNowDate("yyyyMM").substring(0,4));
+			searchVO.setSelectedMonth(DateUtils.getNowDate("yyyyMM").substring(4));
+			searchVO.setSchYearMonth(DateUtils.getNowDate("yyyyMM"));
 		}
 		
 		List<CaVO> resultList=(List<CaVO>)cmmnService.selectList(searchVO, PROGRAM_ID+".calSelectList");

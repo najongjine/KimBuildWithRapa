@@ -12,7 +12,7 @@ public class CaVO  extends CmmnDefaultVO implements Serializable{
 
 	private static final long serialVersionUID = 2172623835339565860L;
 	
-	private String calSeq;				// 일련번호
+	private String seq;				// 일련번호
 	private String dataDate;		// 등록일
 	private String startTime;		// 시작시간
 	private String endTime;			// 종료시간
@@ -26,6 +26,16 @@ public class CaVO  extends CmmnDefaultVO implements Serializable{
 	private String selectedYear;	// 선택 년도
 	private String selectedMonth;	// 선택 월
 	private String schYearMonth;	// 선택 년월
+	
+	/* 달력 게시판을 구현할때 필요한 추가 변수들*/
+	private String lastDateOfMonth;
+	private String nowDate;
+	private String selectedDate;
+	private String firstWeekdayOfMonth;
+	private String prevYear;
+	private String prevMonth;
+	private String nextYear;
+	private String nextMonth;
 	
 	private String endHour;			// 종료 시
 	private String endMinute;		// 종료 분
@@ -159,17 +169,68 @@ public class CaVO  extends CmmnDefaultVO implements Serializable{
 	public void setRvseDt(String rvseDt) {
 		this.rvseDt = rvseDt;
 	}
-	public String getCalSeq() {
-		return calSeq;
-	}
-	public void setCalSeq(String calSeq) {
-		this.calSeq = calSeq;
-	}
 	public String getCalCont() {
 		return calCont;
 	}
 	public void setCalCont(String calCont) {
 		this.calCont = calCont;
+	}
+	public String getSeq() {
+		return seq;
+	}
+	public void setSeq(String seq) {
+		this.seq = seq;
+	}
+	public String getLastDateOfMonth() {
+		return lastDateOfMonth;
+	}
+	public void setLastDateOfMonth(String lastDateOfMonth) {
+		this.lastDateOfMonth = lastDateOfMonth;
+	}
+	public String getNowDate() {
+		return nowDate;
+	}
+	public void setNowDate(String nowDate) {
+		this.nowDate = nowDate;
+	}
+	public String getSelectedDate() {
+		return selectedDate;
+	}
+	public void setSelectedDate(String selectedDate) {
+		this.selectedDate = selectedDate;
+	}
+	public String getFirstWeekdayOfMonth() {
+		return firstWeekdayOfMonth;
+	}
+	public void setFirstWeekdayOfMonth(String firstWeekdayOfMonth) {
+		this.firstWeekdayOfMonth = firstWeekdayOfMonth;
+	}
+	public String getPrevYear() {
+		return prevYear;
+	}
+	public void setPrevYear(String prevYear) {
+		this.prevYear = prevYear;
+	}
+	public String getPrevMonth() {
+		return prevMonth;
+	}
+	public void setPrevMonth(String prevMonth) {
+		this.prevMonth = prevMonth;
+	}
+	public String getNextYear() {
+		return nextYear;
+	}
+	public void setNextYear(String nextYear) {
+		this.nextYear = nextYear;
+	}
+	public String getNextMonth() {
+		return nextMonth;
+	}
+	public void setNextMonth(String nextMonth) {
+		this.nextMonth = nextMonth;
+	}
+	public static long getSerialversionuid() {
+		return serialVersionUID;
 	}
 	
 	
