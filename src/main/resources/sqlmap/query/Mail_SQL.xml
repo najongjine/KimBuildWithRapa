@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.open.Mail">
+
+	<sql id="Where">
+		<if test="searchKeyword !=null and searchKeyword !=''">
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==0">
+				AND (TITLE LIKE CONCAT('%',#{searchKeyword},'%') OR CONT like CONCAT('%',#{searchKeyword},'%'))
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==1">
+				AND TITLE LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==2">
+				AND CONT LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+	 	</if>
+	 	
+	</sql>
+	<sql id="userWhere">
+		<if test='schEtc03 !=null and schEtc03 !="" and schEtc03 !="admin"'>
+	 		AND AUTH_CODE = 1
+	 	</if>
+	 	<if test='schEtc03 !=null and schEtc03 !="" and schEtc03 !="admin"'>
+	 		AND AUTH_CODE != 1
+	 	</if>
+	</sql>
+	
+	<select id="selectContents" parameterType="mailVO" resultType="mailVO">
+		/* Sample.selectContents */
+		<![CDATA[
+			 SELECT  
+				  SEQ seq
+				, TITLE title
+				, CONT cont
+				, DATE_FORMAT(RGST_DT,'%Y.%m.%d') rgstDt
+				, RGST_ID rgstId
+				, F_USER_NM(RGST_ID) name
+		     FROM  T_MAIL TS
+			 WHERE  USE_YN='Y'	
+				 AND SEQ = #{seq}
+		]]>
+	</select>
+	
+	
+	
+	<select id="selectList" parameterType="cmmnDefaultVO" resultType="mailVO">
+		/* Sample.selectList */
+		<![CDATA[
+      	     SELECT  
+				  SEQ seq
+				, TITLE title
+				, CONT cont
+				, DATE_FORMAT(RGST_DT,'%Y.%m.%d') rgstDt
+				, RGST_ID rgstId
+				, F_USER_NM(RGST_ID) name
+				, (SELECT COUNT(*) FROM T_MAIL_VISITIP WHERE MAIL_SEQ = TS.SEQ) visitedCnt
+		     FROM T_MAIL TS
+			 WHERE USE_YN='Y'	
+	      ]]>
+		     <include refid="Where"/>	 
+	     <![CDATA[ 
+	    		ORDER BY SEQ DESC
+				LIMIT  #{firstIndex} , #{recordCountPerPage}
+		]]>
+	</select>	
+
+	<select id="selectREmailList" parameterType="mailVO" resultType="mailVO">
+		/* Sample.selectList */
+		<![CDATA[
+      	     SELECT  
+				  SEQ seq
+				, TITLE title
+				, CONT cont
+				, DATE_FORMAT(RGST_DT,'%Y.%m.%d') rgstDt
+				, RGST_ID rgstId
+				, F_USER_NM(RGST_ID) name
+		     FROM T_MAIL_R
+			 WHERE USE_YN='Y'	
+			 	AND MAIL_SEQ = #{seq,jdbcType=VARCHAR}
+	      ]]>
+		     <include refid="Where"/>	 
+	     <![CDATA[ 
+	    		ORDER BY SEQ DESC
+		]]>
+	</select>	
+	
+	<select id="selectUserList" parameterType="cmmnDefaultVO" resultType="loginVO">
+		/* Sample.selectList */
+		<![CDATA[
+      	     SELECT  
+				  SEQ seq
+				, TITLE title
+				, CONT cont
+				, DATE_FORMAT(RGST_DT,'%Y.%m.%d') rgstDt
+				, RGST_ID rgstId
+				, F_USER_NM(RGST_ID) name
+		     FROM t_ad_user
+			 WHERE USE_YN='Y'	
+			 	AND MAIL_SEQ = #{seq,jdbcType=VARCHAR}
+	      ]]>
+		     <include refid="Where"/>	 
+	     <![CDATA[ 
+	    		ORDER BY SEQ DESC
+		]]>
+	</select>	
+
+	<select id="selectCount" parameterType="cmmnDefaultVO" resultType="int">
+		/* Sample.selectCount */
+		<![CDATA[
+			SELECT 
+				COUNT(SEQ) cnt 
+			FROM T_MAIL
+			WHERE USE_YN='Y' 
+		]]>
+			 <include refid="Where"/>
+	</select>
+	
+	<insert id="insertContents" parameterType="mailVO" useGeneratedKeys="true" keyProperty="seq">
+		/* Sample.insertContents */
+		<![CDATA[
+			INSERT INTO T_MAIL(
+           	  	  SEQ 
+				, TITLE 
+				, CONT
+				, RGST_ID 
+			)
+			VALUES (
+				 (SELECT IFNULL(MAX(TS.SEQ)+1,1) FROM T_MAIL TS)
+				,#{title ,jdbcType=VARCHAR}
+				,#{cont ,jdbcType=VARCHAR}
+				,#{loginSeq ,jdbcType=VARCHAR}
+			)
+		]]>
+	</insert>
+	
+	<insert id="insertREmailList" parameterType="mailVO" >
+		/* mmain.insertContents */
+			INSERT INTO T_MAIL_R(
+				SEQ
+				,MAIL_SEQ
+				, R_EMAIL
+			)
+			VALUES 
+			<foreach collection="list" index="index" item="item" separator=","> 
+			(	
+				(SELECT IFNULL(MAX(TS.SEQ)+1,1) FROM T_MAIL_R TS)+#{index}+1
+				,#{item.mailSeq ,jdbcType=VARCHAR}
+				,#{item.rEmail ,jdbcType=VARCHAR}
+			)
+			</foreach>
+	</insert>
+	<insert id="insertREmailContent" parameterType="mailVO" >
+		/* mmain.insertContents */
+			INSERT INTO T_MAIL_R(
+				SEQ
+				,MAIL_SEQ
+				, R_EMAIL
+			)
+			VALUES 
+			(	
+				(SELECT IFNULL(MAX(TS.SEQ)+1,1) FROM T_MAIL_R TS)
+				,#{item.mailSeq ,jdbcType=VARCHAR}
+				,#{item.rEmail ,jdbcType=VARCHAR}
+			)
+	</insert>
+	
+	<update id="updateContents" parameterType="mailVO">
+		/* Sample.updateContents */
+		<![CDATA[
+			UPDATE T_MAIL     
+			 SET 
+				  TITLE = #{title ,jdbcType=VARCHAR} 
+				, CONT = #{cont ,jdbcType=VARCHAR}
+				, RVSE_DT = NOW()
+			WHERE  SEQ = #{seq}  
+		]]>
+	</update>
+	<update id="updateREmailContents" parameterType="mailVO">
+		/* Sample.updateContents */
+		<![CDATA[
+			UPDATE T_MAIL_R     
+			 SET 
+				  R_EMAIL = #{rEmail ,jdbcType=VARCHAR} 
+				, RVSE_DT = NOW()
+				, USE_YN = 'Y'
+			WHERE  SEQ = #{seq}  
+		]]>
+	</update>
+	
+	<update id="deleteContents" parameterType="mailVO">
+		/* Sample.deleteContents */
+		<![CDATA[
+			UPDATE T_MAIL
+		       SET
+	          	 USE_YN='N'
+			WHERE SEQ=#{seq}
+		]]>
+	</update>
+
+	<update id="deleteREmailList" parameterType="mailVO">
+		/* Sample.deleteContents */
+		<![CDATA[
+			UPDATE T_MAIL_R
+		       SET
+	          	 USE_YN='N'
+			WHERE MAIL_SEQ=#{seq}
+		]]>
+	</update>
+	
+	
+</mapper>

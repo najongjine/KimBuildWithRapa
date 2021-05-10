@@ -8,11 +8,12 @@
 		</if>
 	</sql>
 	
+	
 	<select id="calSelectList" parameterType="caVO" resultType="caVO">
 		/* 해당 월의 데이터 조회 */
 		SELECT 
 			  DATE_FORMAT(DATA_DATE, '%Y.%m.%d') dataDate
-			, CAL_CONT calCont
+			, HOL_CONT holCont
 			, HOL_YN holYn
 		FROM T_CALENDAR
 		WHERE DATE_FORMAT(DATA_DATE, '%Y%m') = #{schYearMonth}
@@ -30,26 +31,42 @@
 			SEQ seq,
 			DATE_FORMAT(DATA_DATE, '%Y.%m.%d') dataDate,
 			HOL_YN holYn,
-			CAL_CONT calCont,
+			HOL_CONT holCont,
 			DATE_FORMAT(RGST_DT, '%Y.%m.%d') rgstDt
 		FROM T_CALENDAR
 		WHERE DATA_DATE = #{dataDate}
-		  AND HOL_YN = 'Y'
 		  AND USE_YN = 'Y'
-		  	
-		UNION
-		
+		ORDER BY RGST_DT DESC
+		LIMIT 1
+		]]>
+	</select>
+	
+	<select id="selectContByCalSeqList" parameterType="caVO" resultType="caVO">
+		/* 해당 일의 데이터 조회  */
+		<![CDATA[
 		SELECT
-			SEQ seq,
-			DATE_FORMAT(DATA_DATE, '%Y.%m.%d') dataDate,
-			HOL_YN holYn,
-			CAL_CONT calCont,
-			DATE_FORMAT(RGST_DT, '%Y.%m.%d') rgstDt
-		FROM T_CALENDAR
-		WHERE DATA_DATE = #{dataDate}
-		  AND HOL_YN <> 'Y'
-		  AND RGST_ID = #{loginSeq}
+			SEQ seq
+			,CAL_SEQ calSeq
+			,CONT cont
+		FROM T_CALENDAR_CONTS
+		WHERE CAL_SEQ = #{seq}
 		  AND USE_YN = 'Y'
+		ORDER BY DATA_DATE
+		]]>
+	</select>
+	
+	<select id="selectContList" parameterType="caVO" resultType="caVO">
+		/* 해당 일의 데이터 조회  */
+		<![CDATA[
+		SELECT
+			SEQ seq
+			,CAL_SEQ calSeq
+			,CONT cont
+			,DATE_FORMAT(DATA_DATE, '%Y.%m.%d') dataDate
+		FROM T_CALENDAR_CONTS
+		WHERE USE_YN = 'Y'
+			AND DATE_FORMAT(DATA_DATE, '%Y%m') = #{schYearMonth}
+		ORDER BY DATA_DATE
 		]]>
 	</select>
 	
@@ -60,24 +77,67 @@
 		WHERE SEQ = #{seq}
 	</update>
 	
-	<insert id="insertContents" parameterType="caVO">
+	<update id="deleteContContents" parameterType="caVO">
+		/* 데이터 삭제 */
+		UPDATE T_CALENDAR_CONTS
+		SET USE_YN = 'N'
+		WHERE CAL_SEQ = #{seq}
+	</update>
+	
+	<insert id="insertContents" parameterType="caVO" useGeneratedKeys="true" keyProperty="seq">
 		/* 데이터 입력 */
 		INSERT INTO T_CALENDAR(
 			  DATA_DATE
-			, CAL_CONT
+			, HOL_CONT
 			, RGST_ID
 			, HOL_YN
 		)VALUES(
-			  STR_TO_DATE(#{dataDate ,jdbcType=VARCHAR},'%Y-%m-%d')
-			, #{calCont ,jdbcType=VARCHAR}
+			  STR_TO_DATE(#{dataDate ,jdbcType=VARCHAR},'%Y.%m.%d')
+			, #{holCont ,jdbcType=VARCHAR}
 			, #{loginSeq}
 			, IFNULL(#{holYn ,jdbcType=VARCHAR}, 'N'))
+	</insert>
+	
+	<insert id="insertContList" parameterType="caVO" >
+		/* mmain.insertContents */
+			INSERT INTO T_CALENDAR_CONTS(
+				SEQ
+				,CAL_SEQ
+				, CONT
+				, DATA_DATE
+			)
+			VALUES 
+			<foreach collection="list" index="index" item="item" separator=","> 
+			(	
+				(SELECT IFNULL(MAX(TS.SEQ)+1,1) FROM T_CALENDAR_CONTS TS)+#{index}+1
+				,#{item.calSeq ,jdbcType=VARCHAR}
+				,#{item.cont ,jdbcType=VARCHAR}
+				,#{item.dataDate ,jdbcType=VARCHAR}
+			)
+			</foreach>
+	</insert>
+	
+	<insert id="insertContContent" parameterType="caVO" >
+		/* mmain.insertContents */
+			INSERT INTO T_CALENDAR_CONTS(
+				SEQ
+				,CAL_SEQ
+				, CONT
+				, DATA_DATE
+			)
+			VALUES 
+			(	
+				(SELECT IFNULL(MAX(TS.SEQ)+1,1) FROM T_CALENDAR_CONTS TS)
+				,#{calSeq ,jdbcType=VARCHAR}
+				,#{cont ,jdbcType=VARCHAR}
+				,#{dataDate ,jdbcType=VARCHAR}
+			)
 	</insert>
 	
 	<update id="updateContents" parameterType="caVO">
 		/* 데이터 수정 */
 		UPDATE T_CALENDAR
-		SET CAL_CONT = #{calCont ,jdbcType=VARCHAR},
+		SET HOL_CONT = #{holCont ,jdbcType=VARCHAR},
 			DATA_DATE = #{dataDate ,jdbcType=VARCHAR},
 			HOL_YN = NVL(#{holYn ,jdbcType=VARCHAR}, 'N'),
 			RVSE_ID = #{loginSeq},
@@ -85,6 +145,15 @@
 		WHERE SEQ = #{seq}	
 	</update>
 	
-
+	<update id="updateContContents" parameterType="caVO">
+		/* 데이터 수정 */
+		UPDATE T_CALENDAR_CONTS
+		SET CONT = #{cont,jdbcType=VARCHAR}
+			,DATA_DATE=#{dataDate ,jdbcType=VARCHAR}
+			,RVSE_ID = #{loginSeq}
+			,RVSE_DT = NOW()
+			, USE_YN = 'Y'
+		WHERE SEQ = #{seq}	
+	</update>
 	
 </mapper>

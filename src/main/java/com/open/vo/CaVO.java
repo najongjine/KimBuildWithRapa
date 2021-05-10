@@ -1,6 +1,8 @@
 package com.open.vo;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.ibatis.type.Alias;
 
@@ -13,11 +15,13 @@ public class CaVO  extends CmmnDefaultVO implements Serializable{
 	private static final long serialVersionUID = 2172623835339565860L;
 	
 	private String seq;				// 일련번호
+	private String calSeq;				// t_calendar seq
+	private String cont;				// 내용
 	private String dataDate;		// 등록일
 	private String startTime;		// 시작시간
 	private String endTime;			// 종료시간
 	private String holYn;			// 기념일구분
-	private String calCont;				// 내용
+	private String holCont;				// 내용
 	private String rgstId;			// 작성자
 	private String rgstDt;			// 작성일
 	private String rvseId;			// 수정자
@@ -42,25 +46,8 @@ public class CaVO  extends CmmnDefaultVO implements Serializable{
 	private String startHour;		// 시작 시
 	private String startMinute;		// 시작 분
 	
-	private String[] arrSelect;
-	
+	private List<CaVO> caList=new ArrayList<>();
 
-	public String[] getArrSelect() {
-		String[] newArrSelect = null;
-		if(this.arrSelect!=null){
-			newArrSelect = new String[arrSelect.length];
-			for (int i = 0; i < arrSelect.length; i++) {
-				newArrSelect[i] = this.arrSelect[i];
-			}
-		}
-		return newArrSelect;
-	}
-	public void setArrSelect(String[] arrSelect) {
-		this.arrSelect = arrSelect;
-		this.arrSelect = new String[arrSelect.length];
-		for (int i = 0; i < arrSelect.length; i++)
-			this.arrSelect[i] = arrSelect[i];
-	}
 	public String getStartTime() throws Exception {
 		
 		if(!StringUtil.nullString(this.getStartHour()).equals("") && !StringUtil.nullString(this.getStartMinute()).equals("")){
@@ -82,38 +69,29 @@ public class CaVO  extends CmmnDefaultVO implements Serializable{
 		}
 		return endTime;
 	}
-	public void setEndTime(String endTime) {
-		this.endTime = endTime;
+	public String getSeq() {
+		return seq;
 	}
-	public String getStartHour() {
-		return startHour;
+	public void setSeq(String seq) {
+		this.seq = seq;
 	}
-	public void setStartHour(String startHour) {
-		this.startHour = startHour;
+	public String getCalSeq() {
+		return calSeq;
 	}
-	public String getStartMinute() {
-		return startMinute;
+	public void setCalSeq(String calSeq) {
+		this.calSeq = calSeq;
 	}
-	public void setStartMinute(String startMinute) {
-		this.startMinute = startMinute;
+	public String getCont() {
+		return cont;
 	}
-	public String getEndHour() {
-		return endHour;
+	public void setCont(String cont) {
+		this.cont = cont;
 	}
-	public void setEndHour(String endHour) {
-		this.endHour = endHour;
+	public String getDataDate() {
+		return dataDate;
 	}
-	public String getEndMinute() {
-		return endMinute;
-	}
-	public void setEndMinute(String endMinute) {
-		this.endMinute = endMinute;
-	}
-	public String getUseYn() {
-		return useYn;
-	}
-	public void setUseYn(String useYn) {
-		this.useYn = useYn;
+	public void setDataDate(String dataDate) {
+		this.dataDate = dataDate;
 	}
 	public String getHolYn() {
 		return holYn;
@@ -121,29 +99,11 @@ public class CaVO  extends CmmnDefaultVO implements Serializable{
 	public void setHolYn(String holYn) {
 		this.holYn = holYn;
 	}
-	public String getSchYearMonth() {
-		return schYearMonth;
+	public String getHolCont() {
+		return holCont;
 	}
-	public void setSchYearMonth(String schYearMonth) {
-		this.schYearMonth = schYearMonth;
-	}
-	public String getSelectedYear() {
-		return selectedYear;
-	}
-	public void setSelectedYear(String selectedYear) {
-		this.selectedYear = selectedYear;
-	}
-	public String getSelectedMonth() {
-		return selectedMonth;
-	}
-	public void setSelectedMonth(String selectedMonth) {
-		this.selectedMonth = selectedMonth;
-	}
-	public String getDataDate() {
-		return dataDate;
-	}
-	public void setDataDate(String dataDate) {
-		this.dataDate = dataDate;
+	public void setHolCont(String holCont) {
+		this.holCont = holCont;
 	}
 	public String getRgstId() {
 		return rgstId;
@@ -169,17 +129,29 @@ public class CaVO  extends CmmnDefaultVO implements Serializable{
 	public void setRvseDt(String rvseDt) {
 		this.rvseDt = rvseDt;
 	}
-	public String getCalCont() {
-		return calCont;
+	public String getUseYn() {
+		return useYn;
 	}
-	public void setCalCont(String calCont) {
-		this.calCont = calCont;
+	public void setUseYn(String useYn) {
+		this.useYn = useYn;
 	}
-	public String getSeq() {
-		return seq;
+	public String getSelectedYear() {
+		return selectedYear;
 	}
-	public void setSeq(String seq) {
-		this.seq = seq;
+	public void setSelectedYear(String selectedYear) {
+		this.selectedYear = selectedYear;
+	}
+	public String getSelectedMonth() {
+		return selectedMonth;
+	}
+	public void setSelectedMonth(String selectedMonth) {
+		this.selectedMonth = selectedMonth;
+	}
+	public String getSchYearMonth() {
+		return schYearMonth;
+	}
+	public void setSchYearMonth(String schYearMonth) {
+		this.schYearMonth = schYearMonth;
 	}
 	public String getLastDateOfMonth() {
 		return lastDateOfMonth;
@@ -229,9 +201,41 @@ public class CaVO  extends CmmnDefaultVO implements Serializable{
 	public void setNextMonth(String nextMonth) {
 		this.nextMonth = nextMonth;
 	}
+	public String getEndHour() {
+		return endHour;
+	}
+	public void setEndHour(String endHour) {
+		this.endHour = endHour;
+	}
+	public String getEndMinute() {
+		return endMinute;
+	}
+	public void setEndMinute(String endMinute) {
+		this.endMinute = endMinute;
+	}
+	public String getStartHour() {
+		return startHour;
+	}
+	public void setStartHour(String startHour) {
+		this.startHour = startHour;
+	}
+	public String getStartMinute() {
+		return startMinute;
+	}
+	public void setStartMinute(String startMinute) {
+		this.startMinute = startMinute;
+	}
+	public List<CaVO> getCaList() {
+		return caList;
+	}
+	public void setCaList(List<CaVO> caList) {
+		this.caList = caList;
+	}
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
-	
+	public void setEndTime(String endTime) {
+		this.endTime = endTime;
+	}
 	
 }
