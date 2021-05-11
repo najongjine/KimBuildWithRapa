@@ -39,7 +39,18 @@ public class MailVO extends CmmnDefaultVO implements Serializable {
 	
 	private String visitedCnt;
 	
+	/* 폼에서 넘어오는 데이터 받는 용도 */
+	private String userid;
+	
 	private List<MailVO> mailList=new ArrayList<>();
+
+	public String getUserid() {
+		return userid;
+	}
+
+	public void setUserid(String userid) {
+		this.userid = userid;
+	}
 
 	public String getSeq() {
 		return seq;

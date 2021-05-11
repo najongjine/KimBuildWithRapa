@@ -17,11 +17,22 @@
 	 	
 	</sql>
 	<sql id="userWhere">
-		<if test='schEtc03 !=null and schEtc03 !="" and schEtc03 !="admin"'>
+		<if test='schEtc05 !=null and schEtc05 !="" and schEtc05 =="admin"'>
 	 		AND AUTH_CODE = 1
 	 	</if>
-	 	<if test='schEtc03 !=null and schEtc03 !="" and schEtc03 !="admin"'>
+	 	<if test='schEtc05 !=null and schEtc05 !="" and schEtc05 =="user"'>
 	 		AND AUTH_CODE != 1
+	 	</if>
+		<if test="searchKeyword !=null and searchKeyword !=''">
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==0">
+				AND (NAME LIKE CONCAT('%',#{searchKeyword},'%') OR EMAIL LIKE CONCAT('%',#{searchKeyword},'%'))
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==1">
+				AND NAME LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==2">
+				AND EMAIL LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
 	 	</if>
 	</sql>
 	
@@ -89,20 +100,31 @@
 		<![CDATA[
       	     SELECT  
 				  SEQ seq
-				, TITLE title
-				, CONT cont
-				, DATE_FORMAT(RGST_DT,'%Y.%m.%d') rgstDt
-				, RGST_ID rgstId
-				, F_USER_NM(RGST_ID) name
-		     FROM t_ad_user
+				, EMAIL email
+				, ID id
+				, NAME name
+		     FROM T_AD_USER
 			 WHERE USE_YN='Y'	
-			 	AND MAIL_SEQ = #{seq,jdbcType=VARCHAR}
 	      ]]>
-		     <include refid="Where"/>	 
+		     <include refid="userWhere"/>	 
+	     <![CDATA[ 
+	    		ORDER BY SEQ DESC
+	    		LIMIT  #{firstIndex} , #{recordCountPerPage}
+		]]>
+	</select>	
+	<select id="selectUserCount" parameterType="cmmnDefaultVO" resultType="int">
+		/* Sample.selectList */
+		<![CDATA[
+      	     SELECT  
+				  COUNT(SEQ) cnt 
+		     FROM T_AD_USER
+			 WHERE USE_YN='Y'	
+	      ]]>
+		     <include refid="userWhere"/>	 
 	     <![CDATA[ 
 	    		ORDER BY SEQ DESC
 		]]>
-	</select>	
+	</select>
 
 	<select id="selectCount" parameterType="cmmnDefaultVO" resultType="int">
 		/* Sample.selectCount */

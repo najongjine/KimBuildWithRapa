@@ -1,13 +1,6 @@
 package com.open.ma.mdev.mmailpop;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Properties;
 
@@ -15,16 +8,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.ss.usermodel.ClientAnchor;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFDrawing;
-import org.apache.poi.xssf.usermodel.XSSFPicture;
-import org.apache.poi.xssf.usermodel.XSSFPictureData;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFShape;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.stereotype.Controller;
@@ -35,15 +18,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.support.SessionStatus;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import com.open.cmmn.model.CmmnDefaultVO;
-import com.open.cmmn.model.FileVO;
 import com.open.cmmn.service.CmmnService;
 import com.open.cmmn.service.FileMngService;
 import com.open.cmmn.util.SessionUtil;
 import com.open.cmmn.util.StringUtil;
+import com.open.ma.login.service.LoginVO;
 import com.open.vo.MailVO;
 
 import egovframework.rte.fdl.idgnr.EgovIdGnrService;
@@ -217,7 +199,7 @@ public class MMailPopController {
 		mailVO.setSearchVO(searchVO);
 		model.addAttribute("mailVO", mailVO);
 
-		return ".mLayout:" + folderPath + "form";
+		return ".mLayout:" + folderPath + "form_modal";
 	}
 
 	/**
@@ -235,7 +217,7 @@ public class MMailPopController {
 	public String proc(@ModelAttribute("searchVO") MailVO searchVO, Model model, SessionStatus status,
 			@PathVariable String procType, HttpServletRequest request) throws Exception {
 		procType = StringUtil.nullString(procType);
-
+		
 		if (procType.equals("insert")) {
 
 			cmmnService.insertContents(searchVO, PROGRAM_ID);
@@ -269,9 +251,25 @@ public class MMailPopController {
 
 	}
 
+	/* 팝업창 기본 페이지 */
 	@RequestMapping(folderPath + "pop.do")
-	public String pop(@ModelAttribute("searchVO") CmmnDefaultVO searchVO, ModelMap model, HttpServletRequest request,String userType) throws Exception {
-		userType=StringUtil.nullString(userType);
+	public String pop(@ModelAttribute("searchVO") CmmnDefaultVO searchVO, ModelMap model, HttpServletRequest request) throws Exception {
+
+		return ".mPopLayout:" + folderPath + "pop";
+	}
+	
+	@RequestMapping(folderPath + "popModal.do")
+	public String popModel(@ModelAttribute("searchVO") CmmnDefaultVO searchVO, ModelMap model, HttpServletRequest request) throws Exception {
+
+		return folderPath + "popModal";
+	}
+	
+	/* 팝업창 페이지네이션 지원 페이지 */
+	@RequestMapping(folderPath + "popList.do")
+	public String popList(@ModelAttribute("modalSearchVO") CmmnDefaultVO searchVO, ModelMap model, HttpServletRequest request) throws Exception {
+		if(StringUtil.nullString(searchVO.getSchEtc05()).equals("")) {
+			searchVO.setSchEtc05("user");
+		}
 		/** Cache sample */
 		Ehcache cache = cacheManager.getCacheManager().getCache("properties");
 		Element pageUnit = cache.get("pageUnit");
@@ -298,14 +296,59 @@ public class MMailPopController {
 		searchVO.setLastIndex(paginationInfo.getLastRecordIndex());
 		searchVO.setRecordCountPerPage(paginationInfo.getRecordCountPerPage());
 
-		List<EmVO> boardList = (List<EmVO>) cmmnService.selectList(searchVO, PROGRAM_ID + ".selectPopList");
+		List<LoginVO> boardList = (List<LoginVO>) cmmnService.selectList(searchVO, PROGRAM_ID + ".selectUserList");
+		System.out.println("## poplist count: "+boardList.size());
+		System.out.println("## schEtc05: "+searchVO.getSchEtc05());
 		model.addAttribute("resultList", boardList);
 
-		int totCnt = cmmnService.selectCount(searchVO, PROGRAM_ID + ".selectPopCount");
+		int totCnt = cmmnService.selectCount(searchVO, PROGRAM_ID + ".selectUserCount");
 		paginationInfo.setTotalRecordCount(totCnt);
 		model.addAttribute("paginationInfo", paginationInfo);
 		
 		return folderPath + "popList";
 	}
 	
+	/* 팝업창 페이지네이션 지원 페이지 */
+	@RequestMapping(folderPath + "popListModal.do")
+	public String popListModal(@ModelAttribute("modalSearchVO") CmmnDefaultVO searchVO, ModelMap model, HttpServletRequest request) throws Exception {
+		if(StringUtil.nullString(searchVO.getSchEtc05()).equals("")) {
+			searchVO.setSchEtc05("user");
+		}
+		/** Cache sample */
+		Ehcache cache = cacheManager.getCacheManager().getCache("properties");
+		Element pageUnit = cache.get("pageUnit");
+		Element pageSize = cache.get("pageSize");
+
+		if (pageUnit != null && pageSize != null) {
+			searchVO.setPageUnit(Integer.parseInt(pageUnit.getValue().toString()));
+			searchVO.setPageSize(Integer.parseInt(pageSize.getValue().toString()));
+		} else {
+			/** EgovPropertyService.sample */
+			searchVO.setPageUnit(propertiesService.getInt("pageUnit"));
+			searchVO.setPageSize(propertiesService.getInt("pageSize"));
+			/** cache에 입력 */
+			cache.put(new Element("pageUnit", propertiesService.getInt("pageUnit")));
+			cache.put(new Element("pageSize", propertiesService.getInt("pageSize")));
+		}
+
+		/** pageing setting */
+		PaginationInfo paginationInfo = new PaginationInfo();
+		paginationInfo.setCurrentPageNo(searchVO.getPageIndex());
+		paginationInfo.setRecordCountPerPage(searchVO.getPageUnit());
+		paginationInfo.setPageSize(searchVO.getPageSize());
+		searchVO.setFirstIndex(paginationInfo.getFirstRecordIndex());
+		searchVO.setLastIndex(paginationInfo.getLastRecordIndex());
+		searchVO.setRecordCountPerPage(paginationInfo.getRecordCountPerPage());
+
+		List<LoginVO> boardList = (List<LoginVO>) cmmnService.selectList(searchVO, PROGRAM_ID + ".selectUserList");
+		System.out.println("## poplist count: "+boardList.size());
+		System.out.println("## schEtc05: "+searchVO.getSchEtc05());
+		model.addAttribute("resultList", boardList);
+
+		int totCnt = cmmnService.selectCount(searchVO, PROGRAM_ID + ".selectUserCount");
+		paginationInfo.setTotalRecordCount(totCnt);
+		model.addAttribute("paginationInfo", paginationInfo);
+		
+		return folderPath + "popListModal";
+	}
 }
