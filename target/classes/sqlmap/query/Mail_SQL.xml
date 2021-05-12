@@ -52,7 +52,18 @@
 		]]>
 	</select>
 	
-	
+	<select id="selectVisitedIpContents" parameterType="mailVO" resultType="mailVO">
+		/* Sample.selectContents */
+		<![CDATA[
+			 SELECT  
+				  SEQ seq
+				  ,IP ip
+		     FROM  T_MAIL_VISITIP TS
+			 WHERE  USE_YN='Y'	
+				 AND MAIL_SEQ = #{seq,jdbcType=VARCHAR}
+				 AND IP = #{ip,jdbcType=VARCHAR}
+		]]>
+	</select>
 	
 	<select id="selectList" parameterType="cmmnDefaultVO" resultType="mailVO">
 		/* Sample.selectList */
@@ -80,11 +91,10 @@
 		<![CDATA[
       	     SELECT  
 				  SEQ seq
-				, TITLE title
-				, CONT cont
 				, DATE_FORMAT(RGST_DT,'%Y.%m.%d') rgstDt
 				, RGST_ID rgstId
-				, F_USER_NM(RGST_ID) name
+				, NAME name
+				, R_EMAIL rEmail
 		     FROM T_MAIL_R
 			 WHERE USE_YN='Y'	
 			 	AND MAIL_SEQ = #{seq,jdbcType=VARCHAR}
@@ -145,12 +155,14 @@
 				, TITLE 
 				, CONT
 				, RGST_ID 
+				, WFORM
 			)
 			VALUES (
 				 (SELECT IFNULL(MAX(TS.SEQ)+1,1) FROM T_MAIL TS)
 				,#{title ,jdbcType=VARCHAR}
 				,#{cont ,jdbcType=VARCHAR}
 				,#{loginSeq ,jdbcType=VARCHAR}
+				,#{wform ,jdbcType=VARCHAR}
 			)
 		]]>
 	</insert>
@@ -161,6 +173,8 @@
 				SEQ
 				,MAIL_SEQ
 				, R_EMAIL
+				, NAME
+				,USER_SEQ
 			)
 			VALUES 
 			<foreach collection="list" index="index" item="item" separator=","> 
@@ -168,6 +182,8 @@
 				(SELECT IFNULL(MAX(TS.SEQ)+1,1) FROM T_MAIL_R TS)+#{index}+1
 				,#{item.mailSeq ,jdbcType=VARCHAR}
 				,#{item.rEmail ,jdbcType=VARCHAR}
+				,#{item.name ,jdbcType=VARCHAR}
+				,#{item.userSeq ,jdbcType=VARCHAR}
 			)
 			</foreach>
 	</insert>
@@ -177,12 +193,30 @@
 				SEQ
 				,MAIL_SEQ
 				, R_EMAIL
+				, NAME
+				,USER_SEQ
 			)
 			VALUES 
 			(	
 				(SELECT IFNULL(MAX(TS.SEQ)+1,1) FROM T_MAIL_R TS)
-				,#{item.mailSeq ,jdbcType=VARCHAR}
-				,#{item.rEmail ,jdbcType=VARCHAR}
+				,#{mailSeq ,jdbcType=VARCHAR}
+				,#{rEmail ,jdbcType=VARCHAR}
+				,#{name ,jdbcType=VARCHAR}
+				,#{userSeq ,jdbcType=VARCHAR}
+			)
+	</insert>
+	<insert id="insertVisitedIpContent" parameterType="mailVO" >
+		/* mmain.insertContents */
+			INSERT INTO T_MAIL_VISITIP(
+				SEQ
+				,MAIL_SEQ
+				, IP
+			)
+			VALUES 
+			(	
+				(SELECT IFNULL(MAX(TS.SEQ)+1,1) FROM T_MAIL_VISITIP TS)
+				,#{seq ,jdbcType=VARCHAR}
+				,#{ip ,jdbcType=VARCHAR}
 			)
 	</insert>
 	

@@ -36,4 +36,13 @@ $(document).ready(function(){
 	<div class="tbl">
 	</div>
 </div>
-
+<script type="text/javascript">
+$(document).ready(function(){
+	fncColLength();
+});
+const fncColLength = function(){
+	$("colgroup").each(function(index){
+		$(this).nextAll('tbody:first').find(".no_data").attr("colspan", $(this).children("col").length);
+	});
+};
+</script>

@@ -500,7 +500,7 @@ box-shadow: 2px 2px 5px 1px rgba(0,0,0,0.24);}
 .faq_txt {float:left;position:relative;; width:93%;vertical-align:top;padding-left:15px;}
 .faq_txt .faq_a {position:absolute; left:0; top:0;color:#1c5cb0; font-weight:bold;}
 
-/*popup*/
+/*popup sample
 .layer_popup {display:none; z-index:1200;border:1px solid #626262;}
 .pop_header {position:relative;padding:0 20px;line-height:40px;background:#1c5cb0;}
 .pop_header h1,
@@ -509,7 +509,20 @@ box-shadow: 2px 2px 5px 1px rgba(0,0,0,0.24);}
 .pop_content {position:relative;padding:20px;background:#fff;}
 .pop_footer {position:relative;padding:10px 20px 20px 20px; text-align:center;}
 .popup_bg {display:none;width:100%; height:100%; _height:800px;position:fixed;_position:absolute; top:0px; left:0px; z-index:1000;}
+*/
 
+/*popup emf*/
+.layer_popup {border:1px solid #626262;z-index:1200;display:none;background:#fff;}
+.pop_size400 {width:400px;}
+.pop_size800 {width:800px;}
+.pop_header {position:relative;padding:10px;background:#308cde;}
+.pop_header h2 {font-size:17px; color:#fff; height:25px; line-height:25px;}
+.pop_header .pop_close {position:absolute; right:10px; top:50%; width:17px; height:17px; margin-top:-8.5px;background:url(http://opennote.co.kr/guide/images/sample/pop_close.png) no-repeat 0 0;}
+.pop_content {position:relative;padding:15px 10px;min-height:80px;}
+.pop_scl {max-height:450px; overflow-y:visible;}
+.pop_footer {position:relative;padding:10px; text-align:center;}
+.popup_bg {display:none;width:100%; height:100%; _height:800px;background:#000; filter:alpha(opacity=70); opacity:0.7; position:fixed;_position:absolute; _filter:alpha(opacity=70); top:0px; left:0px; z-index:1000;}
+.pop_close{width: 100%;position: relative;height: 22px;text-align: right;margin-left: 0px;margin-top: 180px;}
 
 /*thum*/
 .thum_wrap {position: relative;}
@@ -640,3 +653,14 @@ box-shadow: 2px 2px 5px 1px rgba(0,0,0,0.24);}
 
 .srvy_video {position: relative; padding-bottom: 26.25%; width:50%; height:350px; padding-top: 30px;height: 0;overflow: hidden;}
 .srvy_video iframe {position: absolute;top: 0;left: 0; width: 100%; height: 100%;}
+
+
+/*메일폼 관련*/
+.text_area span,
+.text_area strong,
+.text_area02 span,
+.text_area02 strong,
+.text_area70 span,
+.text_area70 strong {display:inline;}
+
+.text_pre {white-space:pre-wrap; font-size:14px; line-height:1.2;}

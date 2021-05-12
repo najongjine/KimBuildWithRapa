@@ -27,16 +27,21 @@
 							<ul id="receiver" class="mail_select_list">
 								
 							</ul>
-							<a href="javascript:void(0);" class="btn btn_sml btn_ok" onclick="fncAddressBook();">주소록</a>
+							<a href="javascript:void(0);" class="btn btn_sml btn_ok" onclick="popupUserList();">팝업 주소록</a>
+							<a href="javascript:void(0);" class="btn btn_sml btn_ok" onclick="modalEmailList();">모달 주소록</a>
 						</td>
 					</tr>
 					<tr>
 						<th scope="row"><strong class="th_tit">양식</strong></th>
 						<td colspan="3">
-							<label><input id="contStyle1" name="contStyle" onchange="fncContStyle(this.value);" type="radio" value="0"/>없음</label>
-							<label class="mar_l20"><input id="contStyle2" name="contStyle" onchange="fncContStyle(this.value);" type="radio" value="1"/>1번</label>
-							<label class="mar_l20"><input id="contStyle3" name="contStyle" onchange="fncContStyle(this.value);" type="radio" value="2"/>2번</label>
-							<label class="mar_l20"><input id="contStyle4" name="contStyle" onchange="fncContStyle(this.value);" type="radio" value="3"/>3번</label>
+							<label><input id="contStyle1" name="contStyle" onchange="fncContStyle(this.value);" type="radio" value="0"
+							 <c:if test="${empty mailVO.wform or mailVO.wform eq 0}">checked="checked"</c:if>/>없음</label>
+							<label class="mar_l20"><input id="contStyle2" name="contStyle" onchange="fncContStyle(this.value);" type="radio" value="1"
+							 <c:if test="${mailVO.wform eq 1}">checked="checked"</c:if>/>1번</label>
+							<label class="mar_l20"><input id="contStyle3" name="contStyle" onchange="fncContStyle(this.value);" type="radio" value="2"
+							 <c:if test="${mailVO.wform eq 2}">checked="checked"</c:if>/>2번</label>
+							<label class="mar_l20"><input id="contStyle4" name="contStyle" onchange="fncContStyle(this.value);" type="radio" value="3"
+							 <c:if test="${mailVO.wform eq 3}">checked="checked"</c:if>/>3번</label>
 						</td>
 					</tr>
 					<tr>
@@ -78,10 +83,11 @@
               	<div style="width:608px; border:1px solid #e6f1f5; padding:30px 25px; margin:30px 0 0 0; background:#f4fcff; color:#333333;">
               		<p style="width:100%; color:#333333;">&nbsp;</p>
               	</div>                
-                <div style="width:221px; height:50px; background:url(<spring:eval expression="@setProperties['isp.domain']"/>/publish/ma/images/mail/mail_from_btn.jpg) no-repeat; color:#fff; font-size:15px; font-weight:500; margin:30px auto; " >
-                	<a href="<spring:eval expression="@setProperties['isp.domain']"/>" style="color:#fff; text-decoration:none;"><p style="padding:15px 0 0 40px;">홈페이지 바로가기</p></a>
-                </div>                
+                               
         	</div>
+        	<div style="width:221px; height:50px; background:url(http://121.179.119.218:8000/publish/ma/images/mail/mail_from_btn.jpg) no-repeat; color:#fff; font-size:15px; font-weight:500; margin:30px auto; " >
+                	<a href="<spring:eval expression="@setProperties['isp.domain']"/>" style="color:#fff; text-decoration:none;"><p style="padding:15px 0 0 40px;">홈페이지 바로가기</p></a>
+                </div> 
             <p style="background:url(/publish/ma/images/mail/mail_from_info.png) no-repeat 40px 9px #f9fafa; height:25px; padding:10px 0 0 65px; font-size:11px; color:#888888; ">
             	본 메일은 발신전용 메일이므로 궁금한점은 고객센터로연락주시거나 서비스 문의를 이용해 주시기 바랍니다. 
             </p>
@@ -95,6 +101,7 @@
 		</div>
 	</div>
 </div>
+
 <div id="pdfFormB" style="display: none;">
 	<div style="width: 100%;height:100%;margin:0;padding:0;font-size:14px;line-height:1.4;font-family:'Noto Sans KR', 'Malgun Gothic', 'Helvetica Neue', 'Helvetica', 'Dotum';color:#000000; ">    
 		<div style="width:720px;padding:20px 0 20px 0;margin:25px 0 0 45px;border:1px solid #e2e2e2; box-shadow: 0px 0px 10px #e2e2e2; ">
@@ -122,6 +129,7 @@
 		</div>
 	</div>
 </div>
+
 <div id="pdfFormC" style="display: none;">
 	<div style="width: 100%;height:100%;margin:0;padding:0;font-size:14px;line-height:1.4;font-family:'Noto Sans KR', 'Malgun Gothic', 'Helvetica Neue', 'Helvetica', 'Dotum';color:#000000; ">    
 		<div style="width:720px;margin:0px 0 0 45px;border:1px solid #e2e2e2; box-shadow: 0px 0px 10px #e2e2e2; border-top:none; background:url(<spring:eval expression="@setProperties['isp.domain']"/>/publish/ma/images/mail/bg_mail_bg.jpg) repeat-x;">
@@ -156,7 +164,7 @@
 <script type="text/javascript" src="/publish/ma/js/board.js"></script>
 <script type="text/javascript" src="/resource/editor/js/HuskyEZCreator.js" charset="utf-8"></script>
 <script type="text/javascript">
-<%-- 부모창과 자식창(팝업) 사이에서 공유될 변수. 선택한 체크박스의 정보를 담는용도로 쓰인다. --%>
+<%-- 부모창과 자식창(팝업) 사이에서 공유될 변수. 선택한 체크박스의 정보를 담는용도로 쓰인다. 현재 페이지 내에선 var col1Json=[] 와 동일하게 쓰인다--%>
 window.col1Json=[];
 
 var oEditors = [];
@@ -183,6 +191,10 @@ $("#btn_submit").on("click", function(){
 		return false;
 	}		
 	
+	if($("[ID^=pickedcol1Item_]").size() < 1){
+		alert("받는사람을 선택해주세요");
+		return false;
+	}
 	fncPageBoard('submit','${searchVO.procType}Proc.do');
 	return false;
 });
@@ -193,14 +205,26 @@ $("#btn_returnView").click(function(){
 });
 
 <%--팝업창을 띄우는 코드--%>
-var fncAddressBook=function() {
+var popupUserList=function() {
 	<%-- 체크박스에서 선택한  strJson 데이터들을 child(popup)에 보낼때 쓰이는 코드 --%>
 	window.col1JsonStr=$("#col1").val().trim();
 	fncPageBoard('pop','pop.do','','','1000','500');
 }
+
+<%--모달창을 띄우는 코드--%>
+var modalEmailList=function(){
+	$.ajax({
+	    url: "popModal.do",
+	    dataType: "HTML",  
+	    success: function(data) { 
+	    	$("#display_view1").html(data);
+	    	view_show(1);
+	    }
+	});	
+}
+
 var fncUserDel=function(elemntId){
-	alert(elemntId)
-	$("#"+elemntId).remove();
+	$("#picked"+elemntId).remove();
 	return false;
 }
 

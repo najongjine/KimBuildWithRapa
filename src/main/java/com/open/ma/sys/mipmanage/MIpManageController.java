@@ -206,7 +206,6 @@ public class MIpManageController {
 	@RequestMapping(value = folderPath + "{procType}Proc.do", method = RequestMethod.POST)
 	public String proc(@ModelAttribute("searchVO") LogManageVO searchVO, Model model, SessionStatus status,@PathVariable String procType, HttpServletRequest request) throws Exception {
 		searchVO.setIp(searchVO.getIp().replace(',', '.'));
-		System.out.println("## allow : "+searchVO.getAllow());
 		if(procType != null){
 			
 			if (procType.equals("insert")) {

@@ -82,8 +82,12 @@ a.btn:focus, input.btn:focus,button.btn:focus {outline: none;}
 
 /* basic */
 .hidden {position:absolute;visibility:hidden;top:-9000px;left:-9000px;}
-.display_none {display:none;}
-.cursor {cursor:pointer;}
+.display_none {display:none !important;}
+.cursor {cursor:pointer !important;}
+.cursor_none {cursor:default !important;}
+.text_over {display:block;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+.textarea_over {word-break:break-all !important;}
+.select_none {user-select:none !important;}
 
 /* align */
 .l {text-align:left !important;}

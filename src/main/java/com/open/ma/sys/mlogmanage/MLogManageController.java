@@ -287,7 +287,6 @@ public class MLogManageController {
 	@ResponseBody
 	@RequestMapping(folderPath + "allowIp.json")
 	public Map<String, Object> allowIp(LogManageVO searchVO, HttpServletRequest request) throws Exception {
-		System.out.println("## ip: " + searchVO.getIp());
 		Map<String, Object> data = new HashMap<>();
 		HttpSession session = request.getSession();
 		String authCode = (String) session.getAttribute("loginMgrAuthCode");

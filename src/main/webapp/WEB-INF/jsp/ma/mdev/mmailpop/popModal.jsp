@@ -1,17 +1,14 @@
 <%@ page contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
 <jsp:directive.include file="/WEB-INF/jsp/cmmn/incTagLib.jsp"/>
 
-<%-- content --%>
-<div class="top_title clear">
-	<span>
-	<h3 class="tit_page">주소록</h3>
-	</span>
-	<span style="float: right;">
-	<a href="javascript:void(0)" class="mail_del btn_del" onclick="view_hide(1)" style="width:500"> x </a>
-	</span>
-	
+<div class="pop_header">
+   <h2>
+   		유저 주소록
+   </h2>
+   <a href="javascript:void(0);" onclick="view_hide(1);return false" class="pop_close"></a>
 </div>
-<div class="content_box">
+<%-- 현재 페이지를 모달 창으로 띄우려면 pop_content,pop_scl div 는 무조건 모든 컨텐츠를 감싸 줘야한다 --%>
+<div class="pop_content">
 	<%-- search  --%>
 	<ul class="tab js-tab tab_menu">
 	    <li class="tabLiUser current"><a href="javascript:void(0)" onclick="tabMenu('user')">회원</a></li>
@@ -25,7 +22,7 @@
 				<legend>검색</legend>
 				<div class="search_basic">
 					<strong class="tit">검색구분</strong>
-					<select name="searchCondition" id="userSrchCondition" title="구분 선택" cssClass="w100"  >  
+					<select name="searchCondition" id="userSrchCondition" title="구분 선택" class="w100"  >  
 						<option value="0" label="전체"/>
 						<option value="1" label="이름"/>
 						<option value="2" label="이메일"/>
@@ -39,7 +36,9 @@
 		</form>
 	</div>
 	<%--// search  --%>
-	<div class="tbl">
+	<div class="pop_scl">
+		<div class="tbl">
+		</div>
 	</div>
 </div>
 

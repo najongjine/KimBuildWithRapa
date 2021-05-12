@@ -41,6 +41,7 @@ public class MailVO extends CmmnDefaultVO implements Serializable {
 	
 	/* 폼에서 넘어오는 데이터 받는 용도 */
 	private String userid;
+	private String userSeq;
 	
 	private List<MailVO> mailList=new ArrayList<>();
 
@@ -158,6 +159,14 @@ public class MailVO extends CmmnDefaultVO implements Serializable {
 
 	public void setVisitedCnt(String visitedCnt) {
 		this.visitedCnt = visitedCnt;
+	}
+
+	public String getUserSeq() {
+		return userSeq;
+	}
+
+	public void setUserSeq(String userSeq) {
+		this.userSeq = userSeq;
 	}
 	
 }

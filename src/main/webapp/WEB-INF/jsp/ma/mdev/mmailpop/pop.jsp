@@ -44,10 +44,10 @@
 
 <script type="text/javascript" src="/publish/ma/js/board.js"></script>
 <script type="text/javaScript">
-<%-- window.opener.arrCol1Json == 부모창과 자식창(팝업) 사이에서 공유될 변수. 선택한 체크박스의 정보를 담는용도로 쓰인다. --%>
-var arrCol1Json=window.opener.arrCol1Json;
+<%-- window.opener.col1Json == 부모창과 자식창(팝업) 사이에서 공유될 변수. 선택한 체크박스의 정보를 담는용도로 쓰인다. --%>
+var col1Json=window.opener.col1Json;
 <%-- 부모로부터 넘어온 strJson 데이터들을 inputbox에 셋팅하는 코드 --%>
-$("#col1").val(window.opener.arrCol1JsonStr);
+$("#col1").val(window.opener.col1JsonStr);
 
 fncPageBoard('addList','popList.do',$("#pageIndex").val());
 

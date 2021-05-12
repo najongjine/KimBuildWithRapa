@@ -66,7 +66,7 @@
 											<div>
 												<c:if test="${result.dataDate eq prtDate and result.holYn eq 'Y' }">
 													<a href="#" class="cutText">
-														<div class="txt_holiday">
+														<div class="txt_holiday text_over">
 															<c:out value="${result.holCont }"/>
 														</div>
 													</a>
@@ -77,7 +77,7 @@
 											<div>
 												<c:if test="${result.dataDate eq prtDate }">
 													<a href="#" class="cutText">
-														<div>
+														<div class="text_over">
 															<c:out value="${result.cont }"/>
 														</div>
 													</a>

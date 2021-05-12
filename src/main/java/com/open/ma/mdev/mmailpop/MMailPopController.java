@@ -4,12 +4,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import javax.activation.CommandMap;
+import javax.activation.MailcapCommandMap;
 import javax.annotation.Resource;
+import javax.mail.Message;
+import javax.mail.Multipart;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.MimeUtility;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -157,13 +169,42 @@ public class MMailPopController {
 	@RequestMapping(folderPath + "view.do")
 	public String view(@ModelAttribute("searchVO") MailVO searchVO, Model model, HttpServletRequest request)
 			throws Exception {
-
+		String ip = StringUtil.getClientIp(request);
 		/* 게시판 상세정보 */
 		MailVO mailVO = new MailVO();
 		mailVO = (MailVO) cmmnService.selectContents(searchVO, PROGRAM_ID);
+		
+		String strEmails="";
+		List<MailVO> mailList=(List<MailVO>) cmmnService.selectList(searchVO, PROGRAM_ID+".selectREmailList");
+		mailVO.setMailList(mailList);
+		for(int i=0;i<mailList.size();i++ ) {
+			strEmails+=mailList.get(i).getName();
+			if(i != mailList.size() -1) {
+				strEmails+="("+mailList.get(i).getrEmail()+"), ";
+			}else {
+				strEmails+="("+mailList.get(i).getrEmail()+")";
+			}
+		}
+		
+		mailVO.setIp(ip);
+		Object ipVisited=cmmnService.selectContents(mailVO, PROGRAM_ID+".selectVisitedIpContents");
+		if(ipVisited==null) {
+			cmmnService.selectContents(mailVO, PROGRAM_ID+".insertVisitedIpContent");
+		}
 		model.addAttribute("mailVO", mailVO);
+		model.addAttribute("strEmails", strEmails);
 
 		return ".mLayout:" + folderPath + "view";
+	}
+	
+	@SuppressWarnings("unchecked")
+	@RequestMapping(folderPath + "contView.do")
+	public String contView(@ModelAttribute("searchVO") MailVO searchVO, Model model, HttpServletRequest request) throws Exception {
+
+		MailVO mailVO = new MailVO();
+		mailVO = (MailVO) cmmnService.selectContents(searchVO, PROGRAM_ID);
+		model.addAttribute("mailVO", mailVO);
+		return folderPath + "contView";
 	}
 
 	/**
@@ -199,7 +240,7 @@ public class MMailPopController {
 		mailVO.setSearchVO(searchVO);
 		model.addAttribute("mailVO", mailVO);
 
-		return ".mLayout:" + folderPath + "form_modal";
+		return ".mLayout:" + folderPath + "form";
 	}
 
 	/**
@@ -219,13 +260,19 @@ public class MMailPopController {
 		procType = StringUtil.nullString(procType);
 		
 		if (procType.equals("insert")) {
-
+			for (MailVO item : searchVO.getMailList()) {
+				sendMail(item.getrEmail(), StringUtil.unEscape(searchVO.getCont()), searchVO.getTitle());
+			}
 			cmmnService.insertContents(searchVO, PROGRAM_ID);
+			for (MailVO item : searchVO.getMailList()) {
+				item.setMailSeq(searchVO.getSeq());
+				cmmnService.insertContents(item, PROGRAM_ID+".insertREmailContent");
+			}
 
 		} else if (procType.equals("update")) {
-			cmmnService.updateContents(searchVO, PROGRAM_ID);
+			//cmmnService.updateContents(searchVO, PROGRAM_ID);
 		} else if (procType.equals("delete")) {
-			cmmnService.deleteContents(searchVO, PROGRAM_ID);
+			//cmmnService.deleteContents(searchVO, PROGRAM_ID);
 
 		}
 
@@ -351,4 +398,72 @@ public class MMailPopController {
 		
 		return folderPath + "popListModal";
 	}
+	
+	public static void sendMail(String mail, String htmlContent, String ttl) throws Exception {
+		if(StringUtil.nullString(mail).equals("")) {
+			return;
+		}
+		String host = "smtp.gmail.com";
+		String useraddr = "najongjine.opennote@gmail.com";
+		
+		//앱 비밀번호인가 그런것임
+		String userpwd = "ceeecpnezzwueuzm";
+		/* IMAP/SMTP 설정 */
+		Properties props = new Properties();
+
+		// 호스트, 계정 비번 설정
+
+		props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+		props.put("mail.smtp.socketFactory.port", "587");
+		props.put("mail.smtp.ssl.enable", "true");
+		props.put("mail.smtp.host", host);
+		props.put("mail.smtp.auth", "true");
+		
+		final String username = useraddr; // 계정
+		final String password = userpwd; // 비밀번호
+
+		// mailForm에 따른 메일 설정
+
+		/* Session 생성 */
+		Session session = Session.getDefaultInstance(props, new javax.mail.Authenticator() {
+			String un = username;
+			String pw = password;
+
+			protected javax.mail.PasswordAuthentication getPasswordAuthentication() {
+				return new javax.mail.PasswordAuthentication(un, pw);
+			}
+		});
+		/* Message 설정 */
+		MimeMessage message = new MimeMessage(session);
+		message.setFrom(new InternetAddress(useraddr, MimeUtility.encodeText("한국전파진흥협회", "UTF-8", "B")));
+		message.setSender(new InternetAddress(useraddr));
+		message.setSubject(ttl);
+
+		session.setDebug(true); // for debug
+
+		String htmlContents = htmlContent;
+		// 메일 주소 변수 :: mail
+
+		// 보낼 사람의 메일주소 셋팅해주기(한명기준)
+		message.setRecipient(Message.RecipientType.TO, new InternetAddress(mail));
+
+		//메일의 내용 셋팅해주기
+		Multipart mp = new MimeMultipart();
+		MimeBodyPart mbp1 = new MimeBodyPart(); // 내용
+		mbp1.setContent(htmlContents, "text/html;charset=UTF-8");
+		mp.addBodyPart(mbp1);
+
+		MailcapCommandMap mc = (MailcapCommandMap) CommandMap.getDefaultCommandMap();
+		mc.addMailcap("text/html; x-java-content-handler=com.sun.mail.handlers.text_html");
+		mc.addMailcap("text/xml; x-java-content-handler=com.sun.mail.handlers.text_xml");
+		mc.addMailcap("text/plain; x-java-content-handler=com.sun.mail.handlers.text_plain");
+		mc.addMailcap("multipart/*; x-java-content-handler=com.sun.mail.handlers.multipart_mixed");
+		mc.addMailcap("message/rfc822; x-java-content-handler=com.sun.mail.handlers.message_rfc822");
+		CommandMap.setDefaultCommandMap(mc);
+
+		message.setContent(mp);
+		Transport.send(message);
+
+	}
+	
 }

@@ -84,7 +84,7 @@
 	</util:properties> 
 	<!-- 로컬 -->
 	<util:properties id="setProperties">
-		<prop key="isp.domain">http://localhost:8081</prop>
+		<prop key="isp.domain">http://121.179.119.218:8000</prop>
 		<prop key="isp.kakaoJsKey">e67a37e277f3c76e7d43d602175d38d2</prop>
 		<prop key="isp.naverJsKey">wI3q6bCu1vo5AmskuKPB</prop>
 		<prop key="isp.kakaoRestKey">23522c03463f274acdf9e965a35af2c0</prop>

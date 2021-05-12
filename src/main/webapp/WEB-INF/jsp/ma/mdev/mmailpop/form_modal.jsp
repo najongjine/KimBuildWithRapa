@@ -41,10 +41,10 @@
 					<tr>
 						<th scope="row"><strong class="th_tit">양식</strong></th>
 						<td colspan="3">
-							<label><input id="contStyle1" name="contStyle" onchange="fncContStyle(this.value);" type="radio" value="0"/>없음</label>
-							<label class="mar_l20"><input id="contStyle2" name="contStyle" onchange="fncContStyle(this.value);" type="radio" value="1"/>1번</label>
-							<label class="mar_l20"><input id="contStyle3" name="contStyle" onchange="fncContStyle(this.value);" type="radio" value="2"/>2번</label>
-							<label class="mar_l20"><input id="contStyle4" name="contStyle" onchange="fncContStyle(this.value);" type="radio" value="3"/>3번</label>
+							<label><input id="wform1" name="wform" onchange="wformStyle(this.value);" type="radio" value="0"/>없음</label>
+							<label class="mar_l20"><input id="wform2" name="wform" onchange="wformStyle(this.value);" type="radio" value="1"/>1번</label>
+							<label class="mar_l20"><input id="wform3" name="wform" onchange="wformStyle(this.value);" type="radio" value="2"/>2번</label>
+							<label class="mar_l20"><input id="wform4" name="wform" onchange="wformStyle(this.value);" type="radio" value="3"/>3번</label>
 						</td>
 					</tr>
 					<tr>
@@ -78,13 +78,13 @@
 <%-- 이메일을 보낼때 내용부분에 삽입되는 양식 --%>
 <div id="pdfFormA" style="display: none; "> 
 	<div style="width: 100%;height:100%;margin:0;padding:0;font-size:14px;line-height:1.4;font-family:'Noto Sans KR', 'Malgun Gothic', 'Helvetica Neue', 'Helvetica', 'Dotum';color:#000000;  background:url(<spring:eval expression="@setProperties['isp.domain']"/>/publish/ma/images/mail/bg_mail_top2.jpg) 45px 0px no-repeat;">   
-		<div style="width:720px;padding:20px 0 30px 0;margin:25px 0 0 45px;border:1px solid #e2e2e2; box-shadow: 0px 0px 10px #e2e2e2; border-top:none;">
+		<div style="width:720px;padding:20px 0 30px 0;margin:25px 0 0 45px;border:1px solid #e2e2e2; box-shadow: 0px 0px 10px #e2e2e2; border-top:none; ">
 			<h1 style="padding-left:45px; margin-top:20px;"><img src="<spring:eval expression="@setProperties['isp.domain']"/>/publish/ma/images/mail/mail_logo_top.jpg" alt="한국전파진흥협회"></h1>
-			<div style="margin:60px 0 0 45px;">
+			<div style="margin:60px 0 0 45px; ">
             	<span style="border-top:2px solid #009ce8; padding-left:55px;"></span> 
         	  	<h2 style="margin:-10px 0 0 0; font-size:34px; font-weight:500; letter-spacing:-0.8px;"> 서비스 문의에 대한 답변드립니다.</h2>
               	<div style="width:608px; border:1px solid #e6f1f5; padding:30px 25px; margin:30px 0 0 0; background:#f4fcff; color:#333333;">
-              		<p style="width:100%; color:#333333;">&nbsp;</p>
+              		<p style="width:100%; color:#333333;word-wrap:break-word; white-space: pre-wrap;">&nbsp;</p>
               	</div>                
                 <div style="width:221px; height:50px; background:url(<spring:eval expression="@setProperties['isp.domain']"/>/publish/ma/images/mail/mail_from_btn.jpg) no-repeat; color:#fff; font-size:15px; font-weight:500; margin:30px auto; " >
                 	<a href="<spring:eval expression="@setProperties['isp.domain']"/>" style="color:#fff; text-decoration:none;"><p style="padding:15px 0 0 40px;">홈페이지 바로가기</p></a>
@@ -112,7 +112,7 @@
 				<h2 style="font-weight:500;  letter-spacing:-1px; font-size:34px; margin-top:1px;"> 서비스 문의에 대한 답변드립니다.</h2>
 			</div>
 	        <div style="margin:40px 0 0 45px;">
-				<div style="width:608px; padding:0 0 20px 0; olor:#333333; line-height:25px;">&nbsp;</div>
+				<div style="width:608px; padding:0 0 20px 0; color:#333333; line-height:25px;word-wrap:break-word; white-space: pre-wrap;">&nbsp;</div>
 				<div style="width:221px; height:50px; background:url(<spring:eval expression="@setProperties['isp.domain']"/>/publish/ma/images/mail/mail_from_btn.jpg) no-repeat; color:#fff; font-size:15px; font-weight:500; " >
 					<a href="<spring:eval expression="@setProperties['isp.domain']"/>" style="color:#fff; text-decoration:none;">	<p style="padding:15px 0 0 40px;">홈페이지 바로가기</p></a>
 				</div>                
@@ -140,7 +140,7 @@
 				<h2 style="; font-size:34px; font-weight:500; letter-spacing:-0.8px;"> 서비스 문의에 대한 답변드립니다.</h2>
 				<span style="border-top:2px solid #0080c9; padding-left:35px;"></span>
 				             
-				<div style="width:608px;padding:0px 0 10px 0;color:#333333; line-height:24px;">&nbsp;</div>
+				<div style="width:608px;padding:0px 0 10px 0;color:#333333; line-height:24px;word-wrap:break-word; white-space: pre-wrap;">&nbsp;</div>
 				<div style="width:221px; height:50px; background:url(<spring:eval expression="@setProperties['isp.domain']"/>/publish/ma/images/mail/mail_from_btn.jpg) no-repeat; color:#fff; font-size:15px; font-weight:500; " >
 					<a href="<spring:eval expression="@setProperties['isp.domain']"/>" style="color:#fff; text-decoration:none;"><p style="padding:15px 0 0 40px;">홈페이지 바로가기</p></a>
 				</div>                
@@ -164,11 +164,9 @@
 <script type="text/javascript" src="/publish/ma/js/board.js"></script>
 <script type="text/javascript" src="/resource/editor/js/HuskyEZCreator.js" charset="utf-8"></script>
 <script type="text/javascript">
-<%-- 부모창과 자식창(팝업) 사이에서 공유될 변수. 선택한 체크박스의 정보를 담는용도로 쓰인다. --%>
-var arrCol1Json=[];
+var col1Json=[];
 
 var oEditors = [];
-$( ".p_main_pop" ).draggable();
 
 <%-- 에디터 --%>
 nhn.husky.EZCreator.createInIFrame({
@@ -191,7 +189,7 @@ $("#btn_submit").on("click", function(){
 		oEditors.getById["cont"].exec("FOCUS"); /* 에디터 */
 		return false;
 	}		
-	
+	var col1Boxes = $("[ID^=col1Item_]").size();
 	fncPageBoard('submit','${searchVO.procType}Proc.do');
 	return false;
 });
@@ -202,12 +200,12 @@ $("#btn_returnView").click(function(){
 });
 
 var fncUserDel=function(elemntId){
-	$("#"+elemntId).remove();
+	$("#picked"+elemntId).remove();
 	return false;
 }
 
 <%--이메일 보낼때 내용의 양식을 선택하는 코드--%>
-function fncContStyle(val) {
+function wformStyle(val) {
 	$("#cont").next().remove();
 	
 	var htmlContStyle = '';
@@ -235,19 +233,14 @@ function fncContStyle(val) {
 }
 
 var modalEmailList=function(){
-	var htmlModal = '<div id="dispay_view1" class="mainPop js-mainPop id_popup1 p_main_pop">';
 	$.ajax({
 	    url: "popModal.do",
 	    dataType: "HTML",  
 	    success: function(data) { 
-	    	htmlModal+=data;
-	    	htmlModal+='</div>'; 
-	    	$("#modal").html(htmlModal);
-	    	//$("#display_view1").html(data);
+	    	$("#display_view1").html(data);
 	    	view_show(1);
-	    	$( ".p_main_pop" ).draggable();
+	    	//$(".js-popup" ).draggable();
 	    }
 	});	
-	
 }
 </script>

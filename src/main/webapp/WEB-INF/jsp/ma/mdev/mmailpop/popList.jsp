@@ -13,7 +13,7 @@
 		</colgroup>
 		<thead>
 			<tr>
-				<th scope="col"><input type="checkbox" id="arrCol1AllCheckbox" onclick="onclickArrCol1AllCheckbox()"></th>
+				<th scope="col"><input type="checkbox" id="col1AllCheckbox" onclick="onclickArrCol1AllCheckbox()"></th>
 				<th scope="col">이름</th>
 				<th scope="col">아이디</th>
 				<th scope="col">이메일</th>
@@ -25,7 +25,7 @@
 					<c:forEach var="result" items="${resultList}" varStatus="status">
 						<tr>
 							<td><%-- 아이템 리스트용 체크박스 --%>
-								<input type="checkbox" name="arrCol1Item" id="arrCol1Item_${result.seq}" value="${result.seq}" data-userInfo='{"id":"arrCol1Item_${result.seq}","name":"${result.name }","email": "${result.email }","userid":"${result.id }" }'>
+								<input type="checkbox" name="col1Item" id="col1Item_${result.seq}" value="${result.seq}" data-userInfo='{"id":"col1Item_${result.seq}","name":"${result.name }","email": "${result.email }","userSeq":"${result.seq }" }'>
 							</td>
 							<td>${result.name }</td>
 							<td>${result.id }</td>
@@ -55,74 +55,85 @@
 <script type="text/javaScript">
 <%--리스트 화면에서 보이는 체크박스를 자동으로 체크해주는 코드. 
  사용자가 체크박스를 클릭 -> 페이지네이션 링크 클릭 -> 이전 페이지링크 클릭시 예전에 클릭했던 체크박스를 유지시켜줌 --%>
-arrCol1Json= $("#col1").val().trim() ? JSON.parse($("#col1").val().trim()) : arrCol1Json
-arrCol1Json.forEach(function(value){
+col1Json= $("#col1").val().trim() ? JSON.parse($("#col1").val().trim()) : col1Json
+col1Json.forEach(function(value){
 	$('#'+value.id).attr('checked', 'checked');
 });
-var arrCol1CheckedBoxes = $("[ID^=arrCol1Item_]:checked").size();
-var arrCol1Boxes = $("[ID^=arrCol1Item_]").size();
-if(arrCol1CheckedBoxes == arrCol1Boxes){
-	$("#arrCol1AllCheckbox").attr('checked','checked');
+chkAllBoxesAuto();
+
+<%-- 상황을 감지하여 전체 체크박스를 자동으로 체크해주는 코드 --%>
+function chkAllBoxesAuto(){
+	var col1CheckedBoxes = $("[ID^=col1Item_]:checked").size();
+	var col1Boxes = $("[ID^=col1Item_]").size();
+	console.log("## col1CheckedBoxes: "+col1CheckedBoxes+", col1Boxes: "+col1Boxes)
+	if(+col1CheckedBoxes == +col1Boxes){
+		$("#col1AllCheckbox").prop('checked','checked');
+	}
+	else{
+		$("#col1AllCheckbox").removeAttr('checked');
+	}
+	return false;
 }
- 
+
 <%-- 체크박스 하나의 이벤트를 감지하는 코드 --%>
-$("[ID^=arrCol1Item_]").change(function() {
+$("[ID^=col1Item_]").change(function() {
 	var userInfo=$(this).attr("data-userInfo");
 	userInfo=JSON.parse(userInfo);
     if(this.checked) {
-    	if(checkDupArrayIndex(arrCol1Json,userInfo.id)<0){
-    		arrCol1Json.push(userInfo);
+    	if(checkDupArrayIndex(col1Json,userInfo.id)<0){
+    		col1Json.push(userInfo);
     	}
     }
     else{
-    	var arrCol1JsonIndex=checkDupArrayIndex(arrCol1Json,userInfo.id);
-    	if(checkDupArrayIndex(arrCol1Json,userInfo.id) > -1){
-    		arrCol1Json.splice(arrCol1JsonIndex,1);
+    	var col1JsonIndex=checkDupArrayIndex(col1Json,userInfo.id);
+    	if(checkDupArrayIndex(col1Json,userInfo.id) > -1){
+    		col1Json.splice(col1JsonIndex,1);
     	}
     }
-    $("#col1").val(JSON.stringify(arrCol1Json))
+    chkAllBoxesAuto();
+    $("#col1").val(JSON.stringify(col1Json))
     return false;
 });
 
 <%-- 전체 체크박스를 클릭했을때 작동하는 이벤트 함수 --%>
 var onclickArrCol1AllCheckbox=function(){
-	$("#arrCol1AllCheckbox").change(function() {
+	$("#col1AllCheckbox").change(function() {
 	    if(this.checked) {
 			selectAllCheckbox();
 	    }
 	    else{
 	    	unselectAllCheckbox();
 	    }
-	    $("#col1").val(JSON.stringify(arrCol1Json))
+	    $("#col1").val(JSON.stringify(col1Json))
 	});
 	return false;
 }
 
 <%-- 아이템 리스트의 모든 체크박스를 체크하는 코드 --%>
 var selectAllCheckbox=function(){
-	$('[ID^=arrCol1Item_]').prop('checked', true);
-	var checkedBoxes = $("[ID^=arrCol1Item_]:checked");
+	$('[ID^=col1Item_]').prop('checked', true);
+	var checkedBoxes = $("[ID^=col1Item_]:checked");
 	checkedBoxes.each(function() { 
 		var userInfo=$(this).attr("data-userInfo");
 		userInfo=JSON.parse(userInfo);
-		if(checkDupArrayIndex(arrCol1Json,userInfo.id) < 0){
-	   		arrCol1Json.push(userInfo);
+		if(checkDupArrayIndex(col1Json,userInfo.id) < 0){
+	   		col1Json.push(userInfo);
 	   	}
 	});
 }
 
 <%-- 아이템 리스트의 모든 체크박스를 해재하는 코드 --%>
 var unselectAllCheckbox=function(){
-	var checkedBoxes = $("[ID^=arrCol1Item_]:checked");
+	var checkedBoxes = $("[ID^=col1Item_]:checked");
 	checkedBoxes.each(function() { 
 		var userInfo=$(this).attr("data-userInfo");
 		userInfo=JSON.parse(userInfo);
-		var arrCol1JsonIndex=checkDupArrayIndex(arrCol1Json,userInfo.id);
-    	if(arrCol1JsonIndex > -1){
-    		arrCol1Json.splice(arrCol1JsonIndex,1);
+		var col1JsonIndex=checkDupArrayIndex(col1Json,userInfo.id);
+    	if(col1JsonIndex > -1){
+    		col1Json.splice(col1JsonIndex,1);
     	}
 	});
-	$('[ID^=arrCol1Item_]').prop('checked', false);
+	$('[ID^=col1Item_]').prop('checked', false);
 }
 
 <%-- 특정 json 객체에 key값이 있나 확인하는 코드--%>
@@ -155,19 +166,19 @@ var checkDupArrayIndex=function(arrayList,itemValue){
 
 var fncChoose=function() {
 	var arrUserHtml='';
-	if(arrCol1Json.length > 0){
-		for(var j = 0; j<arrCol1Json.length; j++){
-			arrUserHtml += '<li class="mail_select_obj" id="' + arrCol1Json[j].id + '">';
-			arrUserHtml += arrCol1Json[j].name + '(' + arrCol1Json[j].email + ')';
+	if(col1Json.length > 0){
+		for(var j = 0; j<col1Json.length; j++){
+			arrUserHtml += '<li class="mail_select_obj" id="picked' + col1Json[j].id + '">';
+			arrUserHtml += col1Json[j].name + '(' + col1Json[j].email + ')';
 			<%-- \'' '\'  넣어주는 이유가 parameter를 문자열로 넘겨주기 위한 코드--%>
-			arrUserHtml += '<a href="javascript:void(0)" class="mail_del btn_del" onclick="fncUserDel(\'' + arrCol1Json[j].id + '\')">x</a>';
-			arrUserHtml += '<input type="hidden" name="mailList[' + j + '].name" value="'+arrCol1Json[j].name+'" />';
-			arrUserHtml += '<input type="hidden" name="mailList[' + j + '].rEmail" value="'+arrCol1Json[j].email+'" />';
-			arrUserHtml += '<input type="hidden" name="mailList[' + j + '].userid" value="'+arrCol1Json[j].userid+'" />';
+			arrUserHtml += '<a href="javascript:void(0)" class="mail_del btn_del" onclick="fncUserDel(\'' + col1Json[j].id + '\')">x</a>';
+			arrUserHtml += '<input type="hidden" name="mailList[' + j + '].name" value="'+col1Json[j].name+'" />';
+			arrUserHtml += '<input type="hidden" name="mailList[' + j + '].rEmail" value="'+col1Json[j].email+'" />';
+			arrUserHtml += '<input type="hidden" name="mailList[' + j + '].userSeq" value="'+col1Json[j].userSeq+'" />';
 			arrUserHtml += '</li>';
 		}
 	}
-	window.opener.arrCol1Json=arrCol1Json
+	window.opener.col1Json=col1Json
 	opener.$("#col1").val($("#col1").val().trim());
 	opener.$("#receiver").html(arrUserHtml);	
 	

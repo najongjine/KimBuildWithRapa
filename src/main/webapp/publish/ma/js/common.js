@@ -179,14 +179,14 @@ $(document).ready(function(){
 });
 
 //팝업. 샘플로 들어 있던것
-function view_show(num) {
+function view_show_sample(num) {
   var left = ( $(window).scrollLeft() + ( $(window).width() - $('.popup').width()) / 2 );
   var top = ( $(window).scrollTop() + ( $(window).height() - $('.popup').height()) / 2 );
   $('.popup').css({'left':left,'top':top, 'position':'absolute'});
   document.getElementById("dispay_view"+num).style.display = "block";
   document.getElementById("layer_bg").style.display = "block";
 }
-function view_show_bk(num) {
+function view_show(num) {
     var left = (( $(window).width() - $("#display_view"+num).width()) / 2 );
     var top = (( $(window).height() - $("#display_view"+num).height()) / 2 );
     $("#display_view"+num).css({'left':left,'top':top, 'position':'fixed'});
@@ -194,11 +194,11 @@ function view_show_bk(num) {
     document.getElementById("js-popup-bg").style.display = "block";
     return false;
  }
-function view_hide(num) {
+function view_hide_sample(num) {
   document.getElementById("dispay_view"+num).style.display = "none";
   document.getElementById("layer_bg").style.display = "none";
 }
-function view_hide_bk(num) {
+function view_hide(num) {
     $("body").removeClass("ofHidden");
     document.getElementById("display_view"+num).style.display = "none";
     document.getElementById("js-popup-bg").style.display = "none";
@@ -210,6 +210,11 @@ $(function(){
         $(this).css("display","none");
     });
 });
+// 팝업 드래그(jquery ui 파일이 연결되어 있어야함.)
+$(function(){
+	$(".js-popup" ).draggable();
+})
+
 
 var fncDate = function(){
 	var setDate = arguments;

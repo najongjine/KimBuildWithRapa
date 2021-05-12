@@ -13,6 +13,7 @@
 			<col style="width:5%">
 			<col>
 			<col style="width:10%">
+			<col style="width:5%">
 			<col style="width:10%">
 		</colgroup>
 		<thead>
@@ -20,6 +21,7 @@
 				<th scope="col">번호</th>
 				<th scope="col" class="subject">제목</th>
 				<th scope="col">등록자</th>
+				<th scope="col">조회수</th>
 				<th scope="col">등록일</th>
 			</tr>
 		</thead>
@@ -31,8 +33,9 @@
 							<td onclick="fncPageBoard('view','view.do','${result.seq}','seq')">
 								${paginationInfo.totalRecordCount+1 - ((searchVO.pageIndex-1) * searchVO.pageSize + status.count)}
 							</td>
-							<td class="subject" onclick="fncPageBoard('view','view.do','${result.seq}','seq')">${util:cutText(result.title,30,'...') }</td>
+							<td class="subject text_over" onclick="fncPageBoard('view','view.do','${result.seq}','seq')">${result.title }</td>
 							<td onclick="fncPageBoard('view','view.do','${result.seq}','seq')">${result.name }</td>
+							<td onclick="fncPageBoard('view','view.do','${result.seq}','seq')">${result.visitedCnt }</td>
 							<td onclick="fncPageBoard('view','view.do','${result.seq}','seq')">${result.rgstDt }</td>
 						</tr>
 					</c:forEach>
@@ -55,8 +58,3 @@
 	</div>
 </div>
 <%-- //paging end--%>
-
-<script type="text/javascript" src="/publish/ma/js/board.js"></script>
-<script type="text/javascript">
-
-</script>
