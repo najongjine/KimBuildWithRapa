@@ -211,10 +211,11 @@ $(function(){
     });
 });
 // 팝업 드래그(jquery ui 파일이 연결되어 있어야함.)
+/*
 $(function(){
 	$(".js-popup" ).draggable();
 })
-
+*/
 
 var fncDate = function(){
 	var setDate = arguments;

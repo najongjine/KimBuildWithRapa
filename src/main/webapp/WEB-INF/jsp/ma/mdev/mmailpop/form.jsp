@@ -81,11 +81,17 @@
             	<span style="border-top:2px solid #009ce8; padding-left:55px;"></span> 
         	  	<h2 style="margin:-10px 0 0 0; font-size:34px; font-weight:500; letter-spacing:-0.8px;"> 서비스 문의에 대한 답변드립니다.</h2>
               	<div style="width:608px; border:1px solid #e6f1f5; padding:30px 25px; margin:30px 0 0 0; background:#f4fcff; color:#333333;">
-              		<p style="width:100%; color:#333333;">&nbsp;</p>
-              	</div>                
-                               
+              		<p style="width:100%; color:#333333;">
+              		<p>p test 조작</p>
+              		<p>p test 조작</p>
+              		<p>p test 조작</p>
+              		<p></p>
+              		<p>p test 조작</p>
+              		<p>p test 조작</p>
+              	</div>     
         	</div>
-        	<div style="width:221px; height:50px; background:url(http://121.179.119.218:8000/publish/ma/images/mail/mail_from_btn.jpg) no-repeat; color:#fff; font-size:15px; font-weight:500; margin:30px auto; " >
+        	<div>dummy</div>
+        	<div style="width:221px; height:50px; background:url(<spring:eval expression="@setProperties['isp.domain']"/>/publish/ma/images/mail/mail_from_btn.jpg) no-repeat; color:#fff; font-size:15px; font-weight:500; margin:30px auto; " >
                 	<a href="<spring:eval expression="@setProperties['isp.domain']"/>" style="color:#fff; text-decoration:none;"><p style="padding:15px 0 0 40px;">홈페이지 바로가기</p></a>
                 </div> 
             <p style="background:url(/publish/ma/images/mail/mail_from_info.png) no-repeat 40px 9px #f9fafa; height:25px; padding:10px 0 0 65px; font-size:11px; color:#888888; ">
