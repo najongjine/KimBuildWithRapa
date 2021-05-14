@@ -3,17 +3,28 @@
 <mapper namespace="com.open.ComplChrt">
 
 	<sql id="Where">
-		<if test="searchKeyword !=null and searchKeyword !=''">
-			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==0">
-				AND (TITLE LIKE CONCAT('%',#{searchKeyword},'%') OR CONT like CONCAT('%',#{searchKeyword},'%'))
-			</if>
-			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==1">
-				AND TITLE LIKE CONCAT('%',#{searchKeyword},'%')
-			</if>
-			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==2">
-				AND CONT LIKE CONCAT('%',#{searchKeyword},'%')
-			</if>
-	 	</if>
+		<if test="searchCondition !=null and searchCondition !='' and searchCondition ==0">
+			AND ADDRESS LIKE CONCAT('%',#{searchKeyword},'%')
+		</if>
+		<if test='schEtc02 != null and schEtc02 !=""'>
+			AND DATE_FORMAT(VISIT_DATE, '%Y') = #{schEtc02}
+		</if>
+		<if test="schEtc03 !=null and schEtc03 !=''">
+			AND AREA = #{schEtc03}
+		</if>
+		<if test="schEtc04 !=null and schEtc04 !=''">
+			AND COM = #{schEtc04}
+		</if>
+		
+		<if test='schEtc05!=null and schEtc05!="" and schEtc01.equalsIgnoreCase("Y")'>
+	     	AND DATE_FORMAT(VISIT_DATE, '%Y') = DATE_FORMAT(#{schEtc05}, '%Y')
+	    </if> 
+	    <if test='schEtc05!=null and schEtc05!="" and schEtc01.equalsIgnoreCase("M")'>
+	    	AND DATE_FORMAT(VISIT_DATE, '%Y.%m') = DATE_FORMAT(#{schEtc05}, '%Y.%m')
+	    </if> 
+	    <if test='schEtc06!=null and schEtc06!=""'>
+	     	AND AREA = #{schEtc06}
+	    </if> 
 	</sql>
 	
 	<select id="selectContents" parameterType="complchrtVO" resultType="complchrtVO">
@@ -39,57 +50,89 @@
 	
 	
 	<select id="selectTotalDataList" parameterType="cmmnDefaultVO" resultType="complchrtVO">
-		/* Sample.selectList */
+		/* totalData.selectList */
 		<![CDATA[
-      	     SELECT  
-				  AREA1 area1
-				  ,AREA2 area2
-				  ,AREA3 area3
-				  ,AREA4 area4
-				  ,AREA5 area5
-				  ,AREA6 area6
-				  ,AREA7 area7
-				  ,TOTAL toal
-				  ,VISIT_DATE visitDate
-		     FROM V_COMPLAIN_TOTAL
-	      ]]>
-		     <include refid="Where"/>	 
-	     <![CDATA[ 
-	    		ORDER BY VISIT_DATE DESC
+      	     SELECT 
+			* 
+			,(SELECT area1+area2+area3+area4+area5+area6) total
 		]]>
+			FROM
+			(
+			SELECT
+			FORMAT(SUM(IF(AREA = '수도권',1,0)),0) area1
+			,FORMAT(SUM(IF(AREA = '경상권',1,0)),0) area2
+			,FORMAT(SUM(IF(AREA = '충청권',1,0)),0) area3
+			,FORMAT(SUM(IF(AREA = '전라권',1,0)),0) area4
+			,FORMAT(SUM(IF(AREA = '강원권',1,0)),0) area5
+			,FORMAT(SUM(IF(AREA = '제주권',1,0)),0) area6
+			,FORMAT(SUM(IF(AREA NOT REGEXP '수도권|경상권|충청권|전라권|강원권|제주권', 1,0)),0) area7
+			,<choose>
+		      <when test="schEtc01.equalsIgnoreCase('Y')">
+		            CONCAT(DATE_FORMAT(VISIT_DATE,'%Y'),' ','년') visitDate
+		      </when>
+		      <otherwise>
+		           CONCAT(DATE_FORMAT(VISIT_DATE,'%m'),' ','월')	visitDate
+		   	  </otherwise>
+		   	</choose>
+		   	,VISIT_DATE visitDateReal
+			FROM V_COMPLAIN_V2
+			WHERE 1=1
+			<include refid="Where"/>
+			
+			<choose>
+		      <when test="schEtc01.equalsIgnoreCase('Y')">
+		            GROUP BY DATE_FORMAT(VISIT_DATE,'%Y')
+		      </when>
+		      <otherwise>
+		           GROUP BY DATE_FORMAT(VISIT_DATE,'%Y.%m')
+		   	  </otherwise>
+		   	</choose>
+			ORDER BY VISIT_DATE DESC
+			) as T1
+	     
 	</select>	
 	
 	<select id="selectList" parameterType="cmmnDefaultVO" resultType="complchrtVO">
-		/* Sample.selectList */
+		/* compl.selectList */
 		<![CDATA[
       	     SELECT  
-				  SEQ seq
-				, TITLE title
-				, CONT cont
-				, DATE_FORMAT(RGST_DT,'%Y.%m.%d') rgstDt
-				, RGST_ID rgstId
-				, F_USER_NM(RGST_ID) name
-				, ATCH_FILE_ID atchFileId
-				, STA_DATE staDate
-				, END_DATE endDate
-		     FROM T_SAMPLE TS
-			 WHERE USE_YN='Y'	
+				  COM com
+				  ,ADDRESS address
+				  ,AREA area
+				  ,VISIT_DATE visitDate
+		     FROM V_COMPLAIN_V2
+		     WHERE 1=1
 	      ]]>
-		     <include refid="Where"/>	 
-	     <![CDATA[ 
-	    		ORDER BY SEQ DESC
-				LIMIT  #{firstIndex} , #{recordCountPerPage}
-		]]>
+		     <include refid="Where"/>	
+	    	<choose>
+				<when test='schEtc15 != null and schEtc15 !="" and schEtc15.equals("E") '>
+					ORDER BY VISIT_DATE DESC
+				</when>
+				<otherwise>
+					ORDER BY VISIT_DATE DESC
+					LIMIT  #{firstIndex} , #{recordCountPerPage}
+				</otherwise>
+			</choose>
 	</select>	
-
+	
+	<select id="yearList" parameterType="cmmnDefaultVO" resultType="complchrtVO">
+		/* Mgr0149.yearList */
+		<![CDATA[
+			SELECT
+				DATE_FORMAT(VISIT_DATE, '%Y')	year
+			FROM V_COMPLAIN_V2
+			GROUP BY DATE_FORMAT(VISIT_DATE, '%Y')
+			ORDER BY DATE_FORMAT(VISIT_DATE, '%Y') DESC
+		]]>
+	</select>
 
 	<select id="selectCount" parameterType="cmmnDefaultVO" resultType="int">
-		/* Sample.selectCount */
+		/* compl.selectCount */
 		<![CDATA[
 			SELECT 
-				COUNT(SEQ) cnt 
-			FROM T_SAMPLE
-			WHERE USE_YN='Y' 
+				COUNT(*) cnt 
+			FROM V_COMPLAIN_V2
+		     WHERE 1=1
 		]]>
 			 <include refid="Where"/>
 	</select>
@@ -146,4 +189,29 @@
 		]]>
 	</update>
 
+	<insert id="excelInsertContents" parameterType="complchrtVO">
+		<selectKey resultType="String" keyProperty="ciapTotalSeq" order="BEFORE">
+	        SELECT IFNULL(MAX(CT.CIAP_TOTAL_SEQ)+1,1) FROM T_ECLCOMPLAIN CT
+	    </selectKey>		
+			INSERT INTO T_ECLCOMPLAIN(
+				  CIAP_TOTAL_SEQ
+				, COM
+				, AREA
+				, ADDRESS
+				, VISIT_DATE
+			)
+			VALUES 
+			<foreach item="item" index="index" collection="excelList" separator=" , ">
+				(
+				  #{ciapTotalSeq} + #{index}	
+				, #{item.com}
+				, #{item.area}
+				, #{item.address}
+				, #{item.visitDate}
+				)
+			</foreach>
+	</insert>
+	<delete id="deleteEclCompl" parameterType="complchrtVO">
+		DELETE FROM T_ECLCOMPLAIN
+	</delete>
 </mapper>

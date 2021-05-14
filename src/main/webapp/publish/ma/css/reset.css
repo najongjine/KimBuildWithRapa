@@ -130,6 +130,7 @@ a.btn:focus, input.btn:focus,button.btn:focus {outline: none;}
 .mar_r50 {margin-right:50px !important;}
 
 /*padding*/
+.pd_t0 {padding-top:0px !important;}
 .pd_t3 {padding-top:3px !important;}
 .pd_t10 {padding-top:10px !important;}
 .pd_t15 {padding-top:15px !important;}

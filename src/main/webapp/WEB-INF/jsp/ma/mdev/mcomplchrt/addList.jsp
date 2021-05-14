@@ -7,12 +7,13 @@
 			전체 : <strong><c:out value="${paginationInfo.totalRecordCount}"/></strong> 건(<c:out value="${searchVO.pageIndex}/${paginationInfo.totalPageCount}"/> Page)
 		</span>
 	</div>
+	<c:if test="${searchVO.pageUnit eq '30'}">selected="selected"</c:if>
 	<div class="tbl_right">
 		<select id="pageCnt" class="w100"> 
-			<option value="10" <c:out value="${searchVO.pageUnit eq '10' ? 'selected=\"selected\"':''}"/>>10개</option>
-			<option value="30" <c:out value="${searchVO.pageUnit eq '30' ? 'selected=\"selected\"':''}"/>>30개</option>
-			<option value="50" <c:out value="${searchVO.pageUnit eq '50' ? 'selected=\"selected\"':''}"/>>50개</option>
-			<option value="100" <c:out value="${searchVO.pageUnit eq '100' ? 'selected=\"selected\"':''}"/>>100개</option>
+			<option value="10" <c:if test="${empty searchVO.pageUnit or searchVO.pageUnit eq '10'}">selected="selected"</c:if>>10개</option>
+			<option value="30" <c:if test="${searchVO.pageUnit eq '30'}">selected="selected"</c:if>>30개</option>
+			<option value="50" <c:if test="${searchVO.pageUnit eq '50'}">selected="selected"</c:if>>50개</option>
+			<option value="100" <c:if test="${searchVO.pageUnit eq '100'}">selected="selected"</c:if>>100개</option>
 		</select>
 	</div>
 </div>

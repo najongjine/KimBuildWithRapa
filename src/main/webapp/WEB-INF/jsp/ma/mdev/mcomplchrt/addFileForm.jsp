@@ -19,7 +19,7 @@
 						<tr>
 							<th>엑셀파일첨부</th>
 							<td>
-								<input type="text" id="fileNm" name="fileNm" />
+								<input type="hidden" id="fileNm" name="fileNm" />
 								<iframe name="fileNmFrame" id="fileNmFrame" src="/atch/fileUpload.do?atchFileId=&fileCnt=1&atchFileIdNm=fileNm&updateType=upload" style="width: 100%;" height="50" frameborder="0" title="파일 업로드 폼"></iframe>
 							</td>
 						</tr>
@@ -42,7 +42,7 @@ function fncExcelUp(){
 				dataType : "HTML",
 				data : {"atchFileId":$("#fileNm").val()},
 				success : function(data){
-					if(data.error != "" && data.error != null){
+					if(data.error){
 						alert(data.error);			
 					}else{
 						alert("엑셀업로드가 완료되었습니다.");
@@ -50,7 +50,7 @@ function fncExcelUp(){
 						view_hide(1);	
 					}
 				},
-				error : function(data){
+				error : function(error){
 					alert("오류가 발생하였습니다.\n잠시 후 다시 시도해 주시기 바랍니다.");
 					fncLodingEnd();
 				}

@@ -19,7 +19,7 @@
 	
 	<%-- 통계 테이들의 데이터를 클릭 했을시, 수도권	경상권	충청권	전라권 등을 담을때 쓰는 inputbox. addList 테이블 부분만 바뀐다. 
 	 차트+통계의 검색박스 통계 테이블 데이터 클릭 부분과 리스트 부분을 따로가기 위한 필드--%>
-	<input type=""hidden"" id="schEtc06" name="schEtc06" value="${schEtc06 }"/>
+	<input type="hidden" id="schEtc06" name="schEtc06" value="${schEtc06 }"/>
 	<ul class="tab js-tab tab_menu">
 	    <li class="btn_tap current"><a href="javascript:void(0)" onclick="fncSelTab('Y')">년도별</a></li>
 	    <li class="btn_tap"><a href="javascript:void(0)" onclick="fncSelTab('M')">월별</a></li>
@@ -30,7 +30,11 @@
 				<legend>검색</legend>
 				<div class="search_basic">
 					<strong class="tit hideBtn3">년도</strong>	
-					<select id="schEtc02" name="schEtc02" class="selec w10p sel_year" title="구분 선택">
+					<select id="schEtc02" name="schEtc02" class="selec w100 sel_year" title="구분 선택">
+						<option value="" <c:if test="${empty schEtc02}">selected="selected"</c:if>>전체</option>
+						<c:forEach var="result" items="${yearList }" varStatus="status">
+							<option value="${result.year }" <c:if test="${schEtc02 eq result.year}">selected="selected"</c:if>>${result.year }</option>
+						</c:forEach>
 					</select>
 					<strong class="tit hideBtn3">권역</strong>		
 					<select id="schEtc03" name="schEtc03" class="selec w10p" title="구분 선택">  
@@ -71,8 +75,9 @@
 </form>
 </div>
 <script type="text/javascript">
+<%--통계 테이블 페이지를 가져오는 코드--%>
 var loadTotalData=function(){
-	if(!$("#schEtc01").val()){
+	if(!$("#schEtc01").val().trim()){
 		$("#schEtc01").val('Y');
 	}
 	$.ajax({
@@ -88,4 +93,53 @@ var loadTotalData=function(){
 	});
 	return false;
 }
+var fncSelTab=function(dtKind){
+	if(!dtKind){
+		dtKind='Y';
+	}
+	$("#schEtc01").val(dtKind);
+	if(dtKind == 'Y' && !$('#schEtc02 option[value=""]').length){
+		var emptyOption = new Option("전체", "");
+		$(emptyOption).html("전체");
+		$("#schEtc02").prepend(emptyOption);
+	}
+	if(dtKind == 'Y'){
+		$("#schEtc02").val('')
+	}
+	if(dtKind == 'M' && !$("#schEtc02").val().trim()){
+		var tempYear=$("#schEtc02 option:eq(1)").val();
+		$("#schEtc02").val(tempYear);
+	}
+	if(dtKind == 'M'){
+		$("#schEtc02 option[value='']").remove();
+	}
+	loadTotalData();
+	return false;
+}
+
+<%--데이터 없음을 나타내는 td 의 colspan을 알아서 조정해주는 코드--%>
+var fncColLength=function(){
+	$("colgroup").each(function(index){
+		$(this).nextAll('tbody:first').find(".no_data").attr("colspan", $(this).children("col").length);
+	});
+}
+
+fncSelTab();
+$("#schEtc02, #schEtc03, #schEtc04").on('change',function(){
+	<%--통계 클릭->년도를 바꿀때 통계클릭 데이터가 남아 있으면 검색이 이상해져서 그것을 잡아주는 코드--%>
+	$("#schEtc05").val("");
+	$("#schEtc06").val("");
+	loadTotalData();
+	return false;
+});
+$("#searchKeyword").keydown(function(e){
+	if (e.keyCode == 13) { 
+		loadTotalData();
+	}
+	return false;
+});
+$("#btn_ciapSearch").on("click",function(){
+	loadTotalData();
+	return false;
+})
 </script>

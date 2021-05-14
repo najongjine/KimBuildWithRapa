@@ -88,6 +88,8 @@ public class MComplChrtControllerV2 {
 	@SuppressWarnings("unchecked")
 	@RequestMapping(folderPath + "list.do")
 	public String list(@ModelAttribute("searchVO") ComplChrtVO searchVO, ModelMap model, HttpServletRequest request) throws Exception {
+		List<ComplChrtVO> yearList = (List<ComplChrtVO>) cmmnService.selectList(searchVO, PROGRAM_ID+".yearList");
+		model.addAttribute("yearList", yearList);
 		
 		return ".mLayout:"+ folderPath + "listV2";
 	}
@@ -103,15 +105,26 @@ public class MComplChrtControllerV2 {
 	@SuppressWarnings("unchecked")
 	@RequestMapping(folderPath + "totalData.do")
 	public String totalData(@ModelAttribute("searchVO") ComplChrtVO searchVO, ModelMap model, HttpServletRequest request) throws Exception {
-		
-		
+		System.out.println("## totalData: "+searchVO.getSchEtc01());
+		System.out.println("## totalData: "+searchVO.getSchEtc02());
+		System.out.println("## totalData: "+searchVO.getSchEtc03());
+		System.out.println("## totalData: "+searchVO.getSchEtc04());
+		System.out.println("## totalData: "+searchVO.getSchEtc05());
+		System.out.println("## totalData: "+searchVO.getSchEtc06());
+		List<ComplChrtVO> resultList=(List<ComplChrtVO>) cmmnService.selectList(searchVO, PROGRAM_ID+".selectTotalDataList");
+		model.addAttribute("resultList", resultList);
 		return folderPath + "totalDataV2";
 	}
 	
 	@SuppressWarnings("unchecked")
 	@RequestMapping(folderPath + "addList.do")
 	public String addList(@ModelAttribute("searchVO") ComplChrtVO searchVO, ModelMap model, HttpServletRequest request) throws Exception {
-			
+		System.out.println("## addList: "+searchVO.getSchEtc01());
+		System.out.println("## addList: "+searchVO.getSchEtc02());
+		System.out.println("## addList: "+searchVO.getSchEtc03());
+		System.out.println("## addList: "+searchVO.getSchEtc04());
+		System.out.println("## addList: "+searchVO.getSchEtc05());
+		System.out.println("## addList: "+searchVO.getSchEtc06());
 		int pageSize = propertiesService.getInt("pageSize");
 		searchVO.setPageSize(pageSize);
 		
@@ -187,7 +200,7 @@ public class MComplChrtControllerV2 {
 		    	
 	    		ComplChrtVO inData = new ComplChrtVO();
 	    		inData.setExcelList(list);
-	    		cmmnService.deleteContents(inData, PROGRAM_ID); // 엑셀 업로드로 insert 했던 데이터들 전부 삭제
+	    		cmmnService.deleteContents(inData, PROGRAM_ID+".deleteEclCompl"); // 엑셀 업로드로 insert 했던 데이터들 전부 삭제
 	    		cmmnService.insertContents(inData, PROGRAM_ID +".excelInsertContents");
 		    }
 		    
@@ -415,14 +428,14 @@ public class MComplChrtControllerV2 {
 		String url = "/mgr0149.xlsx";
 		
 		searchVO.setSchEtc15("E");
-		List<ComplChrtVO> resultList =  (List<ComplChrtVO>) cmmnService.selectList(searchVO, PROGRAM_ID);;
+		List<ComplChrtVO> yearList =  (List<ComplChrtVO>) cmmnService.selectList(searchVO, PROGRAM_ID);;
 		
 		mav.addObject("target", tit);
 		mav.addObject("source", url);
 		
 		/*엑셀안에 resultlist 를 뿌리는 코드가 있음. 엑셀안에 데이터를를 쏴주는거*/
-		if(resultList.size() > 0){
-			mav.addObject("result", resultList);
+		if(yearList.size() > 0){
+			mav.addObject("result", yearList);
 		}
 		return mav;
 	}
