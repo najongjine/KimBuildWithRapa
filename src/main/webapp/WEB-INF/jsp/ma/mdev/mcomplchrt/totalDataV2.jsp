@@ -14,7 +14,7 @@
 <div class="tbl_top mar_t15">
 	<div class="tbl_left"></div>
 	<div class="tbl_right">  
-        <a href="javascript:void(0)" class="btn btn_excel btn_sml03 pd_t0" onclick="fncPageBoard('list','excelDown.do')"><span>엑셀 다운로드</span></a>
+        <a href="javascript:void(0)" class="btn btn_excel btn_sml03 pd_t0" onclick="fncDlExcel();"><span>엑셀 다운로드</span></a>
         <a href="#" class="btn btn_save btn_sml03" onclick="fncAddFileForm();">데이터등록</a>
     </div>
 </div>
@@ -87,6 +87,16 @@ var fncAddFileForm=function(){
 	    	view_show(1);
 	    }
 	});	
+}
+<%--엑셀 다운로드--%>
+var fncDlExcel=function(){
+	var noData=$(".no_data").length;
+	if(+noData){
+		alert("다운로드받을 데이터가 없습니다")
+		return false;
+	}
+	fncPageBoard('list','excelDown.do');
+	return false;
 }
 <%--json으로 묶으면 차트를 그릴때 문제가 생긴다--%>
 <%-- 차트를 그릴때 필요한 합계 데이터.--%>
@@ -165,5 +175,4 @@ Highcharts.setOptions({
 });
 
 fncPageBoard('addList','addList.do','1');
-</script>
 </script>

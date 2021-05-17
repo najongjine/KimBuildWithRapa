@@ -27,28 +27,6 @@
 	    </if> 
 	</sql>
 	
-	<select id="selectContents" parameterType="complchrtVO" resultType="complchrtVO">
-		/* Sample.selectContents */
-		<![CDATA[
-			 SELECT  
-				  SEQ seq
-				, TITLE title
-				, CONT cont
-				, DATE_FORMAT(RGST_DT,'%Y.%m.%d') rgstDt
-				, RGST_ID rgstId
-				, ATCH_FILE_ID atchFileId
-				, F_USER_NM(RGST_ID) name
-				, STA_DATE staDate
-				, END_DATE endDate
-				, NOTI_YN notiYn
-		     FROM  T_SAMPLE TS
-			 WHERE  USE_YN='Y'	
-				 AND SEQ = #{seq}
-		]]>
-	</select>
-	
-	
-	
 	<select id="selectTotalDataList" parameterType="cmmnDefaultVO" resultType="complchrtVO">
 		/* totalData.selectList */
 		<![CDATA[
@@ -75,7 +53,7 @@
 		   	  </otherwise>
 		   	</choose>
 		   	,VISIT_DATE visitDateReal
-			FROM V_COMPLAIN_V2
+			FROM v_complain_v2
 			WHERE 1=1
 			<include refid="Where"/>
 			
@@ -100,7 +78,7 @@
 				  ,ADDRESS address
 				  ,AREA area
 				  ,VISIT_DATE visitDate
-		     FROM V_COMPLAIN_V2
+		     FROM v_complain_v2
 		     WHERE 1=1
 	      ]]>
 		     <include refid="Where"/>	
@@ -120,7 +98,7 @@
 		<![CDATA[
 			SELECT
 				DATE_FORMAT(VISIT_DATE, '%Y')	year
-			FROM V_COMPLAIN_V2
+			FROM v_complain_v2
 			GROUP BY DATE_FORMAT(VISIT_DATE, '%Y')
 			ORDER BY DATE_FORMAT(VISIT_DATE, '%Y') DESC
 		]]>
@@ -131,37 +109,11 @@
 		<![CDATA[
 			SELECT 
 				COUNT(*) cnt 
-			FROM V_COMPLAIN_V2
+			FROM v_complain_v2
 		     WHERE 1=1
 		]]>
 			 <include refid="Where"/>
 	</select>
-	
-	<insert id="insertContents" parameterType="complchrtVO">
-		/* Sample.insertContents */
-		<![CDATA[
-			INSERT INTO T_SAMPLE(
-           	  	  SEQ 
-				, TITLE 
-				, CONT
-				, RGST_ID 
-				, ATCH_FILE_ID 
-				, STA_DATE
-				, END_DATE 
-				, NOTI_YN 
-			)
-			VALUES (
-				 (SELECT IFNULL(MAX(TS.SEQ)+1,1) FROM T_SAMPLE TS)
-				,#{title ,jdbcType=VARCHAR}
-				,#{cont ,jdbcType=VARCHAR}
-				,#{loginSeq ,jdbcType=VARCHAR}
-				,#{atchFileId ,jdbcType=VARCHAR}
-				,#{staDate ,jdbcType=VARCHAR}
-				,#{endDate ,jdbcType=VARCHAR}
-				,#{notiYn ,jdbcType=VARCHAR}
-			)
-		]]>
-	</insert>
 	
 	<update id="updateContents" parameterType="complchrtVO">
 		/* Sample.updateContents */
@@ -179,22 +131,12 @@
 		]]>
 	</update>
 	
-	<update id="deleteContents" parameterType="complchrtVO">
-		/* Sample.deleteContents */
-		<![CDATA[
-			UPDATE T_SAMPLE
-		       SET
-	          	 USE_YN='N'
-			WHERE SEQ=#{seq}
-		]]>
-	</update>
-
 	<insert id="excelInsertContents" parameterType="complchrtVO">
-		<selectKey resultType="String" keyProperty="ciapTotalSeq" order="BEFORE">
-	        SELECT IFNULL(MAX(CT.CIAP_TOTAL_SEQ)+1,1) FROM T_ECLCOMPLAIN CT
+		<selectKey resultType="String" keyProperty="eclCmplSeq" order="BEFORE">
+	        SELECT IFNULL(MAX(CT.ECL_CMPL_SEQ)+1,1) FROM t_eclcomplain CT
 	    </selectKey>		
-			INSERT INTO T_ECLCOMPLAIN(
-				  CIAP_TOTAL_SEQ
+			INSERT INTO t_eclcomplain(
+				  ECL_CMPL_SEQ
 				, COM
 				, AREA
 				, ADDRESS
@@ -203,7 +145,7 @@
 			VALUES 
 			<foreach item="item" index="index" collection="excelList" separator=" , ">
 				(
-				  #{ciapTotalSeq} + #{index}	
+				  #{eclCmplSeq} + #{index}	
 				, #{item.com}
 				, #{item.area}
 				, #{item.address}
@@ -212,6 +154,6 @@
 			</foreach>
 	</insert>
 	<delete id="deleteEclCompl" parameterType="complchrtVO">
-		DELETE FROM T_ECLCOMPLAIN
+		DELETE FROM t_eclcomplain
 	</delete>
 </mapper>

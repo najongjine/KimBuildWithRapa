@@ -15,7 +15,8 @@
 			,NAME name
 			,AUTH_CODE authCode
 			,(SELECT AUTH_CODE_NM FROM T_AD_USER_AUTH WHERE A.AUTH_CODE=AUTH_CODE) authCodeNm
-			, DATE_FORMAT(LAST_DATE,'%Y.%m.%d %H:%i:%s') lastDate
+			, DATE_FORMAT(NOW(), '%Y.%m.%d %r')		nowDate
+			, DATE_FORMAT(LAST_DATE,'%Y.%m.%d %r')	lastDate
 			, SITE_CLCD siteClcd
 		FROM
 			T_AD_USER A

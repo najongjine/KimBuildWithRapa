@@ -105,12 +105,6 @@ public class MComplChrtControllerV2 {
 	@SuppressWarnings("unchecked")
 	@RequestMapping(folderPath + "totalData.do")
 	public String totalData(@ModelAttribute("searchVO") ComplChrtVO searchVO, ModelMap model, HttpServletRequest request) throws Exception {
-		System.out.println("## totalData: "+searchVO.getSchEtc01());
-		System.out.println("## totalData: "+searchVO.getSchEtc02());
-		System.out.println("## totalData: "+searchVO.getSchEtc03());
-		System.out.println("## totalData: "+searchVO.getSchEtc04());
-		System.out.println("## totalData: "+searchVO.getSchEtc05());
-		System.out.println("## totalData: "+searchVO.getSchEtc06());
 		List<ComplChrtVO> resultList=(List<ComplChrtVO>) cmmnService.selectList(searchVO, PROGRAM_ID+".selectTotalDataList");
 		model.addAttribute("resultList", resultList);
 		return folderPath + "totalDataV2";
@@ -119,12 +113,6 @@ public class MComplChrtControllerV2 {
 	@SuppressWarnings("unchecked")
 	@RequestMapping(folderPath + "addList.do")
 	public String addList(@ModelAttribute("searchVO") ComplChrtVO searchVO, ModelMap model, HttpServletRequest request) throws Exception {
-		System.out.println("## addList: "+searchVO.getSchEtc01());
-		System.out.println("## addList: "+searchVO.getSchEtc02());
-		System.out.println("## addList: "+searchVO.getSchEtc03());
-		System.out.println("## addList: "+searchVO.getSchEtc04());
-		System.out.println("## addList: "+searchVO.getSchEtc05());
-		System.out.println("## addList: "+searchVO.getSchEtc06());
 		int pageSize = propertiesService.getInt("pageSize");
 		searchVO.setPageSize(pageSize);
 		

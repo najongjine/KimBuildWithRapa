@@ -7,7 +7,6 @@
 			전체 : <strong><c:out value="${paginationInfo.totalRecordCount}"/></strong> 건(<c:out value="${searchVO.pageIndex}/${paginationInfo.totalPageCount}"/> Page)
 		</span>
 	</div>
-	<c:if test="${searchVO.pageUnit eq '30'}">selected="selected"</c:if>
 	<div class="tbl_right">
 		<select id="pageCnt" class="w100"> 
 			<option value="10" <c:if test="${empty searchVO.pageUnit or searchVO.pageUnit eq '10'}">selected="selected"</c:if>>10개</option>

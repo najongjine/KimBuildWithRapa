@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.open.MaMain">
+
+	<sql id="Where">
+		<if test="searchKeyword !=null and searchKeyword !=''">
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==0">
+				AND (TITLE LIKE CONCAT('%',#{searchKeyword},'%') OR CONT like CONCAT('%',#{searchKeyword},'%'))
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==1">
+				AND TITLE LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==2">
+				AND CONT LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+	 	</if>
+	</sql>
+	
+	<select id="selectContents" parameterType="sampleVO" resultType="sampleVO">
+		/* Sample.selectContents */
+		<![CDATA[
+			 SELECT  
+				  SEQ seq
+				, TITLE title
+				, CONT cont
+				, DATE_FORMAT(RGST_DT,'%Y.%m.%d') rgstDt
+				, RGST_ID rgstId
+				, ATCH_FILE_ID atchFileId
+				, F_USER_NM(RGST_ID) name
+				, STA_DATE staDate
+				, END_DATE endDate
+				, NOTI_YN notiYn
+		     FROM  T_SAMPLE TS
+			 WHERE  USE_YN='Y'	
+				 AND SEQ = #{seq}
+		]]>
+	</select>
+	
+	
+	
+	<select id="selectAllowNList" parameterType="cmmnDefaultVO" resultType="maMainVO">
+		/* Sample.selectList */
+		<![CDATA[
+      	     SELECT
+			SEQ seq
+			, F_USER_NM(RGST_ID) name
+			,TITLE title
+			,CASE 
+					WHEN B_STATUS = 'N' THEN '신청'
+					WHEN B_STATUS = 'O' THEN '승인'
+					WHEN B_STATUS = 'R' THEN '반려'
+					WHEN B_STATUS = 'P' THEN '재신청'
+					ELSE '불명'
+				END bStatus
+			,DATE(RGST_DT) rgstDt
+			FROM t_accept_reject_pending
+			WHERE USE_YN = 'Y'
+			 AND B_STATUS = 'N'
+			ORDER BY RGST_DT DESC
+			LIMIT  4
+		]]>
+	</select>	
+	
+	<select id="selectAllowPList" parameterType="cmmnDefaultVO" resultType="maMainVO">
+		/* Sample.selectList */
+		<![CDATA[
+      	     SELECT
+			SEQ seq
+			, F_USER_NM(RGST_ID) name
+			,TITLE title
+			,CASE 
+					WHEN B_STATUS = 'N' THEN '신청'
+					WHEN B_STATUS = 'O' THEN '승인'
+					WHEN B_STATUS = 'R' THEN '반려'
+					WHEN B_STATUS = 'P' THEN '재신청'
+					ELSE '불명'
+				END bStatus
+			,DATE(RGST_DT) rgstDt
+			FROM t_accept_reject_pending
+			WHERE USE_YN = 'Y'
+			 AND B_STATUS = 'P'
+			ORDER BY RGST_DT DESC
+			LIMIT  4
+		]]>
+	</select>	
+	
+	<select id="selectComplList" parameterType="cmmnDefaultVO" resultType="complchrtVO">
+		/* Sample.selectList */
+		<![CDATA[
+      	     SELECT  
+				  COM com
+				  ,ADDRESS address
+				  ,AREA area
+				  ,VISIT_DATE visitDate
+		     FROM v_complain_v2
+		     WHERE 1=1
+		 ]]>
+		     <if test='schEtc02 != null and schEtc02 !=""'>
+				AND DATE_FORMAT(VISIT_DATE, '%Y') = #{schEtc02}
+			</if>
+		     ORDER BY VISIT_DATE DESC
+		     LIMIT 4
+	</select>	
+	
+	<select id="selectComplTotal" parameterType="cmmnDefaultVO" resultType="complchrtVO">
+		/* Sample.selectList */
+		<![CDATA[
+			SELECT 
+			* 
+			,(SELECT area1+area2+area3+area4+area5+area6) total
+			FROM
+			(
+      	     SELECT  
+      	     	area1,area2,area3,area4,area5,area6
+				,DATE_FORMAT(VISIT_DATE,'%Y') visitDate
+		     FROM v_complain_total
+		     WHERE 1=1
+		 ]]>
+		     <if test='schEtc02 != null and schEtc02 !=""'>
+				AND DATE_FORMAT(VISIT_DATE, '%Y') = #{schEtc02}
+			</if>
+		     ORDER BY VISIT_DATE DESC
+		     LIMIT 1
+		     ) t1
+	</select>	
+	
+	<select id="complTotalChrt" parameterType="cmmnDefaultVO" resultType="complchrtVO">
+		/* Sample.selectList */
+		 	SELECT 
+			* 
+			,(SELECT area1+area2+area3+area4+area5+area6) total
+			FROM
+			(
+			SELECT
+			FORMAT(SUM(IF(AREA = '수도권',1,0)),0) area1
+			,FORMAT(SUM(IF(AREA = '경상권',1,0)),0) area2
+			,FORMAT(SUM(IF(AREA = '충청권',1,0)),0) area3
+			,FORMAT(SUM(IF(AREA = '전라권',1,0)),0) area4
+			,FORMAT(SUM(IF(AREA = '강원권',1,0)),0) area5
+			,FORMAT(SUM(IF(AREA = '제주권',1,0)),0) area6
+			,FORMAT(SUM(IF(AREA NOT REGEXP '수도권|경상권|충청권|전라권|강원권|제주권', 1,0)),0) area7
+			,CONCAT(DATE_FORMAT(VISIT_DATE,'%m'),' ','월')	visitDate
+			FROM v_complain_v2
+			WHERE 1=1
+			AND DATE_FORMAT(VISIT_DATE, '%Y') = #{schEtc02}
+			GROUP BY DATE_FORMAT(VISIT_DATE,'%Y.%m')
+			ORDER BY VISIT_DATE DESC
+			) as T1
+	</select>	
+
+
+	<select id="selectConCount" parameterType="cmmnDefaultVO" resultType="maMainVO">
+		/* Sample.selectCount */
+		<![CDATA[
+			SELECT
+			maCnt
+			,ftCnt
+			FROM (
+				SELECT
+				count(*) maCnt
+				FROM t_logmanage
+				WHERE USERKIND = 'admin'
+				 AND URL NOT REGEXP 'addList.do|Proc.do'
+				ORDER BY RGST_DT DESC
+			)as t1,
+			(
+				SELECT
+				count(*) ftCnt
+				FROM t_logmanage
+				WHERE USERKIND = 'user'
+				 AND URL NOT REGEXP 'addList.do|Proc.do'
+				ORDER BY RGST_DT DESC
+			)as t2
+		]]>
+	</select>
+	
+	<insert id="insertContents" parameterType="sampleVO">
+		/* Sample.insertContents */
+		<![CDATA[
+			INSERT INTO T_SAMPLE(
+           	  	  SEQ 
+				, TITLE 
+				, CONT
+				, RGST_ID 
+				, ATCH_FILE_ID 
+				, STA_DATE
+				, END_DATE 
+				, NOTI_YN 
+			)
+			VALUES (
+				 (SELECT IFNULL(MAX(TS.SEQ)+1,1) FROM T_SAMPLE TS)
+				,#{title ,jdbcType=VARCHAR}
+				,#{cont ,jdbcType=VARCHAR}
+				,#{loginSeq ,jdbcType=VARCHAR}
+				,#{atchFileId ,jdbcType=VARCHAR}
+				,#{staDate ,jdbcType=VARCHAR}
+				,#{endDate ,jdbcType=VARCHAR}
+				,#{notiYn ,jdbcType=VARCHAR}
+			)
+		]]>
+	</insert>
+	
+	<update id="updateContents" parameterType="sampleVO">
+		/* Sample.updateContents */
+		<![CDATA[
+			UPDATE T_SAMPLE     
+			 SET 
+				  TITLE = #{title ,jdbcType=VARCHAR} 
+				, CONT = #{cont ,jdbcType=VARCHAR}
+				, RVSE_DT = NOW()
+				, ATCH_FILE_ID = #{atchFileId ,jdbcType=VARCHAR}
+				, STA_DATE = #{staDate ,jdbcType=VARCHAR}
+				, END_DATE  = #{endDate ,jdbcType=VARCHAR}
+				, NOTI_YN  = #{notiYn ,jdbcType=VARCHAR}
+			WHERE  SEQ = #{seq}  
+		]]>
+	</update>
+	
+	<update id="deleteContents" parameterType="sampleVO">
+		/* Sample.deleteContents */
+		<![CDATA[
+			UPDATE T_SAMPLE
+		       SET
+	          	 USE_YN='N'
+			WHERE SEQ=#{seq}
+		]]>
+	</update>
+
+
+	
+	
+	
+	
+</mapper>

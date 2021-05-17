@@ -30,31 +30,38 @@
 	</div>
 </div>
 <div class="pop_footer">
-    <a href="javascript:void(0);" title="등록" onclick="fncExcelUp();" class="btn btn_mdl btn_add">등록</a>
+    <a href="javascript:void(0);" id="btnExcelUpl" title="등록" onclick="fncExcelUp();" class="btn btn_mdl btn_add">등록</a>
     <a href="javascript:void(0);" title="취소" onclick="view_hide(1);return false" class="btn btn_mdl btn_close">취소</a>
 </div>
 <script type="text/javascript">
 function fncExcelUp(){
 	if($("#fileNm").val() != null && $("#fileNm").val() != "" ){
 		if(confirm("파일을 업로드 하시겠습니까?")){
+			<%--버튼 클릭 무력화--%>
+			$("#btnExcelUpl").prop("onclick", null).off("click");
+			//setTimeout(function() {
 			$.ajax({
 				url : "saveExcel.json",
 				dataType : "HTML",
 				data : {"atchFileId":$("#fileNm").val()},
 				success : function(data){
 					if(data.error){
-						alert(data.error);			
+						alert(data.error);		
 					}else{
 						alert("엑셀업로드가 완료되었습니다.");
-						fncPageBoard('addList','addList.do',1);
 						view_hide(1);	
+						loadTotalData();
 					}
 				},
 				error : function(error){
 					alert("오류가 발생하였습니다.\n잠시 후 다시 시도해 주시기 바랍니다.");
 					fncLodingEnd();
+				},complete : function(){
+					<%--버튼 클릭 활성화--%>
+					$("#btnExcelUpl").prop("onclick", "fncExcelUp()").on("click");
 				}
-			});
+			})
+			//}, 5000);
 		}
 	}else{
 		alert("첨부파일을 등록해주세요.");

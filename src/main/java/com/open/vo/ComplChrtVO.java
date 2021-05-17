@@ -23,7 +23,7 @@ public class ComplChrtVO extends CmmnDefaultVO implements Serializable {
 	 */
 	private static final long serialVersionUID = 2172623835339565860L;
 	
-	private String ciapTotalSeq;
+	private String eclCmplSeq;
 	private String com;
 	private String area;
 	private String address;
@@ -106,14 +106,6 @@ public class ComplChrtVO extends CmmnDefaultVO implements Serializable {
 
 	public void setExcelList(List<ComplChrtVO> excelList) {
 		this.excelList = excelList;
-	}
-
-	public String getCiapTotalSeq() {
-		return ciapTotalSeq;
-	}
-
-	public void setCiapTotalSeq(String ciapTotalSeq) {
-		this.ciapTotalSeq = ciapTotalSeq;
 	}
 
 	public String getAtchFileId() {
@@ -354,5 +346,13 @@ public class ComplChrtVO extends CmmnDefaultVO implements Serializable {
 
 	public void setTotal(String total) {
 		this.total = total;
+	}
+
+	public String getEclCmplSeq() {
+		return eclCmplSeq;
+	}
+
+	public void setEclCmplSeq(String eclCmplSeq) {
+		this.eclCmplSeq = eclCmplSeq;
 	}
 }

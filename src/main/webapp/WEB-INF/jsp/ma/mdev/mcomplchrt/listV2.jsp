@@ -37,7 +37,7 @@
 						</c:forEach>
 					</select>
 					<strong class="tit hideBtn3">권역</strong>		
-					<select id="schEtc03" name="schEtc03" class="selec w10p" title="구분 선택">  
+					<select id="schEtc03" name="schEtc03" class="selec w100" title="구분 선택">  
 					 	<option value="">전체</option>
 						<option value="수도권" >수도권</option>
 						<option value="경상권" >경상권</option>
@@ -48,7 +48,7 @@
 						<!-- <option value="기타" >기타</option> -->
 					</select>				
 					<strong class="tit hideBtn3">통신사</strong>	
-					<select id="schEtc04" name="schEtc04" class="selec w10p" title="구분 선택">  
+					<select id="schEtc04" name="schEtc04" class="selec w100" title="구분 선택">  
 						<option value="">전체</option>
 						<option value="SKT">SKT</option>
 						<option value="KT">KT</option>
@@ -113,6 +113,9 @@ var fncSelTab=function(dtKind){
 	if(dtKind == 'M'){
 		$("#schEtc02 option[value='']").remove();
 	}
+	<%--통계 클릭->년도를 바꿀때 통계클릭 데이터가 남아 있으면 검색이 이상해져서 그것을 잡아주는 코드--%>
+	$("#schEtc05").val("");
+	$("#schEtc06").val("");
 	loadTotalData();
 	return false;
 }

@@ -59,6 +59,7 @@ public class LoginVO extends CmmnDefaultVO implements Serializable {
 	private String regId;
 	private String keyDiv;
 	private String lastDate;
+	private String nowDate;
 	private String siteClcd;
 	
 	private String failCnt;
@@ -238,6 +239,12 @@ public class LoginVO extends CmmnDefaultVO implements Serializable {
 	}
 	public void setAddr(String addr) {
 		this.addr = addr;
+	}
+	public String getNowDate() {
+		return nowDate;
+	}
+	public void setNowDate(String nowDate) {
+		this.nowDate = nowDate;
 	}
 	
 }

@@ -147,7 +147,9 @@ public class LoginController {
 				status.setComplete();
 				return "/ma/login/login";
 			} else {
-
+				/*최근접속일*/
+				cmmnService.updateContents(userLoginVO, PROGRAM_ID);
+				
 				/** 세션 정보 입력 */
 				HttpSession session = request.getSession();
 				session.setAttribute(SessionUtil.SESSION_MANAGE_KEY, userLoginVO);
@@ -158,6 +160,8 @@ public class LoginController {
 				session.setAttribute("loginMgrAuthCode", userLoginVO.getAuthCode()); // 권한
 				session.setAttribute("loginMgrAuthCodeNm", userLoginVO.getAuthCodeNm()); // 권한명
 				session.setAttribute("loginMgrSiteClcd", userLoginVO.getSiteClcd()); // 사이트구분
+				session.setAttribute("loginMgrLastDate", userLoginVO.getLastDate()); 
+				session.setAttribute("loginMgrNowDate", userLoginVO.getNowDate()); 
 
 				MnVO auth = new MnVO();
 				auth.setLvl("2");
@@ -209,7 +213,7 @@ public class LoginController {
 				status.setComplete();
 
 				if (loginVO.getReturnUrl() == null || loginVO.getReturnUrl().equals("")) {
-					return "redirect:/ma/sys/mn/list.do";
+					return "redirect:/ma/main.do";
 				} else {
 					String returnUrl = URLDecoder.decode(loginVO.getReturnUrl(), "UTF-8");
 					returnUrl = returnUrl.replaceAll("&amp;", "&");

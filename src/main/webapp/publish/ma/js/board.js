@@ -490,3 +490,13 @@ function fncSelSite(id1,id2,pCd,type){
 function fncNcNtPg(rUrl){
 	fncPageBoard('list', rUrl);
 }
+
+var fncLoadingStart = function(){
+	$(".loading_wrap").show();
+}
+
+var fncLoadingEnd = function(){
+	setTimeout(function(){ 
+		$(".loading_wrap").hide();
+    }, 350);	
+}
