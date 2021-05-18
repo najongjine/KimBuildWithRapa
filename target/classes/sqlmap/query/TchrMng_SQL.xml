@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.open.TchrMng">
+
+	<sql id="Where">
+		<if test="searchKeyword !=null and searchKeyword !=''">
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==0">
+				AND (TITLE LIKE CONCAT('%',#{searchKeyword},'%') OR CONT like CONCAT('%',#{searchKeyword},'%'))
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==1">
+				AND TITLE LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==2">
+				AND CONT LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+	 	</if>
+	</sql>
+	
+	<select id="selectContents" parameterType="tchrMngVO" resultType="tchrMngVO">
+		/* Sample.selectContents */
+		<![CDATA[
+			 SELECT  
+				 SEQ seq
+				,NAME name
+				,RGST_DT rgstDt
+				,RGST_ID rgstId
+				,RVSE_DT rvseDt
+				,RVSE_ID rvseId
+				,USE_YN useYn
+				,ATCH_FILE_ID atchFileId
+				,HP hp
+				,PHONE phone
+				,EMAIL email
+				,EMAIL_YN emailYn
+				,BIRTHDT birthdt
+				,ADDR addr
+				,ZONECODE zonecode
+				,ADDR_DETAIL addrDetail
+				,JOB job
+				,JOB_NAME jobName
+				,DPT_NAME dptName
+				,POSITION position
+				,HOMEPAGE homepage
+				,WORK_PHONE workPhone
+				,WORK_FAX workFax
+				,MEMBER_YN memberYn
+				,MEMBER_ALW_YN memberAlwYn
+				,B_NRML_MEMBER bNrmlMember
+				,B_AL_TCHR_STUS bAlTchrStus
+				,CNAME cname
+				,LCTR_L lctrL
+				,LCTR_M lctrM
+				,LCTR_S lctrS
+				,LCTR_D lctrD
+				,LCTR_O lctrO
+				,PI_YN piYn
+				,UI_YN uiYn
+				,PIO_YN pioYn
+				,GENDER gender
+				,BYEAR byear
+				,BMONTH bmonth
+				,BDATE bdate
+		     FROM  t_tchr_mng TS
+			 WHERE  USE_YN='Y'	
+				 AND SEQ = #{seq}
+		]]>
+	</select>
+	
+	
+	
+	<select id="selectList" parameterType="cmmnDefaultVO" resultType="tchrMngVO">
+		/* Sample.selectList */
+		<![CDATA[
+      	     SELECT  
+				  SEQ seq
+				, NAME name
+				, JOB_NAME jobName
+				,(SELECT ID FROM t_ad_user TAU WHERE TS.RGST_ID = TAU.SEQ) id
+				, RGST_ID rgstId
+				, HP hp
+				, EMAIL email
+				, DATE_FORMAT(RGST_DT,'%Y.%m.%d') rgstDt
+				,CASE
+					WHEN B_AL_TCHR_STUS = 'N' THEN '신청'
+					WHEN B_AL_TCHR_STUS = 'O' THEN '승인'
+					WHEN B_AL_TCHR_STUS = 'R' THEN '반려'
+					ELSE '미신청'
+				END bAlTchrStus
+		     FROM t_tchr_mng TS
+			 WHERE USE_YN='Y'	
+	      ]]>
+		     <include refid="Where"/>	 
+	     <![CDATA[ 
+	    		ORDER BY RGST_DT DESC
+				LIMIT  #{firstIndex} , #{recordCountPerPage}
+		]]>
+	</select>	
+
+
+	<select id="selectCount" parameterType="cmmnDefaultVO" resultType="int">
+		/* Sample.selectCount */
+		<![CDATA[
+			SELECT 
+				COUNT(SEQ) cnt 
+			FROM t_tchr_mng
+			WHERE USE_YN='Y' 
+		]]>
+			 <include refid="Where"/>
+	</select>
+	
+	<insert id="insertContents" parameterType="tchrMngVO">
+		/* Sample.insertContents */
+		<![CDATA[
+			INSERT INTO t_tchr_mng(
+           	  	 SEQ
+				,NAME
+				,PWD
+				,RGST_ID
+				,ATCH_FILE_ID
+				,HP
+				,PHONE
+				,EMAIL
+				,EMAIL_YN
+				,BIRTHDT
+				,ADDR
+				,ZONECODE
+				,ADDR_DETAIL
+				,JOB
+				,JOB_NAME
+				,DPT_NAME
+				,POSITION
+				,HOMEPAGE
+				,WORK_PHONE
+				,WORK_FAX
+				,MEMBER_YN
+				,MEMBER_ALW_YN
+				,B_NRML_MEMBER
+				,B_AL_TCHR_STUS
+				,CNAME
+				,LCTR_L
+				,LCTR_M
+				,LCTR_S
+				,LCTR_D
+				,LCTR_O
+				,PI_YN
+				,UI_YN
+				,PIO_YN
+				,GENDER
+				,BYEAR
+				,BMONTH
+				,BDATE
+				
+			)
+			VALUES (
+				 (SELECT IFNULL(MAX(TS.SEQ)+1,1) FROM t_tchr_mng TS)
+				,#{name, jdbcType=VARCHAR}
+				,#{pwd, jdbcType=VARCHAR}
+				,#{rgstId, jdbcType=VARCHAR}
+				,#{atchFileId, jdbcType=VARCHAR}
+				,#{hp, jdbcType=VARCHAR}
+				,#{phone, jdbcType=VARCHAR}
+				,#{email, jdbcType=VARCHAR}
+				,#{emailYn, jdbcType=VARCHAR}
+				,#{birthdt, jdbcType=VARCHAR}
+				,#{addr, jdbcType=VARCHAR}
+				,#{zonecode, jdbcType=VARCHAR}
+				,#{addrDetail, jdbcType=VARCHAR}
+				,#{job, jdbcType=VARCHAR}
+				,#{jobName, jdbcType=VARCHAR}
+				,#{dptName, jdbcType=VARCHAR}
+				,#{position, jdbcType=VARCHAR}
+				,#{homepage, jdbcType=VARCHAR}
+				,#{workPhone, jdbcType=VARCHAR}
+				,#{workFax, jdbcType=VARCHAR}
+				,#{memberYn, jdbcType=VARCHAR}
+				,#{memberAlwYn, jdbcType=VARCHAR}
+				,#{bNrmlMember, jdbcType=VARCHAR}
+				,#{bAlTchrStus, jdbcType=VARCHAR}
+				,#{cname, jdbcType=VARCHAR}
+				,#{lctrL, jdbcType=VARCHAR}
+				,#{lctrM, jdbcType=VARCHAR}
+				,#{lctrS, jdbcType=VARCHAR}
+				,#{lctrD, jdbcType=VARCHAR}
+				,#{lctrO, jdbcType=VARCHAR}
+				,#{piYn, jdbcType=VARCHAR}
+				,#{uiYn, jdbcType=VARCHAR}
+				,#{pioYn, jdbcType=VARCHAR}
+				,#{tchrMngSeq, jdbcType=VARCHAR}
+				,#{period, jdbcType=VARCHAR}
+				,#{schlName, jdbcType=VARCHAR}
+				,#{target, jdbcType=VARCHAR}
+				,#{lecSubject, jdbcType=VARCHAR}
+				,#{lecTime, jdbcType=VARCHAR}
+				,#{book, jdbcType=VARCHAR}
+				,#{ect, jdbcType=VARCHAR}
+				,#{bookNm, jdbcType=VARCHAR}
+				,#{publisher, jdbcType=VARCHAR}
+				,#{pubYear, jdbcType=VARCHAR}
+				,#{coAuth, jdbcType=VARCHAR}
+				,#{association, jdbcType=VARCHAR}
+				,#{irole, jdbcType=VARCHAR}
+				,#{period, jdbcType=VARCHAR}
+				,#{wPlace, jdbcType=VARCHAR}
+				,#{dpt, jdbcType=VARCHAR}
+				,#{rank, jdbcType=VARCHAR}
+				,#{mWork, jdbcType=VARCHAR}
+				,#{schlName, jdbcType=VARCHAR}
+				,#{major, jdbcType=VARCHAR}
+				,#{aDegree, jdbcType=VARCHAR}
+				,#{etc, jdbcType=VARCHAR}
+				,#{gender, jdbcType=VARCHAR}
+				,#{byear, jdbcType=VARCHAR}
+				,#{bmonth, jdbcType=VARCHAR}
+				,#{bdate, jdbcType=VARCHAR}
+			)
+		]]>
+	</insert>
+	
+	<update id="updateContents" parameterType="tchrMngVO">
+		/* Sample.updateContents */
+		<![CDATA[
+			UPDATE t_tchr_mng     
+			 SET 
+				  NAME = #{name, jdbcType=VARCHAR}
+				,ATCH_FILE_ID = #{atchFileId, jdbcType=VARCHAR}
+				,HP = #{hp, jdbcType=VARCHAR}
+				,PHONE = #{phone, jdbcType=VARCHAR}
+				,EMAIL = #{email, jdbcType=VARCHAR}
+				,EMAIL_YN = #{emailYn, jdbcType=VARCHAR}
+				,BIRTHDT = #{birthdt, jdbcType=VARCHAR}
+				,ADDR = #{addr, jdbcType=VARCHAR}
+				,ZONECODE = #{zonecode, jdbcType=VARCHAR}
+				,ADDR_DETAIL = #{addrDetail, jdbcType=VARCHAR}
+				,JOB = #{job, jdbcType=VARCHAR}
+				,JOB_NAME = #{jobName, jdbcType=VARCHAR}
+				,DPT_NAME = #{dptName, jdbcType=VARCHAR}
+				,POSITION = #{position, jdbcType=VARCHAR}
+				,HOMEPAGE = #{homepage, jdbcType=VARCHAR}
+				,WORK_PHONE = #{workPhone, jdbcType=VARCHAR}
+				,WORK_FAX = #{workFax, jdbcType=VARCHAR}
+				,MEMBER_YN = #{memberYn, jdbcType=VARCHAR}
+				,MEMBER_ALW_YN = #{memberAlwYn, jdbcType=VARCHAR}
+				,B_NRML_MEMBER = #{bNrmlMember, jdbcType=VARCHAR}
+				,B_AL_TCHR_STUS = #{bAlTchrStus, jdbcType=VARCHAR}
+				,CNAME = #{cname, jdbcType=VARCHAR}
+				,LCTR_L = #{lctrL, jdbcType=VARCHAR}
+				,LCTR_M = #{lctrM, jdbcType=VARCHAR}
+				,LCTR_S = #{lctrS, jdbcType=VARCHAR}
+				,LCTR_D = #{lctrD, jdbcType=VARCHAR}
+				,LCTR_O = #{lctrO, jdbcType=VARCHAR}
+				,PI_YN = #{piYn, jdbcType=VARCHAR}
+				,UI_YN = #{uiYn, jdbcType=VARCHAR}
+				,PIO_YN = #{pioYn, jdbcType=VARCHAR}
+				, NOTI_YN  = #{notiYn ,jdbcType=VARCHAR}
+				,RVSE_DT = NOW()
+				,RVSE_ID = #{rgstId, jdbcType=VARCHAR}
+				,GENDER = #{gender, jdbcType=VARCHAR}
+				,BYEAR = #{byear, jdbcType=VARCHAR}
+				,BMONTH = #{bmonth, jdbcType=VARCHAR}
+				,BDATE = #{bdate, jdbcType=VARCHAR}
+				
+			WHERE  SEQ = #{seq}  
+		]]>
+	</update>
+	
+	<update id="deleteContents" parameterType="tchrMngVO">
+		/* Sample.deleteContents */
+		<![CDATA[
+			UPDATE t_tchr_mng
+		       SET
+	          	 USE_YN='N'
+			WHERE SEQ=#{seq}
+		]]>
+	</update>
+
+	<select id="getId" parameterType="tchrMngVO" resultType="tchrMngVO">
+		/* Sample.selectContents */
+		<![CDATA[
+			 SELECT  
+				 ID id
+		     FROM  t_ad_user
+			 WHERE  USE_YN='Y'	
+				 AND ID = #{id}
+		]]>
+	</select>
+	
+	<select id="getEmail" parameterType="tchrMngVO" resultType="tchrMngVO">
+		/* Sample.selectContents */
+		<![CDATA[
+			 SELECT  
+				 EMAIL email
+		     FROM  t_ad_user
+			 WHERE  USE_YN='Y'	
+				 AND EMAIL = #{email}
+		]]>
+	</select>
+</mapper>

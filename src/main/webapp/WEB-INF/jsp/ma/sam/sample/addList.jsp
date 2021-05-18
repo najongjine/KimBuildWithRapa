@@ -31,8 +31,8 @@
 							<td onclick="fncPageBoard('view','view.do','${result.seq}','seq')">
 								${paginationInfo.totalRecordCount+1 - ((searchVO.pageIndex-1) * searchVO.pageSize + status.count)}
 							</td>
-							<td class="subject" onclick="fncPageBoard('view','view.do','${result.seq}','seq')">${util:cutText(result.title,30,'...') }</td>
-							<td onclick="fncPageBoard('view','view.do','${result.seq}','seq')">${result.name }</td>
+							<td class="subject" onclick="fncPageBoard('view','view.do','${result.seq}','seq')"><c:out value="${result.title}"/></td>
+							<td onclick="fncPageBoard('view','view.do','${result.seq}','seq')">${result.id }</td>
 							<td onclick="fncPageBoard('view','view.do','${result.seq}','seq')">${result.rgstDt }</td>
 						</tr>
 					</c:forEach>
@@ -63,7 +63,12 @@
 
 <script type="text/javascript" src="/publish/ma/js/board.js"></script>
 <script type="text/javascript">
-
+<%--데이터 없음을 나타내는 td 의 colspan을 알아서 조정해주는 코드--%>
+var fncColLength=function(){
+	$("colgroup").each(function(index){
+		$(this).nextAll('tbody:first').find(".no_data").attr("colspan", $(this).children("col").length);
+	});
+}
 var fncExcelUp=function(){
 	if($("#excelFileId").val() != null && $("#excelFileId").val() != '' ){
 		if(confirm("파일을 업로드 하시겠습니까?")){
@@ -97,4 +102,6 @@ var fncExcelUp=function(){
 		return false;
 	}
 }
+
+fncColLength();
 </script>

@@ -37,7 +37,14 @@ public class MaMainVO extends CmmnDefaultVO implements Serializable {
 	
 	private String maCnt;
 	private String ftCnt;
+	private String imonth;
 	private String year;
+	
+	private String nStusCnt;
+	private String pStusCnt;
+	private String rStusCnt;
+	private String oStusCnt;
+	
 	public String getSeq() {
 		return seq;
 	}
@@ -124,6 +131,36 @@ public class MaMainVO extends CmmnDefaultVO implements Serializable {
 	}
 	public void setYear(String year) {
 		this.year = year;
+	}
+	public String getnStusCnt() {
+		return nStusCnt;
+	}
+	public void setnStusCnt(String nStusCnt) {
+		this.nStusCnt = nStusCnt;
+	}
+	public String getpStusCnt() {
+		return pStusCnt;
+	}
+	public void setpStusCnt(String pStusCnt) {
+		this.pStusCnt = pStusCnt;
+	}
+	public String getrStusCnt() {
+		return rStusCnt;
+	}
+	public void setrStusCnt(String rStusCnt) {
+		this.rStusCnt = rStusCnt;
+	}
+	public String getoStusCnt() {
+		return oStusCnt;
+	}
+	public void setoStusCnt(String oStusCnt) {
+		this.oStusCnt = oStusCnt;
+	}
+	public String getImonth() {
+		return imonth;
+	}
+	public void setImonth(String imonth) {
+		this.imonth = imonth;
 	}
 	
 }

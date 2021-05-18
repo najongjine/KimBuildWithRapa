@@ -144,7 +144,7 @@
 			WHERE 1=1
 			AND DATE_FORMAT(VISIT_DATE, '%Y') = #{schEtc02}
 			GROUP BY DATE_FORMAT(VISIT_DATE,'%Y.%m')
-			ORDER BY VISIT_DATE DESC
+			ORDER BY VISIT_DATE
 			) as T1
 	</select>	
 
@@ -171,6 +171,66 @@
 				 AND URL NOT REGEXP 'addList.do|Proc.do'
 				ORDER BY RGST_DT DESC
 			)as t2
+		]]>
+	</select>
+	
+	<select id="selectUrlConMCount" parameterType="cmmnDefaultVO" resultType="maMainVO">
+		/* Sample.selectCount */
+		<![CDATA[
+			SELECT
+			(
+				SELECT COUNT(*) FROM t_logmanage WHERE USE_YN='Y'
+					AND USERKIND = 'admin'
+					AND URL NOT REGEXP 'addList.do|Proc.do'
+					AND DATE_FORMAT(RGST_DT, '%Y') = DATE_FORMAT(NOW(), '%Y')
+					AND MONTH(RGST_DT) = TM.IMONTH
+			) maCnt
+			,(
+				SELECT COUNT(*) FROM t_logmanage WHERE USE_YN='Y'
+					AND USERKIND = 'user'
+					AND URL NOT REGEXP 'addList.do|Proc.do'
+					AND DATE_FORMAT(RGST_DT, '%Y') = DATE_FORMAT(NOW(), '%Y')
+					AND MONTH(RGST_DT) = TM.IMONTH
+			) ftCnt
+			,REPLACE(CONCAT(IMONTH,' 월'),'0','') imonth
+			FROM t_months as TM
+			WHERE IMONTH <= MONTH(NOW())
+			ORDER BY IMONTH
+		]]>
+	</select>
+	
+	<select id="selectAllowBrdCount" parameterType="cmmnDefaultVO" resultType="maMainVO">
+		/* Sample.selectCount */
+		<![CDATA[
+			SELECT * FROM
+			(
+			 SELECT 
+			 COUNT(*) nStusCnt
+			 FROM t_accept_reject_pending
+			 WHERE USE_YN ='Y'
+				AND B_STATUS = 'N'
+			) as T1
+			,(
+			 SELECT 
+			 COUNT(*) pStusCnt
+			 FROM t_accept_reject_pending
+			 WHERE USE_YN ='Y'
+				AND B_STATUS = 'P'
+			) as T2
+			,(
+			 SELECT 
+			 COUNT(*) rStusCnt
+			 FROM t_accept_reject_pending
+			 WHERE USE_YN ='Y'
+				AND B_STATUS = 'R'
+			) as T3
+			,(
+			 SELECT 
+			 COUNT(*) oStusCnt
+			 FROM t_accept_reject_pending
+			 WHERE USE_YN ='Y'
+				AND B_STATUS = 'O'
+			) as T4
 		]]>
 	</select>
 	

@@ -15,7 +15,6 @@
 <meta http-equiv="X-UA-Compatible" content="IE=Edge">
 <title>전파방송통신교육원 포털</title>
 <link rel="stylesheet" type="text/css" href="/publish/ma/css/atic/style.css">
-<link rel="stylesheet" type="text/css" href="/publish/ma/css/atic/reset.css">
 <link rel="stylesheet" type="text/css" href="/publish/ma/css/atic/jquery-ui-1.12.1.custom.css"/>
 <script type="text/javascript" src="/publish/ma/js/jquery-1.11.3.min.js"></script>
 <script type="text/javascript" src="/publish/ma/js/jquery-ui-1.12.1.custom.js"></script>
@@ -33,23 +32,13 @@
 <div id="wrapper">
 	<header id="header">
 		<div class="header_box">
-			<div class="header_inner">
-				<h1 class="logo">
-					<a href="/mgr/main.do"><img src="/publish/mgr/images/logo.png" alt="전파방송통신교육원"/></a>
-				</h1>
-				<div class="util_box">
-					<span class="user_info">
-						<strong>${loginMgrNm}</strong> [ <strong>${loginMgrId }</strong> ] 님
-						<a href="/logout.do" class="btn_logout"><strong>로그아웃</strong></a>
-					</span>
-					<a href="/ma/sys/mn/list.do" class="go_homepage">홈페이지</a>
-				</div>
-			</div>
-			
+			<h1 class="logo">
+				<a href="/ma/main.do">사이트 로고</a>
+			</h1>
 			<!-- GNB -->
 			<div id="gnb_area">
 				<nav id="gnb">
-					<ul class="type08 clear">
+					<ul class="gnb clear">
 						<c:forEach var="result" items="${mgrMenu }" varStatus="status" >
 							<li ${util:getMenuCd(url).depth1 eq result.menuCd ? 'class="on"' : '' }>
 								<a href="${result.url }" >${result.menuNm }</a>
@@ -59,6 +48,13 @@
 				</nav>
 			</div>
 			<!-- //GNB -->
+			<div class="util_box">
+				<span class="user_info">
+					<strong>${loginMgrNm}</strong> [ <strong>${loginMgrId }</strong> ] 님
+					<a href="/logout.do" class="btn_logout"><strong>로그아웃</strong></a>
+				</span>
+				<a href="/ma/sys/mn/list.do" class="go_homepage">홈페이지</a>
+			</div>
 		</div>
 	</header>
 	<div id="main_container">
@@ -105,7 +101,7 @@
 					<input type="hidden" name="schEtc02" id="schEtc02" value="${searchVO.schEtc02}">
 				</form>
 				<div class="state01 m_box">
-					<h2 class="m_title">민원현황</h2>
+					<h2 class="m_title">민원합계</h2>
 					<span class="selcs">
 			          	<select id="select_eduCnt" onchange="chYearCompl(this);">
 			          		<c:choose>
@@ -163,9 +159,9 @@
 			        
 			        <div class="chart_cell m_box">
 			        	<div class="main_chart">
-			        		<h2 class="m_title">접속자 현황</h2>
+			        		<h2 class="m_title">접속횟수 현황</h2>
 							<div class="chart_box">
-								<div id="chart04" style="max-width:1160px;height:100%"></div>
+								<div id="chart02" style="max-width:1160px;height:100%"></div>
 							</div>
 						</div>
 			        </div>
@@ -224,7 +220,7 @@
 					<div class="m_box">
 						<div class="board_head">
 				      		<h2 class="m_title">재승인신청</h2>
-				      		<!-- <a href="/mgr/mgr0030/list.do" class="more" title="더보기">+</a> -->
+				      		<a href="/ma/mdev/mallow/list.do" class="more" title="더보기">+</a>
 				      	</div>
       					<div class="board_box">
 					       	<table class="main_board">
@@ -301,6 +297,74 @@ var chYearCompl=function(year){
 	getCompList($(year).val());
 	return false;
 }
+
+<%-- 차트를 그릴때 필요한 합계 데이터.--%>
+var arrUrlMaData = [];
+var arrUrlFtData = [];
+<%-- 차트를 그릴때 필요한 년도 데이터.--%>
+var arrUrlCategory = [];
+
+<c:forEach var="result" items="${urlConMCnt }" varStatus="status">
+	arrUrlMaData.push(+'${result.maCnt}');
+	arrUrlFtData.push(+'${result.ftCnt}');
+	arrUrlCategory.push('${result.imonth}');
+</c:forEach>
+
+<%--차트를 그릴 element id--%>
+Highcharts.chart('chart02', {
+    chart: {//
+        type: 'line'
+    },
+    <%-- 제목 부분은 opennote 양식을 사용하기 때문에 false--%>
+    title: false,
+    navigation: {
+       buttonOptions: {
+         y: -1000 //차트 다운버튼 화면에서 숨김
+       }
+    },
+    credits: {
+       enabled: false //하단 하이차트 주소 숨김
+    },
+    yAxis: {
+        title: false,
+        labels : {//
+            format: '{value:,.0f}'
+        }
+    },
+    xAxis: {
+     categories: arrUrlCategory
+    },
+    plotOptions: {
+        line: {
+          dataLabels: {
+            enabled: true
+          }
+        }
+    },
+    tooltip: {
+        headerFormat: '<span style="font-size:10px">{point.key}</span>',
+        pointFormat: '<table><tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                   '<td style="padding:0"><b>{point.y:,.0f}</b></td></tr>',
+        footerFormat: '</table>',
+        shared: true,
+        useHTML: true
+    },
+    series: [{
+        name: '관리자 접속횟수',
+        data: arrUrlMaData,
+        color:'#d4ad38',
+    }
+    ,{
+        name: '사용자 접속횟수',
+        data: arrUrlFtData
+    },
+    ]
+});
+Highcharts.setOptions({
+    lang : {
+       thousandsSep:','
+    }
+});
 
 getCompList();
 </script>

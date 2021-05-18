@@ -1,8 +1,8 @@
 <%@ page contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
 <jsp:directive.include file="/WEB-INF/jsp/cmmn/incTagLib.jsp"/>
+<%--
 <table class="state_tbl">
 	<colgroup>
-		<col style="width:25%">
 		<col style="width:25%">
 		<col style="width:25%">
 		<col>
@@ -11,13 +11,32 @@
 		<tr>
 			<th scope="col">구분</th>
 			<th scope="col">합계</th>
-			<th scope="col">년도</th>
 		</tr>
 	</thead>
 	<tbody>
-		<th scope="row">지역별 민원 전체합계</th>
+		<th scope="row">${compl.visitDate }년도 민원 전체합계</th>
 		<td class="point01"><fmt:formatNumber value="${compl.total }" pattern="#,###"/></td>
-		<td class="point02">${compl.visitDate }</td>
+	</tbody>
+</table>
+
+ --%>
+<table class="state_tbl">
+	<colgroup>
+		<c:forEach var="result" items="${complChrtList }">
+			<col>
+		</c:forEach>
+	</colgroup>
+	<thead>
+		<tr>
+			<c:forEach var="result" items="${complChrtList }">
+				<th scope="col"><c:out value="${result.visitDate}"/></th>
+			</c:forEach>
+		</tr>
+	</thead>
+	<tbody>
+		<c:forEach var="result" items="${complChrtList }">
+			<td class="point01"><fmt:formatNumber value="${result.total }" pattern="#,###"/></td>
+		</c:forEach>
 	</tbody>
 </table>
 
@@ -28,8 +47,8 @@ var arrComplData = [];
 var arrComplCategory = [];
 
 <c:forEach var="result" items="${complChrtList }" varStatus="status">
-arrComplData.push(+'${result.total}');
-arrComplCategory.push('${result.visitDate}');
+	arrComplData.push(+'${result.total}');
+	arrComplCategory.push('${result.visitDate}');
 </c:forEach>
 
 <%--차트를 그릴 element id--%>

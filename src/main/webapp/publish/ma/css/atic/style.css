@@ -8,53 +8,42 @@
 #skipnavi a:active {top:0; font-weight:bold;font-size:13px;line-height:20px;}
 
 /***** layout *****/
-#wrapper {position:relative;min-width:1200px;width:100%;margin:0 auto;height:100%;}
-#header {position: fixed;z-index: 10;top: 0;left: 0;width: 100%;height: 115px;background: #0a62c6;}
-.header_inner {position: relative;width: 100%;height: 60px;padding:7px 0 0;color: #fff;border-bottom: 5px solid #063d7c;}
-.logo {position: absolute;top: 0;left: 20px;display: inline-block;width: 220px;height: 60px;vertical-align: middle;}
-.logo > a {position: relative;display: block;line-height: 55px;}
-.logo > a img {font-size: 1%;line-height: 1;}
-.top_search {display:block;overflow: hidden;width: 30%;margin:0 auto;vertical-align: middle;border-radius: 23px;}
-.top_search > span {position: relative;display: block;height: 45px;padding-right: 42px;background:#298e92;}
-.top_search .text {width: 100%;height: 100%;padding-left: 10px;color: #fff;border: 0;background:transparent;}
-.top_search .text::placeholder {color: #abcccd;}
-.top_search .search {position: absolute;top: 0;right: 0;width: 42px;height: 100%;border: 0;background:url(../images/common/i_search.png) no-repeat 50% 50%;}
-.util_box {position:absolute;top: 14px;right: 20px;display: inline-block;}
-.user_info {margin-right: 18px;padding-left: 40px;background: url(../images/i_user.png) no-repeat 0 50%;line-height: 30px;}
-.user_info span {vertical-align: baseline;}
-.user_info span::after {display: inline-block;width: 2px;height: 10px;margin: 0 5px;content: " ";background: #fff;}
-.util_box .btn_logout {display: inline-block;width: 72px;margin-left: 12px;transition: all 0.2s ease;text-align: center;color: #fff;border: 1px solid #fff;border-radius: 12px;font-size: 12px;line-height: 24px;}
-.util_box .btn_logout:hover {border-color: #05366e;background: #05366e;}
-.util01,
-.util02 {position: relative;display: inline-block;height: 29px;margin-right: 5px;text-indent: -9999px;background-repeat: no-repeat;background-position: 0 50%;}
-.util01 {width: 38px;background-image: url(../images/common/i_util01.png);}
-.util02 {width: 33px;background-image: url(../images/common/i_util02.png);}
-.util_box .i_new {position: absolute;top: 0;right: 0;width: 16px;height: 16px;text-indent: -9999px;background: url(../images/common/util_new.png) no-repeat 0 0;}
+#wrapper {position:relative;min-width:1200px;margin:0 auto;height:100%;}
+#header {position:relative;background-color: #0a62c6;height: 60px;overflow: hidden;z-index:100;}
+#header .header_box {position:relative;height: 60px;line-height: 60px; padding-right:25px;}
+#header .header_box:after{content:".";height:0;font-size:0;visibility:hidden;display:block;clear:both;}
+#header .logo {float:left;width: 230px;}
+#header .logo a {display:block;width: 230px;height: 60px;text-indent:-9999em;background: #083c92  url(/publish/ma/images/logo.png) no-repeat 50% 50%;background-size: 70% auto;}
+#header .util_box {float:right;text-align:right;color:#000;font-size: 14px;}
+#header .util_box .user_info {color:#fff;padding-left:18px;background:url(../images/i_user.png) no-repeat 0 50%;background-size: 14px auto;line-height: 1;}
+#header .util_box .user_info strong {color:#fff;font-weight:600;}
+#header .util_box .user_info .btn_logout {display:inline-block;line-height: 23px;width: 75px;height: 30px;font-size: 12px;letter-spacing:-0.08em;text-align:center;color:#fff;border: 2px solid
+#fff;border-radius: 15px;margin-left:5px;}
+#header .util_box .user_info .btn_logout:hover {background:#087bbf;border:2px solid #087bbf; color:#fff}
+#header .util_box .user_info .btn_logout strong {color:#fff;}
+#header .util_box .user_info .util_date {color:#000; margin-right:15px;}
+#header .go_homepage {display:inline-block; line-height: 25px;width: 75px;height: 30px;font-size: 12px;letter-spacing:-0.08em;text-align:center;color:##0c53c7;border: 2px solid
+#fff;border-radius: 15px;margin:0 5px;background:#ffffff}
+#header .go_homepage .fa {margin-right:5px;}
+#header .go_homepage:hover {background:#087bbf;border:2px solid #087bbf; color:#fff}
+
 
 /*gnb*/
-#gnb_area {position: relative;width: 100%;background: #0b2239;}
-#gnb {position: relative;width: 100%;font-size: 0;}
-#gnb > ul > li {position: relative;float: left;}
-#gnb .type05 li {width: 20%;}
-#gnb .type06 li {width: 16.66%;}
-#gnb .type07 li {width: 14.28%;}
-#gnb .type08 li {width: 12.5%;}
-#gnb > ul > li > a {display: block;height: 55px;text-align: center;color: #fff;font-size: 17px; font-weight: 700;}
-#gnb > ul > li > a::before {position: absolute;top: 0;right: 0;display: inline-block;content:"\003A";color: #ffffff;line-height:55px;}
-#gnb > ul > li:last-child > a::before {display: none;}
-#gnb > ul > li:hover > a,
-#gnb > ul > li.on > a {color: #3694ff;}
-#gnb > ul > li > a span {position: relative;padding: 0 5px;line-height:52px;}
-#gnb > ul > li:hover > a span::after,
-#gnb > ul > li.on > a span::after {position: absolute;bottom: 0;left: 0;display: block;width: 100%;height: 2px;content: '';background: #3694ff;}
-
+.gnb_bg {position:absolute;left:0;top:104px;width:100%;height:118px;background:rgba(255,255,255,0.9);display:none;z-index:50;border-bottom:1px solid #1d8fcb;}
+#gnb_area {position: absolute;left: 230px;height: 60px;background-color: #0a62c6;}
+.gnb > li {position:relative;float:left;width: 160px;}
+.gnb > li:after {position:absolute;width:1px;height: 15px;background: rgba(255,255,255,0.5);content:"";right:0;top: 23px;}
+.gnb > li > a {display:block;height: 60px;line-height: 60px;text-align:center;font-size: 18px;font-weight:600;color:#fff;}
+.gnb > li > a:hover, .gnb > li > a:focus, .gnb > li > a.current {color:#082244}
+.gnb > li.on > a {background:#1c5cb0;}
+.gnb .fa {vertical-align: 0;font-size: 16px;}
 
 #footer {position:fixed;left:0;bottom:0;width:100%;height:40px;line-height:40px; text-align:center;border-top:1px solid #cfcfcf;z-index:10;background:#fff;}
 
 /* main */
 #main_container {position: relative; width: auto;min-height: 100%;background:#e9ecef;}
 
-.main {position: relative; padding: 145px 30px 14px; display:table; width: 100%; table-layout:fixed; background:#e9ecef;}
+.main {position: relative; padding: 50px 30px 14px; display:table; width: 100%; table-layout:fixed; background:#e9ecef;}
 
 .m_title {position: relative;font-size: 18px;font-weight: 600; letter-spacing:-0.05em; color:#222222; line-height:1; margin-top:8px;}
 .m_title::before {display: inline-block;width: 9px;height: 9px;margin-right: 5px;content: '';vertical-align: top;border-radius: 50%; border:4px solid #555;}

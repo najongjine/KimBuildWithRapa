@@ -1,6 +1,8 @@
-package com.open.ma;
+package com.open.ma.mdev.mtchrmng;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.annotation.Resource;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
@@ -24,18 +27,18 @@ import com.open.cmmn.service.CmmnService;
 import com.open.cmmn.service.FileMngService;
 import com.open.cmmn.util.SessionUtil;
 import com.open.cmmn.util.StringUtil;
-import com.open.ma.sample.service.SampleVO;
-import com.open.vo.ComplChrtVO;
-import com.open.vo.MaMainVO;
+import com.open.vo.TchrMngVO;
 
 import egovframework.rte.fdl.idgnr.EgovIdGnrService;
 import egovframework.rte.fdl.property.EgovPropertyService;
 import egovframework.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
-import net.sf.ehcache.Ehcache;
-import net.sf.ehcache.Element;
 
+/**
+ * 공지사항 게시판을 관리하는 컨트롤러 클래스를 정의한다.
+ */
 @Controller
-public class MaMainController {
+public class MTchrMngController {
+
 	@Resource(name = "cmmnService")
 	protected CmmnService cmmnService;
 
@@ -60,10 +63,10 @@ public class MaMainController {
 	private MappingJackson2JsonView ajaxView;
 
 	/** Program ID **/
-	private final static String PROGRAM_ID = "MaMain";
+	private final static String PROGRAM_ID = "TchrMng";
 
 	/** folderPath **/
-	private final static String folderPath = "/ma/";
+	private final static String folderPath = "/ma/mdev/mtchrmng/";
 
 	// @Resource(name = "beanValidator")
 	// protected DefaultBeanValidator beanValidator;
@@ -82,22 +85,11 @@ public class MaMainController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(folderPath + "main.do")
+	@RequestMapping(folderPath + "list.do")
 	public String list(@ModelAttribute("searchVO") CmmnDefaultVO searchVO, ModelMap model, HttpServletRequest request)
 			throws Exception {
-		
-		MaMainVO maFtCnt= (MaMainVO) cmmnService.selectContents(searchVO, PROGRAM_ID+".selectConCount");
-		List<MaMainVO> urlConMCnt= (List<MaMainVO>) cmmnService.selectList(searchVO, PROGRAM_ID+".selectUrlConMCount");
-		List<MaMainVO> allowNList=(List<MaMainVO>) cmmnService.selectList(searchVO, PROGRAM_ID+".selectAllowNList");
-		List<MaMainVO> allowPList=(List<MaMainVO>) cmmnService.selectList(searchVO, PROGRAM_ID+".selectAllowPList");
-		
-		List<MaMainVO> yearList=(List<MaMainVO>) cmmnService.selectList(searchVO, "ComplChrt.yearList");
-		model.addAttribute("maFtCnt", maFtCnt);
-		model.addAttribute("urlConMCnt", urlConMCnt);
-		model.addAttribute("allowNList", allowNList);
-		model.addAttribute("allowPList", allowPList);
-		model.addAttribute("yearList", yearList);
-		return folderPath + "main";
+
+		return ".mLayout:" + folderPath + "list";
 	}
 
 	/**
@@ -110,17 +102,32 @@ public class MaMainController {
 	 * @throws Exception
 	 */
 	@SuppressWarnings("deprecation")
-	@RequestMapping(folderPath + "/mc01/compl.do")
+	@RequestMapping(folderPath + "addList.do")
 	public String addList(@ModelAttribute("searchVO") CmmnDefaultVO searchVO, ModelMap model,
 			HttpServletRequest request) throws Exception {
+		int pageSize = propertiesService.getInt("pageSize");
+		int pageUnit = propertiesService.getInt("pageUnit");
+		searchVO.setPageSize(pageSize);
+		searchVO.setPageUnit(pageUnit);
+		
+		/** pageing setting */
+		PaginationInfo paginationInfo = new PaginationInfo();
+		paginationInfo.setCurrentPageNo(searchVO.getPageIndex());
+		paginationInfo.setRecordCountPerPage(searchVO.getPageUnit());
+		paginationInfo.setPageSize(searchVO.getPageSize());
+		searchVO.setFirstIndex(paginationInfo.getFirstRecordIndex());
+		searchVO.setLastIndex(paginationInfo.getLastRecordIndex());
+		searchVO.setRecordCountPerPage(paginationInfo.getRecordCountPerPage());
+		
+		int totCnt = cmmnService.selectCount(searchVO, PROGRAM_ID);
+		paginationInfo.setTotalRecordCount(totCnt);
+		model.addAttribute("paginationInfo", paginationInfo);
 
 		@SuppressWarnings("unchecked")
-		ComplChrtVO compl =  (ComplChrtVO) cmmnService.selectContents(searchVO, PROGRAM_ID+".selectComplTotal");
-		List<ComplChrtVO> complChrtList =  (List<ComplChrtVO>) cmmnService.selectList(searchVO, PROGRAM_ID+".complTotalChrt");
-		model.addAttribute("compl", compl);
-		model.addAttribute("complChrtList", complChrtList);
+		List<TchrMngVO> resultList = (List<TchrMngVO>) cmmnService.selectList(searchVO, PROGRAM_ID);
+		model.addAttribute("resultList", resultList);
 
-		return folderPath + "compl";
+		return folderPath + "addList";
 	}
 
 	/**
@@ -134,15 +141,10 @@ public class MaMainController {
 	 */
 	@SuppressWarnings("unchecked")
 	@RequestMapping(folderPath + "view.do")
-	public String view(@ModelAttribute("searchVO") SampleVO searchVO, Model model, HttpServletRequest request)
+	public String view(@ModelAttribute("searchVO") TchrMngVO searchVO, Model model, HttpServletRequest request)
 			throws Exception {
 
-		/* 게시판 상세정보 */
-		SampleVO sampleVO = new SampleVO();
-		sampleVO = (SampleVO) cmmnService.selectContents(searchVO, PROGRAM_ID);
-		model.addAttribute("sampleVO", sampleVO);
-
-		return ".mLayout:" + folderPath + "view";
+		return "forward:"+folderPath+"updateForm.do";
 	}
 
 	/**
@@ -156,14 +158,14 @@ public class MaMainController {
 	 * @throws Exception
 	 */
 	@RequestMapping(folderPath + "{procType}Form.do")
-	public String form(@ModelAttribute("searchVO") SampleVO searchVO, Model model, @PathVariable String procType,
+	public String form(@ModelAttribute("searchVO") TchrMngVO searchVO, Model model, @PathVariable String procType,
 			HttpServletRequest request) throws Exception {
 
-		SampleVO sampleVO = new SampleVO();
+		TchrMngVO tchrMngVO = new TchrMngVO();
 		if (procType.equals("update")) {
-			sampleVO = (SampleVO) cmmnService.selectContents(searchVO, PROGRAM_ID);
+			tchrMngVO = (TchrMngVO) cmmnService.selectContents(searchVO, PROGRAM_ID);
 			if (!StringUtil.nullString(SessionUtil.getUserDetails().getAuthCode()).equals("1")
-					&& !StringUtil.nullString(sampleVO.getRgstId())
+					&& !StringUtil.nullString(tchrMngVO.getRgstId())
 							.equals(StringUtil.nullString(SessionUtil.getUserDetails().getLoginSeq()))) {
 				model.addAttribute("message", "비정상적인 접근입니다.");
 				model.addAttribute("cmmnScript", "list.do");
@@ -171,8 +173,8 @@ public class MaMainController {
 			}
 		}
 		searchVO.setProcType(procType);
-		sampleVO.setSearchVO(searchVO);
-		model.addAttribute("sampleVO", sampleVO);
+		tchrMngVO.setSearchVO(searchVO);
+		model.addAttribute("tchrMngVO", tchrMngVO);
 
 		return ".mLayout:" + folderPath + "form";
 	}
@@ -189,7 +191,7 @@ public class MaMainController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = folderPath + "{procType}Proc.do", method = RequestMethod.POST)
-	public String proc(@ModelAttribute("searchVO") SampleVO searchVO, Model model, SessionStatus status,
+	public String proc(@ModelAttribute("searchVO") TchrMngVO searchVO, Model model, SessionStatus status,
 			@PathVariable String procType, HttpServletRequest request) throws Exception {
 
 		if (procType != null) {
@@ -229,4 +231,35 @@ public class MaMainController {
 		return "redirect:list.do";
 
 	}
+	
+	@RequestMapping(value = folderPath + "checkId.json")
+	@ResponseBody
+	public Map<String,Object> checkId(@ModelAttribute("searchVO") TchrMngVO searchVO) throws Exception {
+		Map<String,Object> data=new HashMap<>();
+		Object exId=cmmnService.selectContents(searchVO, PROGRAM_ID+".getId");
+		if(exId!=null) {
+			data.put("success", false);
+			data.put("msg", "중복된 아이디 입니다");
+		}else {
+			data.put("success", true);
+			data.put("msg", "사용가능한 아이디 입니다");
+		}
+		return data;
+	}
+	
+	@RequestMapping(value = folderPath + "checkEmail.json")
+	@ResponseBody
+	public Map<String,Object> checkEmail(@ModelAttribute("searchVO") TchrMngVO searchVO) throws Exception {
+		Map<String,Object> data=new HashMap<>();
+		Object exId=cmmnService.selectContents(searchVO, PROGRAM_ID+".getEmail");
+		if(exId!=null) {
+			data.put("success", false);
+			data.put("msg", "중복된 이메일 입니다");
+		}else {
+			data.put("success", true);
+			data.put("msg", "사용가능한 이메일 입니다");
+		}
+		return data;
+	}
+
 }
